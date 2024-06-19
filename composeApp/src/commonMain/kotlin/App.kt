@@ -1,7 +1,13 @@
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.FastOutLinearInEasing
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.animateDpAsState
-import androidx.compose.foundation.Canvas
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -69,8 +75,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
@@ -220,70 +224,84 @@ fun SidebarMenu(isCompact: Boolean, selectedMenuItem: String, onMenuItemClick: (
     ) {
         IconButton(
             onClick = { expanded = !expanded },
-            modifier = Modifier.align(Alignment.End)
+            modifier = Modifier
+                .animateContentSize(
+                    tween(
+                        durationMillis = 300,
+                        delayMillis = 400,
+                        easing = LinearOutSlowInEasing
+                    )
+                )
+                .align(Alignment.End)
         ) {
             Icon(expandIcon, contentDescription = "Expand/Collapse Sidebar")
         }
 
-        if (expanded) {
-            MenuItem(
-                "Dashboard",
-                Icons.Default.Dashboard,
-                selectedMenuItem = selectedMenuItem,
-                onMenuItemClick = onMenuItemClick
-            )
-            MenuItem(
-                "Products",
-                Icons.Default.ShoppingCart,
-                listOf("Add Product", "Product List"),
-                selectedMenuItem,
-                onMenuItemClick
-            )
-            MenuItem(
-                "Categories",
-                Icons.Default.Category,
-                listOf("Add Category", "Category List"),
-                selectedMenuItem,
-                onMenuItemClick
-            )
-            MenuItem(
-                "Orders",
-                Icons.Default.Receipt,
-                listOf("New Orders", "Completed Orders"),
-                selectedMenuItem,
-                onMenuItemClick
-            )
-            MenuItem(
-                "Reviews",
-                Icons.Default.Star,
-                selectedMenuItem = selectedMenuItem,
-                onMenuItemClick = onMenuItemClick
-            )
-            MenuItem(
-                "Coupons",
-                Icons.Default.LocalOffer,
-                selectedMenuItem = selectedMenuItem,
-                onMenuItemClick = onMenuItemClick
-            )
-            MenuItem(
-                "Profile",
-                Icons.Default.Person,
-                selectedMenuItem = selectedMenuItem,
-                onMenuItemClick = onMenuItemClick
-            )
-            MenuItem(
-                "Shop Settings",
-                Icons.Default.Settings,
-                selectedMenuItem = selectedMenuItem,
-                onMenuItemClick = onMenuItemClick
-            )
-            MenuItem(
-                "Pages",
-                Icons.Default.Pages,
-                listOf("About Us", "Contact Us"),
-                selectedMenuItem,
-                onMenuItemClick
-            )
+        androidx.compose.animation.AnimatedVisibility(
+            visible = expanded,
+            enter = fadeIn(tween(1000,50, easing = LinearEasing)),
+            exit = fadeOut(tween(1000,50, easing = LinearEasing))
+        ) {
+            Column {
+                MenuItem(
+                    "Dashboard",
+                    Icons.Default.Dashboard,
+                    selectedMenuItem = selectedMenuItem,
+                    onMenuItemClick = onMenuItemClick
+                )
+                MenuItem(
+                    "Products",
+                    Icons.Default.ShoppingCart,
+                    listOf("Add Product", "Product List"),
+                    selectedMenuItem,
+                    onMenuItemClick
+                )
+                MenuItem(
+                    "Categories",
+                    Icons.Default.Category,
+                    listOf("Add Category", "Category List"),
+                    selectedMenuItem,
+                    onMenuItemClick
+                )
+                MenuItem(
+                    "Orders",
+                    Icons.Default.Receipt,
+                    listOf("New Orders", "Completed Orders"),
+                    selectedMenuItem,
+                    onMenuItemClick
+                )
+                MenuItem(
+                    "Reviews",
+                    Icons.Default.Star,
+                    selectedMenuItem = selectedMenuItem,
+                    onMenuItemClick = onMenuItemClick
+                )
+                MenuItem(
+                    "Coupons",
+                    Icons.Default.LocalOffer,
+                    selectedMenuItem = selectedMenuItem,
+                    onMenuItemClick = onMenuItemClick
+                )
+                MenuItem(
+                    "Profile",
+                    Icons.Default.Person,
+                    selectedMenuItem = selectedMenuItem,
+                    onMenuItemClick = onMenuItemClick
+                )
+                MenuItem(
+                    "Shop Settings",
+                    Icons.Default.Settings,
+                    selectedMenuItem = selectedMenuItem,
+                    onMenuItemClick = onMenuItemClick
+                )
+                MenuItem(
+                    "Pages",
+                    Icons.Default.Pages,
+                    listOf("About Us", "Contact Us"),
+                    selectedMenuItem,
+                    onMenuItemClick
+                )
+            }
         }
     }
 }
@@ -716,7 +734,8 @@ fun TransactionsCard(modifier: Modifier) {
                     Spacer(modifier = Modifier.width(8.dp))
                     Column {
                         Text(text = name, fontSize = 14.sp)
-                        Text(text = amount, fontSize = 14.sp, fontWeight = FontWeight.Bold)
+                        Text(text = amount, fontSize = 14.sp, fontWeight = FontWeight.Bold,
+                            color = if (amount.contains("-")) Color.Red else Color.Green)
                     }
                 }
                 Spacer(modifier = Modifier.height(8.dp))
