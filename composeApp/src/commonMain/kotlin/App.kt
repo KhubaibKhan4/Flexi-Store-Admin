@@ -26,6 +26,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.Category
+import androidx.compose.material.icons.filled.Checklist
 import androidx.compose.material.icons.filled.Dashboard
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
@@ -37,7 +38,16 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.filled.TaskAlt
+import androidx.compose.material.icons.outlined.Analytics
+import androidx.compose.material.icons.outlined.Chat
+import androidx.compose.material.icons.outlined.Checklist
+import androidx.compose.material.icons.outlined.CurrencyBitcoin
+import androidx.compose.material.icons.outlined.DashboardCustomize
 import androidx.compose.material.icons.outlined.NotificationsActive
+import androidx.compose.material.icons.outlined.Pending
+import androidx.compose.material.icons.outlined.ShoppingBag
+import androidx.compose.material.icons.outlined.Synagogue
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.ButtonDefaults
@@ -405,25 +415,33 @@ fun DashboardMainContent() {
                         title = "Orders Received",
                         value = "400",
                         percentage = "15%",
-                        modifier = Modifier.weight(1f)
+                        modifier = Modifier.weight(1f),
+                        icon = Icons.Outlined.Checklist,
+                        background = Color(0XFF51cd85)
                     )
                     DashboardCard(
                         title = "Average Daily Sales",
                         value = "\$6433",
                         percentage = "25%",
-                        modifier = Modifier.weight(1f)
+                        modifier = Modifier.weight(1f),
+                        icon = Icons.Outlined.CurrencyBitcoin,
+                        background = Color(0XFF723bde)
                     )
                     DashboardCard(
                         title = "New Customers This Month",
                         value = "8.9K",
                         percentage = "18%",
-                        modifier = Modifier.weight(1f)
+                        modifier = Modifier.weight(1f),
+                        icon = Icons.Outlined.ShoppingBag,
+                        background = Color(0XFF3e93f6)
                     )
                     DashboardCard(
                         title = "Pending Orders",
                         value = "563",
                         percentage = "10%",
-                        modifier = Modifier.weight(1f)
+                        modifier = Modifier.weight(1f),
+                        icon = Icons.Outlined.Pending,
+                        background = Color(0XFFfe9603)
                     )
                 }
                 Row(
@@ -465,7 +483,14 @@ fun DashboardMainContent() {
 }
 
 @Composable
-fun DashboardCard(title: String, value: String, percentage: String, modifier: Modifier) {
+fun DashboardCard(
+    title: String,
+    value: String,
+    percentage: String,
+    modifier: Modifier,
+    icon: ImageVector,
+    background: Color
+) {
     Card(
         shape = RoundedCornerShape(8.dp),
         modifier = modifier
@@ -473,15 +498,42 @@ fun DashboardCard(title: String, value: String, percentage: String, modifier: Mo
             .fillMaxWidth(),
         colors = CardDefaults.cardColors(containerColor = Color(0xFFf1f4f9))
     ) {
-        Column(
-            modifier = Modifier.padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.Start,
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(text = title, fontSize = 16.sp, color = Color.Gray)
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(text = value, fontSize = 24.sp, fontWeight = FontWeight.Bold)
-            Spacer(modifier = Modifier.height(4.dp))
-            Text(text = percentage, fontSize = 14.sp, color = Color.Green)
+            Column(
+                modifier = Modifier.padding(16.dp),
+                horizontalAlignment = Alignment.Start,
+                verticalArrangement = Arrangement.Center
+            ) {
+                Text(
+                    text = value,
+                    fontSize = 20.sp,
+                    color = Color.Black,
+                    fontWeight = FontWeight.Bold
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(text = title, fontSize = 14.sp)
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(text = percentage, fontSize = 14.sp, color = Color.Green)
+            }
+            Spacer(modifier = Modifier.weight(1f))
+            Box(
+                modifier = Modifier
+                    .size(30.dp)
+                    .background(color = background, shape = CircleShape)
+                    .padding(3.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector =icon,
+                    contentDescription = null,
+                    tint = Color.White
+                )
+            }
+            Spacer(modifier = Modifier.width(8.dp))
         }
     }
 }
