@@ -46,7 +46,7 @@ kotlin {
         }
     }
 }
-
+task("testClasses"){}
 
 compose.desktop {
     application {

@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -62,6 +63,9 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import flexi_store_admin.composeapp.generated.resources.Res
+import flexi_store_admin.composeapp.generated.resources.avatar
+import org.jetbrains.compose.resources.painterResource
 
 @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
 @Composable
@@ -107,15 +111,18 @@ fun CustomTopAppBar(modifier: Modifier = Modifier) {
             fontWeight = FontWeight.Bold,
             fontSize = MaterialTheme.typography.headlineSmall.fontSize
         )
-        Spacer(modifier = Modifier.weight(1f))
+        Spacer(modifier = Modifier.width(120.dp))
         OutlinedTextField(
             value = isSearchQuery,
             onValueChange = {
                 isSearchQuery = it
             },
             modifier = Modifier
+                .padding(14.dp)
+                .wrapContentWidth()
                 .weight(1f)
-                .border(width = 1.dp, color = Color.Gray, shape = RoundedCornerShape(6.dp)),
+                .border(width = 1.dp, color = Color.Gray, shape = RoundedCornerShape(6.dp))
+            ,
             trailingIcon = {
                 Icon(
                     imageVector = Icons.Default.Search,
@@ -149,13 +156,13 @@ fun CustomTopAppBar(modifier: Modifier = Modifier) {
                 contentDescription = "Notifications"
             )
         }
-        Spacer(modifier = Modifier.width(10.dp))
+        Spacer(modifier = Modifier.width(20.dp))
         Box(
             modifier = Modifier.size(35.dp),
             contentAlignment = Alignment.Center
         ) {
             Image(
-                imageVector = Icons.Default.Image,
+                painter = painterResource(Res.drawable.avatar),
                 contentDescription = "Image",
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
