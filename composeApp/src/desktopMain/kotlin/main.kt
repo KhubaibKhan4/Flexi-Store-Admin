@@ -7,7 +7,7 @@ fun main() = application {
     Window(
         onCloseRequest = ::exitApplication,
         title = "Flexi-Store-Admin",
-        state = rememberWindowState(width = 1280.dp, height = 720.dp)
+        state = rememberWindowState(width = 1370.dp, height = 720.dp)
     ) {
         App()
     }

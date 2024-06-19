@@ -26,7 +26,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.Category
-import androidx.compose.material.icons.filled.Checklist
 import androidx.compose.material.icons.filled.Dashboard
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
@@ -38,22 +37,12 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material.icons.filled.Star
-import androidx.compose.material.icons.filled.TaskAlt
-import androidx.compose.material.icons.outlined.Analytics
-import androidx.compose.material.icons.outlined.BarChart
-import androidx.compose.material.icons.outlined.CandlestickChart
-import androidx.compose.material.icons.outlined.Chat
 import androidx.compose.material.icons.outlined.Checklist
 import androidx.compose.material.icons.outlined.CurrencyBitcoin
-import androidx.compose.material.icons.outlined.DashboardCustomize
-import androidx.compose.material.icons.outlined.MultilineChart
 import androidx.compose.material.icons.outlined.NotificationsActive
 import androidx.compose.material.icons.outlined.Pending
-import androidx.compose.material.icons.outlined.PieChartOutline
 import androidx.compose.material.icons.outlined.ShoppingBag
 import androidx.compose.material.icons.outlined.StackedLineChart
-import androidx.compose.material.icons.outlined.Synagogue
-import androidx.compose.material.icons.outlined.WaterfallChart
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.ButtonDefaults
@@ -83,13 +72,18 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Path
-import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.aay.compose.baseComponents.model.GridOrientation
+import com.aay.compose.donutChart.PieChart
+import com.aay.compose.donutChart.model.PieChartData
+import com.aay.compose.lineChart.LineChart
+import com.aay.compose.lineChart.model.LineParameters
+import com.aay.compose.lineChart.model.LineType
 import flexi_store_admin.composeapp.generated.resources.Res
 import flexi_store_admin.composeapp.generated.resources.avatar
 import org.jetbrains.compose.resources.painterResource
@@ -495,7 +489,7 @@ fun DashboardCard(
     percentage: String,
     modifier: Modifier,
     icon: ImageVector,
-    background: Color
+    background: Color,
 ) {
     Card(
         shape = RoundedCornerShape(8.dp),
@@ -523,14 +517,14 @@ fun DashboardCard(
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(text = title, fontSize = 14.sp)
                 Spacer(modifier = Modifier.height(4.dp))
-              Row {
-                  Text(text = percentage, fontSize = 14.sp, color = background)
-                  Icon(
-                      imageVector =Icons.Outlined.StackedLineChart,
-                      contentDescription = null,
-                      tint = background
-                  )
-              }
+                Row {
+                    Text(text = percentage, fontSize = 14.sp, color = background)
+                    Icon(
+                        imageVector = Icons.Outlined.StackedLineChart,
+                        contentDescription = null,
+                        tint = background
+                    )
+                }
             }
             Spacer(modifier = Modifier.weight(1f))
             Box(
@@ -541,7 +535,7 @@ fun DashboardCard(
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
-                    imageVector =icon,
+                    imageVector = icon,
                     contentDescription = null,
                     tint = Color.White
                 )
@@ -555,6 +549,29 @@ data class DataPoint(val x: Float, val y: Float)
 
 @Composable
 fun DashboardChart(title: String, modifier: Modifier = Modifier) {
+    val testLineParameters: List<LineParameters> = listOf(
+        LineParameters(
+            label = "Sales",
+            data = listOf(70.0, 00.0, 50.33, 40.0, 100.500, 50.0),
+            lineColor = Color.Gray,
+            lineType = LineType.CURVED_LINE,
+            lineShadow = true,
+        ),
+        LineParameters(
+            label = "Visitors",
+            data = listOf(60.0, 80.6, 40.33, 86.232, 88.0, 90.0),
+            lineColor = Color(0xFFFF7F50),
+            lineType = LineType.DEFAULT_LINE,
+            lineShadow = true
+        ),
+        LineParameters(
+            label = "Products",
+            data = listOf(1.0, 40.0, 11.33, 55.23, 1.0, 100.0),
+            lineColor = Color(0xFF81BE88),
+            lineType = LineType.CURVED_LINE,
+            lineShadow = false,
+        )
+    )
     val dataPoints = listOf(
         DataPoint(0f, 100f),
         DataPoint(1f, 120f),
@@ -576,19 +593,29 @@ fun DashboardChart(title: String, modifier: Modifier = Modifier) {
         ) {
             Text(text = title, fontSize = 16.sp, color = Color.Gray)
             Spacer(modifier = Modifier.height(8.dp))
-            Canvas(modifier = Modifier.fillMaxWidth().height(200.dp)) {
-                val path = Path().apply {
-                    moveTo(dataPoints.first().x, size.height - dataPoints.first().y)
-                    for (point in dataPoints) {
-                        lineTo(point.x * size.width / (dataPoints.size - 1), size.height - point.y)
-                    }
-                }
-                drawPath(
-                    path = path,
-                    color = Color.Blue,
-                    style = Stroke(width = 4.dp.toPx())
-                )
-            }
+
+            LineChart(
+                modifier = Modifier.fillMaxWidth()
+                    .height(300.dp),
+                linesParameters = testLineParameters,
+                isGrid = true,
+                gridColor = Color.Blue,
+                xAxisData = listOf("0", "15", "25", "50", "75", "100"),
+                animateChart = true,
+                showGridWithSpacer = true,
+                yAxisStyle = TextStyle(
+                    fontSize = 14.sp,
+                    color = Color.Gray,
+                ),
+                xAxisStyle = TextStyle(
+                    fontSize = 14.sp,
+                    color = Color.Gray,
+                    fontWeight = FontWeight.W400
+                ),
+                yAxisRange = 14,
+                oneLineChart = false,
+                gridOrientation = GridOrientation.VERTICAL
+            )
         }
     }
 }
@@ -599,8 +626,8 @@ fun DashboardPieChart(title: String, modifier: Modifier) {
         "Grocery" to 30f,
         "Women" to 25f,
         "Men" to 20f,
-        "Kids" to 15f,
-        "Other" to 10f
+        "" to 15f,
+        "" to 10f
     )
     val colors = listOf(Color.Green, Color.Blue, Color.Red, Color.Yellow, Color.Gray)
     val total = data.sumOf { it.second.toDouble() }.toFloat()
@@ -617,24 +644,40 @@ fun DashboardPieChart(title: String, modifier: Modifier) {
         ) {
             Text(text = title, fontSize = 16.sp, color = Color.Gray)
             Spacer(modifier = Modifier.height(8.dp))
-            Canvas(modifier = Modifier.fillMaxWidth().height(200.dp)) {
-                var startAngle = 0f
-                data.forEachIndexed { index, (_, value) ->
-                    val sweepAngle = (value / total) * 360f
-                    drawArc(
-                        color = colors[index],
-                        startAngle = startAngle,
-                        sweepAngle = sweepAngle,
-                        useCenter = true,
-                        size = Size(size.minDimension, size.minDimension),
-                        topLeft = Offset(
-                            (size.width - size.minDimension) / 2,
-                            (size.height - size.minDimension) / 2
-                        )
-                    )
-                    startAngle += sweepAngle
-                }
-            }
+            val testPieChartData: List<PieChartData> = listOf(
+                PieChartData(
+                    partName = "Grocery",
+                    data = 500.0,
+                    color = Color(0xFF22A699),
+                ),
+                PieChartData(
+                    partName = "Women",
+                    data = 700.0,
+                    color = Color(0xFFF2BE22),
+                ),
+                PieChartData(
+                    partName = "Men",
+                    data = 500.0,
+                    color = Color(0xFFF29727),
+                ),
+                PieChartData(
+                    partName = "Kids",
+                    data = 100.0,
+                    color = Color(0xFFF24C3D),
+                ),
+                PieChartData(
+                    partName = "Other",
+                    data = 125.0,
+                    color = Color(0xFFF24C9D),
+                ),
+            )
+
+            PieChart(
+                modifier = Modifier.height(300.dp),
+                pieChartData = testPieChartData,
+                ratioLineColor = Color.LightGray,
+                textRatioStyle = TextStyle(color = Color.Gray),
+            )
         }
     }
 }
