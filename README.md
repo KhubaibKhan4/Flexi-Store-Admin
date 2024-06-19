@@ -1,3 +1,8 @@
+# Flexi-Store-Admin
+Flexi-Store-Admin is a Seller Central for the Flexi-Store-KMP Project that Supports Android, iOS, Web & Desktop.
+
+
+
 This is a Kotlin Multiplatform project targeting Web, Desktop.
 
 * `/composeApp` is for code that will be shared across your Compose Multiplatform applications.
