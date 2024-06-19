@@ -9,8 +9,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -42,8 +40,10 @@ import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.outlined.NotificationsActive
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -67,8 +67,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Paint
-import androidx.compose.ui.graphics.PaintingStyle
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -218,15 +216,64 @@ fun SidebarMenu(isCompact: Boolean, selectedMenuItem: String, onMenuItemClick: (
         }
 
         if (expanded) {
-            MenuItem("Dashboard", Icons.Default.Dashboard, selectedMenuItem = selectedMenuItem, onMenuItemClick = onMenuItemClick)
-            MenuItem("Products", Icons.Default.ShoppingCart, listOf("Add Product", "Product List"), selectedMenuItem, onMenuItemClick)
-            MenuItem("Categories", Icons.Default.Category, listOf("Add Category", "Category List"), selectedMenuItem, onMenuItemClick)
-            MenuItem("Orders", Icons.Default.Receipt, listOf("New Orders", "Completed Orders"), selectedMenuItem, onMenuItemClick)
-            MenuItem("Reviews", Icons.Default.Star, selectedMenuItem = selectedMenuItem, onMenuItemClick = onMenuItemClick)
-            MenuItem("Coupons", Icons.Default.LocalOffer, selectedMenuItem = selectedMenuItem, onMenuItemClick = onMenuItemClick)
-            MenuItem("Profile", Icons.Default.Person, selectedMenuItem = selectedMenuItem, onMenuItemClick = onMenuItemClick)
-            MenuItem("Shop Settings", Icons.Default.Settings, selectedMenuItem = selectedMenuItem, onMenuItemClick = onMenuItemClick)
-            MenuItem("Pages", Icons.Default.Pages, listOf("About Us", "Contact Us"), selectedMenuItem, onMenuItemClick)
+            MenuItem(
+                "Dashboard",
+                Icons.Default.Dashboard,
+                selectedMenuItem = selectedMenuItem,
+                onMenuItemClick = onMenuItemClick
+            )
+            MenuItem(
+                "Products",
+                Icons.Default.ShoppingCart,
+                listOf("Add Product", "Product List"),
+                selectedMenuItem,
+                onMenuItemClick
+            )
+            MenuItem(
+                "Categories",
+                Icons.Default.Category,
+                listOf("Add Category", "Category List"),
+                selectedMenuItem,
+                onMenuItemClick
+            )
+            MenuItem(
+                "Orders",
+                Icons.Default.Receipt,
+                listOf("New Orders", "Completed Orders"),
+                selectedMenuItem,
+                onMenuItemClick
+            )
+            MenuItem(
+                "Reviews",
+                Icons.Default.Star,
+                selectedMenuItem = selectedMenuItem,
+                onMenuItemClick = onMenuItemClick
+            )
+            MenuItem(
+                "Coupons",
+                Icons.Default.LocalOffer,
+                selectedMenuItem = selectedMenuItem,
+                onMenuItemClick = onMenuItemClick
+            )
+            MenuItem(
+                "Profile",
+                Icons.Default.Person,
+                selectedMenuItem = selectedMenuItem,
+                onMenuItemClick = onMenuItemClick
+            )
+            MenuItem(
+                "Shop Settings",
+                Icons.Default.Settings,
+                selectedMenuItem = selectedMenuItem,
+                onMenuItemClick = onMenuItemClick
+            )
+            MenuItem(
+                "Pages",
+                Icons.Default.Pages,
+                listOf("About Us", "Contact Us"),
+                selectedMenuItem,
+                onMenuItemClick
+            )
         }
     }
 }
@@ -237,7 +284,7 @@ fun MenuItem(
     icon: ImageVector,
     subMenuItems: List<String> = emptyList(),
     selectedMenuItem: String,
-    onMenuItemClick: (String) -> Unit
+    onMenuItemClick: (String) -> Unit,
 ) {
     val backgroundColor by animateColorAsState(if (selectedMenuItem == name) Color(0xFF007BFF) else Color.Transparent)
     val contentColor by animateColorAsState(if (selectedMenuItem == name) Color.White else Color.Black)
@@ -312,12 +359,38 @@ fun DashboardMainContent() {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         item {
-            Text(
-                text = "Dashboard",
-                fontSize = 24.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color(0xFF007BFF)
-            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Start,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Column(
+                    horizontalAlignment = Alignment.Start,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Text(
+                        text = "Dashboard",
+                        fontSize = 24.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color(0xFF007BFF)
+                    )
+                    Text(
+                        "Welcome to your dashboard",
+                        fontSize = MaterialTheme.typography.bodyMedium.fontSize
+                    )
+                }
+                Spacer(modifier = Modifier.weight(1f))
+                ElevatedButton(
+                    onClick = {},
+                    shape = RoundedCornerShape(8.dp),
+                    colors = ButtonDefaults.elevatedButtonColors(
+                        containerColor = Color(0XFF0a8af9),
+                        contentColor = Color.White
+                    )
+                ) {
+                    Text("Add Product")
+                }
+            }
             Spacer(modifier = Modifier.height(16.dp))
         }
         item {
@@ -328,10 +401,30 @@ fun DashboardMainContent() {
                         .padding(vertical = 8.dp, horizontal = 8.dp),
                     horizontalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
-                    DashboardCard(title = "Orders Received", value = "400", percentage = "15%", modifier = Modifier.weight(1f))
-                    DashboardCard(title = "Average Daily Sales", value = "\$6433", percentage = "25%", modifier = Modifier.weight(1f))
-                    DashboardCard(title = "New Customers This Month", value = "8.9K", percentage = "18%", modifier = Modifier.weight(1f))
-                    DashboardCard(title = "Pending Orders", value = "563", percentage = "10%", modifier = Modifier.weight(1f))
+                    DashboardCard(
+                        title = "Orders Received",
+                        value = "400",
+                        percentage = "15%",
+                        modifier = Modifier.weight(1f)
+                    )
+                    DashboardCard(
+                        title = "Average Daily Sales",
+                        value = "\$6433",
+                        percentage = "25%",
+                        modifier = Modifier.weight(1f)
+                    )
+                    DashboardCard(
+                        title = "New Customers This Month",
+                        value = "8.9K",
+                        percentage = "18%",
+                        modifier = Modifier.weight(1f)
+                    )
+                    DashboardCard(
+                        title = "Pending Orders",
+                        value = "563",
+                        percentage = "10%",
+                        modifier = Modifier.weight(1f)
+                    )
                 }
                 Row(
                     modifier = Modifier
@@ -372,7 +465,7 @@ fun DashboardMainContent() {
 }
 
 @Composable
-fun DashboardCard(title: String, value: String, percentage: String,modifier: Modifier) {
+fun DashboardCard(title: String, value: String, percentage: String, modifier: Modifier) {
     Card(
         shape = RoundedCornerShape(8.dp),
         modifier = modifier
@@ -392,6 +485,7 @@ fun DashboardCard(title: String, value: String, percentage: String,modifier: Mod
         }
     }
 }
+
 data class DataPoint(val x: Float, val y: Float)
 
 @Composable
@@ -435,7 +529,7 @@ fun DashboardChart(title: String, modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun DashboardPieChart(title: String,modifier: Modifier) {
+fun DashboardPieChart(title: String, modifier: Modifier) {
     val data = listOf(
         "Grocery" to 30f,
         "Women" to 25f,
@@ -468,7 +562,10 @@ fun DashboardPieChart(title: String,modifier: Modifier) {
                         sweepAngle = sweepAngle,
                         useCenter = true,
                         size = Size(size.minDimension, size.minDimension),
-                        topLeft = Offset((size.width - size.minDimension) / 2, (size.height - size.minDimension) / 2)
+                        topLeft = Offset(
+                            (size.width - size.minDimension) / 2,
+                            (size.height - size.minDimension) / 2
+                        )
                     )
                     startAngle += sweepAngle
                 }
@@ -563,7 +660,9 @@ fun RecentOrdersCard(modifier: Modifier) {
                         color = if (status == "Active") Color.Green else Color.Red,
                         modifier = Modifier
                             .background(
-                                color = if (status == "Active") Color.Green.copy(alpha = 0.1f) else Color.Red.copy(alpha = 0.1f),
+                                color = if (status == "Active") Color.Green.copy(alpha = 0.1f) else Color.Red.copy(
+                                    alpha = 0.1f
+                                ),
                                 shape = RoundedCornerShape(4.dp)
                             )
                             .padding(horizontal = 8.dp, vertical = 4.dp)
