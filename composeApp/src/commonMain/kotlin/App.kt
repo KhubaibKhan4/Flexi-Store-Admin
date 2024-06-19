@@ -90,6 +90,10 @@ import com.aay.compose.lineChart.model.LineParameters
 import com.aay.compose.lineChart.model.LineType
 import flexi_store_admin.composeapp.generated.resources.Res
 import flexi_store_admin.composeapp.generated.resources.avatar
+import flexi_store_admin.composeapp.generated.resources.avatar_1
+import flexi_store_admin.composeapp.generated.resources.avatar_2
+import flexi_store_admin.composeapp.generated.resources.avatar_3
+import flexi_store_admin.composeapp.generated.resources.avatar_4
 import org.jetbrains.compose.resources.painterResource
 
 @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
@@ -703,10 +707,10 @@ fun DashboardPieChart(title: String, modifier: Modifier) {
 @Composable
 fun TransactionsCard(modifier: Modifier) {
     val transactions = listOf(
-        "Esther Howard" to "\$302.33",
-        "Robert Fox" to "-\$192.63",
-        "Brooklyn Simmons" to "\$602.50",
-        "Cameron Williamson" to "\$602.00"
+        "Esther Howard" to "\$302.33" to Res.drawable.avatar_1,
+        "Robert Fox" to "-\$192.63" to Res.drawable.avatar_2,
+        "Brooklyn Simmons" to "\$602.50" to Res.drawable.avatar_3,
+        "Cameron Williamson" to "\$602.00" to Res.drawable.avatar_4
     )
 
     Card(
@@ -730,12 +734,19 @@ fun TransactionsCard(modifier: Modifier) {
                         modifier = Modifier
                             .size(40.dp)
                             .background(Color.Gray, shape = CircleShape)
-                    )
+                    ){
+                        Image(
+                            painter = painterResource(amount),
+                            contentDescription = null,
+                            contentScale = ContentScale.Crop,
+                            modifier = Modifier.fillMaxWidth().clip(CircleShape)
+                        )
+                    }
                     Spacer(modifier = Modifier.width(8.dp))
                     Column {
-                        Text(text = name, fontSize = 14.sp)
-                        Text(text = amount, fontSize = 14.sp, fontWeight = FontWeight.Bold,
-                            color = if (amount.contains("-")) Color.Red else Color.Green)
+                        Text(text = name.first, fontSize = 14.sp)
+                        Text(text = name.second, fontSize = 14.sp, fontWeight = FontWeight.Bold,
+                            color = if (name.second.contains("-")) Color.Red else Color.Green)
                     }
                 }
                 Spacer(modifier = Modifier.height(8.dp))
