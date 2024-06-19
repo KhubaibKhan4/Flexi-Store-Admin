@@ -43,6 +43,7 @@ import androidx.compose.material.icons.outlined.NotificationsActive
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -68,6 +69,8 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Paint
 import androidx.compose.ui.graphics.PaintingStyle
+import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
@@ -91,7 +94,7 @@ fun Dashboard(windowSizeClass: WindowSizeClass) {
     var selectedMenuItem by remember { mutableStateOf("Dashboard") }
     val isCompact = windowSizeClass.widthSizeClass == WindowWidthSizeClass.Compact
 
-    Column(modifier = Modifier.fillMaxSize().background(Color(0xFFF5F5F5))) {
+    Column(modifier = Modifier.fillMaxSize().background(Color(0xFFe6f0f9))) {
         CustomTopAppBar(windowSizeClass)
         Row(modifier = Modifier.fillMaxSize()) {
             SidebarMenu(isCompact, selectedMenuItem) { selectedMenuItem = it }
@@ -284,7 +287,7 @@ fun MenuItem(
 @Composable
 fun DashboardContent(isCompact: Boolean, selectedMenuItem: String) {
     when (selectedMenuItem) {
-        "Dashboard" -> DashboardMainContent(isCompact)
+        "Dashboard" -> DashboardMainContent()
         "Products" -> Text("Products Screen")
         "Categories" -> Text("Categories Screen")
         "Orders" -> Text("Orders Screen")
@@ -296,13 +299,16 @@ fun DashboardContent(isCompact: Boolean, selectedMenuItem: String) {
     }
 }
 
-@OptIn(ExperimentalLayoutApi::class)
+@OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
 @Composable
-fun DashboardMainContent(isCompact: Boolean) {
+fun DashboardMainContent() {
+    val isCompact = calculateWindowSizeClass().widthSizeClass == WindowWidthSizeClass.Compact
     val columns = if (isCompact) 1 else 2
 
     LazyColumn(
-        modifier = Modifier.padding(16.dp),
+        modifier = Modifier
+            .padding(16.dp)
+            .fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         item {
@@ -315,31 +321,64 @@ fun DashboardMainContent(isCompact: Boolean) {
             Spacer(modifier = Modifier.height(16.dp))
         }
         item {
-            FlowRow(
-                modifier = Modifier.fillMaxWidth(),
-                maxItemsInEachRow = columns
-            ) {
-                DashboardCard(title = "Orders Received", value = "400", percentage = "15%")
-                DashboardCard(title = "Average Daily Sales", value = "\$6433", percentage = "25%")
-                DashboardCard(title = "New Customers This Month", value = "8.9K", percentage = "18%")
-                DashboardCard(title = "Pending Orders", value = "563", percentage = "10%")
-                DashboardChart(title = "Sales Statistics")
-                DashboardPieChart(title = "Most Selling Category")
-                TransactionsCard()
-                RecentOrdersCard()
-                TrafficSourceCard()
+            Column {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 8.dp, horizontal = 8.dp),
+                    horizontalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    DashboardCard(title = "Orders Received", value = "400", percentage = "15%", modifier = Modifier.weight(1f))
+                    DashboardCard(title = "Average Daily Sales", value = "\$6433", percentage = "25%", modifier = Modifier.weight(1f))
+                    DashboardCard(title = "New Customers This Month", value = "8.9K", percentage = "18%", modifier = Modifier.weight(1f))
+                    DashboardCard(title = "Pending Orders", value = "563", percentage = "10%", modifier = Modifier.weight(1f))
+                }
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 8.dp),
+                    horizontalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+
+                }
             }
+        }
+        item {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 8.dp),
+                horizontalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                DashboardChart(title = "Sales Statistics", modifier = Modifier.weight(1f))
+                DashboardPieChart(title = "Most Selling Category", modifier = Modifier.weight(1f))
+            }
+        }
+        item {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 8.dp),
+                horizontalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                TransactionsCard(modifier = Modifier.weight(1f))
+                RecentOrdersCard(modifier = Modifier.weight(1f))
+            }
+        }
+        item {
+            TrafficSourceCard(modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp))
         }
     }
 }
 
 @Composable
-fun DashboardCard(title: String, value: String, percentage: String) {
+fun DashboardCard(title: String, value: String, percentage: String,modifier: Modifier) {
     Card(
         shape = RoundedCornerShape(8.dp),
-        modifier = Modifier
+        modifier = modifier
             .padding(8.dp)
-            .fillMaxWidth()
+            .fillMaxWidth(),
+        colors = CardDefaults.cardColors(containerColor = Color.White)
     ) {
         Column(
             modifier = Modifier.padding(16.dp),
@@ -353,14 +392,25 @@ fun DashboardCard(title: String, value: String, percentage: String) {
         }
     }
 }
+data class DataPoint(val x: Float, val y: Float)
 
 @Composable
-fun DashboardChart(title: String) {
+fun DashboardChart(title: String, modifier: Modifier = Modifier) {
+    val dataPoints = listOf(
+        DataPoint(0f, 100f),
+        DataPoint(1f, 120f),
+        DataPoint(2f, 90f),
+        DataPoint(3f, 160f),
+        DataPoint(4f, 130f),
+        DataPoint(5f, 180f)
+    )
+
     Card(
         shape = RoundedCornerShape(8.dp),
-        modifier = Modifier
+        modifier = modifier
             .padding(8.dp)
-            .fillMaxWidth()
+            .fillMaxWidth(),
+        colors = CardDefaults.cardColors(containerColor = Color.White)
     ) {
         Column(
             modifier = Modifier.padding(16.dp)
@@ -368,11 +418,16 @@ fun DashboardChart(title: String) {
             Text(text = title, fontSize = 16.sp, color = Color.Gray)
             Spacer(modifier = Modifier.height(8.dp))
             Canvas(modifier = Modifier.fillMaxWidth().height(200.dp)) {
-                drawLine(
-                    color = Color.Gray,
-                    start = Offset(0f, size.height / 2),
-                    end = Offset(size.width, size.height / 2),
-                    strokeWidth = 4f
+                val path = Path().apply {
+                    moveTo(dataPoints.first().x, size.height - dataPoints.first().y)
+                    for (point in dataPoints) {
+                        lineTo(point.x * size.width / (dataPoints.size - 1), size.height - point.y)
+                    }
+                }
+                drawPath(
+                    path = path,
+                    color = Color.Blue,
+                    style = Stroke(width = 4.dp.toPx())
                 )
             }
         }
@@ -380,7 +435,7 @@ fun DashboardChart(title: String) {
 }
 
 @Composable
-fun DashboardPieChart(title: String) {
+fun DashboardPieChart(title: String,modifier: Modifier) {
     val data = listOf(
         "Grocery" to 30f,
         "Women" to 25f,
@@ -393,9 +448,10 @@ fun DashboardPieChart(title: String) {
 
     Card(
         shape = RoundedCornerShape(8.dp),
-        modifier = Modifier
+        modifier = modifier
             .padding(8.dp)
-            .fillMaxWidth()
+            .fillMaxWidth(),
+        colors = CardDefaults.cardColors(containerColor = Color.White)
     ) {
         Column(
             modifier = Modifier.padding(16.dp)
@@ -422,7 +478,7 @@ fun DashboardPieChart(title: String) {
 }
 
 @Composable
-fun TransactionsCard() {
+fun TransactionsCard(modifier: Modifier) {
     val transactions = listOf(
         "Esther Howard" to "\$302.33",
         "Robert Fox" to "-\$192.63",
@@ -432,9 +488,10 @@ fun TransactionsCard() {
 
     Card(
         shape = RoundedCornerShape(8.dp),
-        modifier = Modifier
+        modifier = modifier
             .padding(8.dp)
-            .fillMaxWidth()
+            .fillMaxWidth(),
+        colors = CardDefaults.cardColors(containerColor = Color.White)
     ) {
         Column(
             modifier = Modifier.padding(16.dp)
@@ -464,7 +521,7 @@ fun TransactionsCard() {
 }
 
 @Composable
-fun RecentOrdersCard() {
+fun RecentOrdersCard(modifier: Modifier) {
     val orders = listOf(
         Triple("Samsung TV 32\"", "#KY6133", "$368") to "Active",
         Triple("Apple Macbook Pro 17\"", "#KY5126", "$1400") to "Disabled",
@@ -477,9 +534,10 @@ fun RecentOrdersCard() {
 
     Card(
         shape = RoundedCornerShape(8.dp),
-        modifier = Modifier
+        modifier = modifier
             .padding(8.dp)
-            .fillMaxWidth()
+            .fillMaxWidth(),
+        colors = CardDefaults.cardColors(containerColor = Color.White)
     ) {
         Column(
             modifier = Modifier.padding(16.dp)
@@ -518,7 +576,7 @@ fun RecentOrdersCard() {
 }
 
 @Composable
-fun TrafficSourceCard() {
+fun TrafficSourceCard(modifier: Modifier) {
     val sources = listOf(
         "Facebook" to 77,
         "Youtube" to 35,
@@ -529,9 +587,10 @@ fun TrafficSourceCard() {
 
     Card(
         shape = RoundedCornerShape(8.dp),
-        modifier = Modifier
+        modifier = modifier
             .padding(8.dp)
-            .fillMaxWidth()
+            .fillMaxWidth(),
+        colors = CardDefaults.cardColors(containerColor = Color.White)
     ) {
         Column(
             modifier = Modifier.padding(16.dp)
