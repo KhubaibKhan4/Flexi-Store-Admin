@@ -13,27 +13,15 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Badge
-import androidx.compose.material.BadgedBox
-import androidx.compose.material.Card
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
-import androidx.compose.material.TextField
-import androidx.compose.material.TextFieldDefaults
-import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.CardGiftcard
 import androidx.compose.material.icons.filled.Image
 import androidx.compose.material.icons.filled.List
@@ -46,6 +34,17 @@ import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material.icons.filled.ThumbUp
 import androidx.compose.material.icons.outlined.NotificationsActive
+import androidx.compose.material3.Badge
+import androidx.compose.material3.BadgedBox
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
@@ -89,14 +88,15 @@ fun Dashboard(windowSizeClass: WindowSizeClass) {
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CustomTopAppBar(modifier: Modifier = Modifier) {
     var isSearchQuery by remember { mutableStateOf("") }
     Row(
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier
+            .fillMaxWidth()
             .background(Color.White)
-            .padding(6.dp)
-        ,
+            .padding(6.dp),
         horizontalArrangement = Arrangement.Start,
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -105,17 +105,15 @@ fun CustomTopAppBar(modifier: Modifier = Modifier) {
             text = "Flexi-Store",
             color = Color(0xFF007BFF),
             fontWeight = FontWeight.Bold,
-            fontSize = MaterialTheme.typography.h5.fontSize
+            fontSize = MaterialTheme.typography.headlineSmall.fontSize
         )
-        Spacer(modifier = Modifier.width(130.dp))
-        TextField(
+        Spacer(modifier = Modifier.weight(1f))
+        OutlinedTextField(
             value = isSearchQuery,
             onValueChange = {
                 isSearchQuery = it
             },
             modifier = Modifier
-                .wrapContentWidth()
-                .height(40.dp)
                 .weight(1f)
                 .border(width = 1.dp, color = Color.Gray, shape = RoundedCornerShape(6.dp)),
             trailingIcon = {
@@ -128,20 +126,22 @@ fun CustomTopAppBar(modifier: Modifier = Modifier) {
                 Text(text = "Search Here ...")
             },
             colors = TextFieldDefaults.textFieldColors(
+                containerColor = Color.White,
                 focusedIndicatorColor = Color.Transparent,
-                unfocusedIndicatorColor = Color.Transparent
-            )
+                unfocusedIndicatorColor = Color.Transparent,
+                focusedTextColor = Color.Black,
+                unfocusedTextColor = Color.Black
+            ),
+            singleLine = true,
         )
         Spacer(modifier = Modifier.weight(1f))
 
         val item = 4
         BadgedBox(badge = {
-            if (item != null) {
+            if (item > 0) {
                 Badge {
                     Text(text = item.toString())
                 }
-            } else if (item > 0) {
-                Badge()
             }
         }) {
             Icon(
@@ -158,15 +158,16 @@ fun CustomTopAppBar(modifier: Modifier = Modifier) {
                 imageVector = Icons.Default.Image,
                 contentDescription = "Image",
                 contentScale = ContentScale.Crop,
-                modifier = Modifier.fillMaxWidth()
-                    .clip(CircleShape),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .clip(CircleShape)
             )
-            Text(
-                ".",
-                fontSize = 26.sp,
-                fontWeight = FontWeight.ExtraBold,
-                modifier = Modifier.align(Alignment.TopEnd),
-                color = Color.Green
+            Box(
+                modifier = Modifier
+                    .size(10.dp)
+                    .background(Color.Green, CircleShape)
+                    .align(Alignment.TopEnd)
+                    .offset(x = (-2).dp, y = 2.dp)
             )
         }
         Spacer(modifier = Modifier.width(10.dp))
@@ -272,7 +273,9 @@ fun ResponsiveRow(content: @Composable RowScope.() -> Unit) {
 fun StatCard(title: String, value: String) {
     Card(
         shape = RoundedCornerShape(8.dp),
-        backgroundColor = Color.White,
+        colors = CardDefaults.cardColors(
+            containerColor = Color.White
+        ),
         modifier = Modifier
             .padding(8.dp)
             .height(100.dp)
@@ -292,7 +295,9 @@ fun StatCard(title: String, value: String) {
 fun GraphCard(title: String) {
     Card(
         shape = RoundedCornerShape(8.dp),
-        backgroundColor = Color.White,
+        colors = CardDefaults.cardColors(
+            containerColor = Color.White
+        ),
         modifier = Modifier
             .padding(8.dp)
             .height(200.dp)
@@ -313,14 +318,15 @@ fun GraphCard(title: String) {
 fun PieChartCard(title: String) {
     Card(
         shape = RoundedCornerShape(8.dp),
-        backgroundColor = Color.White,
+        colors = CardDefaults.cardColors(
+            containerColor = Color.White
+        ),
         modifier = Modifier
             .padding(8.dp)
             .height(200.dp)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(title, fontWeight = FontWeight.Bold)
-            // Placeholder for pie chart
             Box(
                 modifier = Modifier
                     .fillMaxSize()
@@ -334,14 +340,15 @@ fun PieChartCard(title: String) {
 fun TransactionsCard() {
     Card(
         shape = RoundedCornerShape(8.dp),
-        backgroundColor = Color.White,
+        colors = CardDefaults.cardColors(
+            containerColor = Color.White
+        ),
         modifier = Modifier
             .padding(8.dp)
             .height(200.dp)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text("Transactions", fontWeight = FontWeight.Bold)
-            // Placeholder for transactions list
             Box(
                 modifier = Modifier
                     .fillMaxSize()
@@ -355,14 +362,15 @@ fun TransactionsCard() {
 fun RecentOrdersCard() {
     Card(
         shape = RoundedCornerShape(8.dp),
-        backgroundColor = Color.White,
+        colors = CardDefaults.cardColors(
+            containerColor = Color.White
+        ),
         modifier = Modifier
             .padding(8.dp)
             .height(200.dp)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text("Recent Orders", fontWeight = FontWeight.Bold)
-            // Placeholder for recent orders list
             Box(
                 modifier = Modifier
                     .fillMaxSize()
@@ -376,14 +384,15 @@ fun RecentOrdersCard() {
 fun TrafficSourceCard() {
     Card(
         shape = RoundedCornerShape(8.dp),
-        backgroundColor = Color.White,
+        colors = CardDefaults.cardColors(
+            containerColor = Color.White
+        ),
         modifier = Modifier
             .padding(8.dp)
             .height(200.dp)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text("Traffic Source", fontWeight = FontWeight.Bold)
-            // Placeholder for traffic source data
             Box(
                 modifier = Modifier
                     .fillMaxSize()
