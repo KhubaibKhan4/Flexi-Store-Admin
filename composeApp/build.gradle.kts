@@ -38,6 +38,8 @@ kotlin {
             implementation(compose.ui)
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
+            implementation(compose.materialIconsExtended)
+            implementation("dev.chrisbanes.material3:material3-window-size-class-multiplatform:0.5.0")
         }
         desktopMain.dependencies {
             implementation(compose.desktop.currentOs)
