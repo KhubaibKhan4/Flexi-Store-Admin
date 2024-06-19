@@ -40,14 +40,20 @@ import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.TaskAlt
 import androidx.compose.material.icons.outlined.Analytics
+import androidx.compose.material.icons.outlined.BarChart
+import androidx.compose.material.icons.outlined.CandlestickChart
 import androidx.compose.material.icons.outlined.Chat
 import androidx.compose.material.icons.outlined.Checklist
 import androidx.compose.material.icons.outlined.CurrencyBitcoin
 import androidx.compose.material.icons.outlined.DashboardCustomize
+import androidx.compose.material.icons.outlined.MultilineChart
 import androidx.compose.material.icons.outlined.NotificationsActive
 import androidx.compose.material.icons.outlined.Pending
+import androidx.compose.material.icons.outlined.PieChartOutline
 import androidx.compose.material.icons.outlined.ShoppingBag
+import androidx.compose.material.icons.outlined.StackedLineChart
 import androidx.compose.material.icons.outlined.Synagogue
+import androidx.compose.material.icons.outlined.WaterfallChart
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.ButtonDefaults
@@ -517,7 +523,14 @@ fun DashboardCard(
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(text = title, fontSize = 14.sp)
                 Spacer(modifier = Modifier.height(4.dp))
-                Text(text = percentage, fontSize = 14.sp, color = Color.Green)
+              Row {
+                  Text(text = percentage, fontSize = 14.sp, color = background)
+                  Icon(
+                      imageVector =Icons.Outlined.StackedLineChart,
+                      contentDescription = null,
+                      tint = background
+                  )
+              }
             }
             Spacer(modifier = Modifier.weight(1f))
             Box(
