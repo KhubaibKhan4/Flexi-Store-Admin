@@ -5,6 +5,7 @@ import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandHorizontally
 import androidx.compose.animation.shrinkHorizontally
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -80,6 +81,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
@@ -93,7 +96,7 @@ import flexi_store_admin.composeapp.generated.resources.avatar
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
 
-@OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
+@OptIn(ExperimentalMaterial3WindowSizeClassApi::class, ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 fun App() {
     val windowSizeClass = calculateWindowSizeClass()
@@ -349,7 +352,6 @@ fun MenuItem(
     }
 }
 
-
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun DashboardContent(isCompact: Boolean) {
@@ -371,7 +373,7 @@ fun DashboardContent(isCompact: Boolean) {
         item {
             FlowRow(
                 modifier = Modifier.fillMaxWidth(),
-              maxItemsInEachRow = 4
+                maxItemsInEachRow = 4
             ) {
                 DashboardCard(title = "Orders Received", value = "400")
                 DashboardCard(title = "Average Daily Sales", value = "\$6433")
@@ -386,10 +388,11 @@ fun DashboardContent(isCompact: Boolean) {
         }
     }
 }
+
 @Composable
 fun DashboardCard(title: String, value: String) {
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth().padding(8.dp),
         shape = RoundedCornerShape(8.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White),
         elevation = CardDefaults.cardElevation(4.dp)
@@ -403,27 +406,162 @@ fun DashboardCard(title: String, value: String) {
         }
     }
 }
+
 @Composable
 fun DashboardChart(title: String) {
-    // Implement chart component here
+    val data = listOf(
+        Pair("Jan", 30),
+        Pair("Feb", 20),
+        Pair("Mar", 40),
+        Pair("Apr", 50),
+        Pair("May", 60),
+        Pair("Jun", 70),
+        Pair("Jul", 80),
+        Pair("Aug", 90),
+        Pair("Sep", 100),
+        Pair("Oct", 110),
+        Pair("Nov", 120),
+        Pair("Dec", 130),
+    )
+    Column(
+        modifier = Modifier.fillMaxWidth().padding(8.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(text = title, fontSize = 18.sp, fontWeight = FontWeight.Bold)
+        Spacer(modifier = Modifier.height(8.dp))
+        Canvas(modifier = Modifier.fillMaxWidth().height(200.dp)) {
+            val maxValue = data.maxOf { it.second }
+            val barWidth = size.width / data.size
+            data.forEachIndexed { index, (label, value) ->
+                val barHeight = (value.toFloat() / maxValue) * size.height
+                drawRect(
+                    color = Color(0xFF007BFF),
+                    topLeft = Offset(x = index * barWidth, y = size.height - barHeight),
+                    size = Size(width = barWidth, height = barHeight)
+                )
+            }
+        }
+    }
 }
 
 @Composable
 fun DashboardPieChart(title: String) {
-    // Implement pie chart component here
+    val data = listOf(
+        "Grocery" to 30f,
+        "Women" to 25f,
+        "Men" to 20f,
+        "Kids" to 15f,
+        "Other" to 10f
+    )
+    val colors = listOf(Color.Green, Color.Blue, Color.Red, Color.Yellow, Color.Gray)
+    val total = data.sumOf { it.second.toDouble() }
+
+    Column(
+        modifier = Modifier.fillMaxWidth().padding(8.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(text = title, fontSize = 18.sp, fontWeight = FontWeight.Bold)
+        Spacer(modifier = Modifier.height(8.dp))
+        Canvas(modifier = Modifier.fillMaxWidth().height(200.dp)) {
+            var startAngle = 0f
+            data.forEachIndexed { index, (category, value) ->
+                val sweepAngle = (value / total.toFloat()) * 360f
+                drawArc(
+                    color = colors[index],
+                    startAngle = startAngle,
+                    sweepAngle = sweepAngle,
+                    useCenter = true,
+                    size = Size(size.minDimension, size.minDimension),
+                    topLeft = Offset((size.width - size.minDimension) / 2, (size.height - size.minDimension) / 2)
+                )
+                startAngle += sweepAngle
+            }
+        }
+    }
 }
 
 @Composable
 fun DashboardTransactions() {
-    // Implement transactions component here
+    val transactions = listOf(
+        "Esther Howard" to "$302.33",
+        "Robert Fox" to "-\$192.63",
+        "Brooklyn Simmons" to "$602.50",
+        "Cameron Williamson" to "$602.00"
+    )
+
+    Column(
+        modifier = Modifier.fillMaxWidth().padding(8.dp),
+        horizontalAlignment = Alignment.Start
+    ) {
+        Text(text = "Transactions", fontSize = 18.sp, fontWeight = FontWeight.Bold)
+        Spacer(modifier = Modifier.height(8.dp))
+        transactions.forEach { (name, amount) ->
+            Row(
+                modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(text = name, fontSize = 14.sp, color = Color.Black)
+                Text(text = amount, fontSize = 14.sp, color = if (amount.startsWith("-")) Color.Red else Color.Green)
+            }
+        }
+    }
 }
 
 @Composable
 fun DashboardRecentOrders() {
-    // Implement recent orders component here
+    val orders = listOf(
+        Triple("Samsung TV 32\"", "#KY6133", "$368"),
+        Triple("Apple Macbook Pro 17\"", "#KY5126", "$1400"),
+        Triple("Iphone 11 Pro", "#KY6123", "$999"),
+        Triple("ASUS Gaming laptop", "#KY1633", "$1562"),
+        Triple("Lenovo PC", "#KY1623", "$1230"),
+        Triple("OPPO Folding Phone", "#KY1632", "$866"),
+        Triple("Bag Pack", "#KY1631", "$66")
+    )
+
+    Column(
+        modifier = Modifier.fillMaxWidth().padding(8.dp),
+        horizontalAlignment = Alignment.Start
+    ) {
+        Text(text = "Recent Orders", fontSize = 18.sp, fontWeight = FontWeight.Bold)
+        Spacer(modifier = Modifier.height(8.dp))
+        orders.forEach { (item, productId, price) ->
+            Row(
+                modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(text = item, fontSize = 14.sp, color = Color.Black)
+                Text(text = productId, fontSize = 14.sp, color = Color.Gray)
+                Text(text = price, fontSize = 14.sp, color = Color.Black)
+            }
+        }
+    }
 }
 
 @Composable
 fun DashboardTrafficSource() {
-    // Implement traffic source component here
+    val trafficSources = listOf(
+        "Facebook" to 77,
+        "YouTube" to 35,
+        "Instagram" to 59,
+        "Twitter" to 23,
+        "Others" to 46
+    )
+
+    Column(
+        modifier = Modifier.fillMaxWidth().padding(8.dp),
+        horizontalAlignment = Alignment.Start
+    ) {
+        Text(text = "Traffic Source", fontSize = 18.sp, fontWeight = FontWeight.Bold)
+        Spacer(modifier = Modifier.height(8.dp))
+        trafficSources.forEach { (source, percentage) ->
+            Row(
+                modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(text = source, fontSize = 14.sp, color = Color.Black)
+                Text(text = "$percentage%", fontSize = 14.sp, color = Color.Gray)
+            }
+        }
+    }
 }
