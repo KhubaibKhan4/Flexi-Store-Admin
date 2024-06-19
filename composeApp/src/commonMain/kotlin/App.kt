@@ -111,7 +111,7 @@ fun CustomTopAppBar(windowSizeClass: WindowSizeClass) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .background(Color.White)
+            .background(Color(0XFFf1f4f9))
             .padding(6.dp),
         horizontalArrangement = Arrangement.Start,
         verticalAlignment = Alignment.CenterVertically
@@ -207,7 +207,7 @@ fun SidebarMenu(isCompact: Boolean, selectedMenuItem: String, onMenuItemClick: (
         modifier = Modifier
             .width(sidebarWidth)
             .fillMaxHeight()
-            .background(Color(0xFFF8F9FA))
+            .background(Color(0xFFf1f4f9))
             .padding(16.dp)
     ) {
         IconButton(
@@ -363,10 +363,10 @@ fun DashboardMainContent() {
             ) {
                 TransactionsCard(modifier = Modifier.weight(1f))
                 RecentOrdersCard(modifier = Modifier.weight(1f))
+                TrafficSourceCard(modifier = Modifier.weight(1f))
             }
         }
         item {
-            TrafficSourceCard(modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp))
         }
     }
 }
@@ -378,7 +378,7 @@ fun DashboardCard(title: String, value: String, percentage: String,modifier: Mod
         modifier = modifier
             .padding(8.dp)
             .fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = Color.White)
+        colors = CardDefaults.cardColors(containerColor = Color(0xFFf1f4f9))
     ) {
         Column(
             modifier = Modifier.padding(16.dp),
@@ -410,7 +410,7 @@ fun DashboardChart(title: String, modifier: Modifier = Modifier) {
         modifier = modifier
             .padding(8.dp)
             .fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = Color.White)
+        colors = CardDefaults.cardColors(containerColor = Color(0xFFf1f4f9))
     ) {
         Column(
             modifier = Modifier.padding(16.dp)
@@ -451,7 +451,7 @@ fun DashboardPieChart(title: String,modifier: Modifier) {
         modifier = modifier
             .padding(8.dp)
             .fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = Color.White)
+        colors = CardDefaults.cardColors(containerColor = Color(0xFFf1f4f9))
     ) {
         Column(
             modifier = Modifier.padding(16.dp)
@@ -491,7 +491,7 @@ fun TransactionsCard(modifier: Modifier) {
         modifier = modifier
             .padding(8.dp)
             .fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = Color.White)
+        colors = CardDefaults.cardColors(containerColor = Color(0xFFf1f4f9))
     ) {
         Column(
             modifier = Modifier.padding(16.dp)
@@ -537,7 +537,7 @@ fun RecentOrdersCard(modifier: Modifier) {
         modifier = modifier
             .padding(8.dp)
             .fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = Color.White)
+        colors = CardDefaults.cardColors(containerColor = Color(0xFFf1f4f9))
     ) {
         Column(
             modifier = Modifier.padding(16.dp)
@@ -590,7 +590,7 @@ fun TrafficSourceCard(modifier: Modifier) {
         modifier = modifier
             .padding(8.dp)
             .fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = Color.White)
+        colors = CardDefaults.cardColors(containerColor = Color(0xFFf1f4f9))
     ) {
         Column(
             modifier = Modifier.padding(16.dp)
