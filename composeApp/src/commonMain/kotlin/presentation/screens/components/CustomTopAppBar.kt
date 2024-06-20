@@ -18,11 +18,12 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBackIosNew
-import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.outlined.NotificationsActive
+import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -104,18 +105,32 @@ fun CustomTopAppBar(windowSizeClass: WindowSizeClass) {
         Spacer(modifier = Modifier.weight(1f))
 
         val item = 4
-        BadgedBox(badge = {
-            if (item > 0) {
-                Badge {
-                    Text(text = item.toString())
+        Card(
+            modifier = Modifier.size(40.dp),
+            shape = RoundedCornerShape(8.dp),
+           colors = CardDefaults.cardColors(
+               containerColor = Color(0xFFe6f0f9)
+           )
+        ) {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                BadgedBox(badge = {
+                    if (item > 0) {
+                        Badge {
+                            Text(text = item.toString())
+                        }
+                    }
+                }) {
+                    Icon(
+                        imageVector = Icons.Outlined.Notifications,
+                        contentDescription = "Notifications"
+                    )
                 }
             }
-        }) {
-            Icon(
-                imageVector = Icons.Outlined.NotificationsActive,
-                contentDescription = "Notifications"
-            )
         }
+
         Spacer(modifier = Modifier.width(20.dp))
         Box(
             modifier = Modifier.size(35.dp),
@@ -127,7 +142,7 @@ fun CustomTopAppBar(windowSizeClass: WindowSizeClass) {
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
                     .fillMaxSize()
-                    .clip(CircleShape)
+                    .clip(RoundedCornerShape(8.dp))
             )
             Box(
                 modifier = Modifier
