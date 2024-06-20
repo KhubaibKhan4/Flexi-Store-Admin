@@ -2,7 +2,6 @@ package presentation.screens.dashboard
 
 import RecentOrdersCard
 import TrafficSourceCard
-import TransactionsCard
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -43,6 +42,7 @@ import presentation.screens.components.DashboardCard
 import presentation.screens.components.DashboardChart
 import presentation.screens.components.DashboardPieChart
 import presentation.screens.components.SidebarMenu
+import presentation.screens.components.TransactionsCard
 
 @Composable
 fun Dashboard(windowSizeClass: WindowSizeClass) {
