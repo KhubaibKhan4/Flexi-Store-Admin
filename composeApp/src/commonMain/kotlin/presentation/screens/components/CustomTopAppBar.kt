@@ -17,6 +17,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBackIosNew
+import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.outlined.NotificationsActive
 import androidx.compose.material3.Badge
@@ -37,6 +39,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
@@ -132,6 +135,26 @@ fun CustomTopAppBar(windowSizeClass: WindowSizeClass) {
                     .background(Color.Green, CircleShape)
                     .align(Alignment.TopEnd)
                     .offset(x = (-2).dp, y = 2.dp)
+            )
+        }
+        Spacer(modifier = Modifier.width(6.dp))
+        Row(
+            horizontalArrangement = Arrangement.Start,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = "Khubaib",
+                fontSize = MaterialTheme.typography.titleMedium.fontSize,
+                fontWeight = FontWeight.Bold,
+                color = Color.Black
+            )
+            Spacer(modifier = Modifier.width(4.dp))
+            Icon(
+                imageVector = Icons.Default.ArrowBackIosNew,
+                contentDescription = "Drop Down Arrow",
+                modifier = Modifier
+                    .size(15.dp)
+                    .rotate(270f)
             )
         }
         Spacer(modifier = Modifier.width(10.dp))
