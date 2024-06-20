@@ -84,6 +84,7 @@ import flexi_store_admin.composeapp.generated.resources.avatar_3
 import flexi_store_admin.composeapp.generated.resources.avatar_4
 import org.jetbrains.compose.resources.painterResource
 import presentation.screens.components.CustomTopAppBar
+import presentation.screens.components.SidebarMenu
 
 @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
 @Composable
@@ -108,103 +109,7 @@ fun Dashboard(windowSizeClass: WindowSizeClass) {
     }
 }
 
-@Composable
-fun SidebarMenu(isCompact: Boolean, selectedMenuItem: String, onMenuItemClick: (String) -> Unit) {
-    var expanded by remember { mutableStateOf(true) }
 
-    val expandIcon = if (expanded) Icons.Default.ArrowBack else Icons.Default.ArrowForward
-    val sidebarWidth by animateDpAsState(targetValue = if (expanded) 200.dp else 60.dp)
-
-    Column(
-        modifier = Modifier
-            .width(sidebarWidth)
-            .fillMaxHeight()
-            .background(Color(0xFFf1f4f9))
-            .padding(16.dp)
-    ) {
-        IconButton(
-            onClick = { expanded = !expanded },
-            modifier = Modifier
-                .animateContentSize(
-                    tween(
-                        durationMillis = 300,
-                        delayMillis = 400,
-                        easing = LinearOutSlowInEasing
-                    )
-                )
-                .align(Alignment.End)
-        ) {
-            Icon(expandIcon, contentDescription = "Expand/Collapse Sidebar")
-        }
-
-        androidx.compose.animation.AnimatedVisibility(
-            visible = expanded,
-            enter = fadeIn(tween(1000, 50, easing = LinearEasing)),
-            exit = fadeOut(tween(1000, 50, easing = LinearEasing))
-        ) {
-            Column {
-                MenuItem(
-                    "Dashboard",
-                    Icons.Default.Dashboard,
-                    selectedMenuItem = selectedMenuItem,
-                    onMenuItemClick = onMenuItemClick
-                )
-                MenuItem(
-                    "Products",
-                    Icons.Default.ShoppingCart,
-                    listOf("Add Product", "Product List"),
-                    selectedMenuItem,
-                    onMenuItemClick
-                )
-                MenuItem(
-                    "Categories",
-                    Icons.Default.Category,
-                    listOf("Add Category", "Category List"),
-                    selectedMenuItem,
-                    onMenuItemClick
-                )
-                MenuItem(
-                    "Orders",
-                    Icons.Default.Receipt,
-                    listOf("New Orders", "Completed Orders"),
-                    selectedMenuItem,
-                    onMenuItemClick
-                )
-                MenuItem(
-                    "Reviews",
-                    Icons.Default.Star,
-                    selectedMenuItem = selectedMenuItem,
-                    onMenuItemClick = onMenuItemClick
-                )
-                MenuItem(
-                    "Coupons",
-                    Icons.Default.LocalOffer,
-                    selectedMenuItem = selectedMenuItem,
-                    onMenuItemClick = onMenuItemClick
-                )
-                MenuItem(
-                    "Profile",
-                    Icons.Default.Person,
-                    selectedMenuItem = selectedMenuItem,
-                    onMenuItemClick = onMenuItemClick
-                )
-                MenuItem(
-                    "Shop Settings",
-                    Icons.Default.Settings,
-                    selectedMenuItem = selectedMenuItem,
-                    onMenuItemClick = onMenuItemClick
-                )
-                MenuItem(
-                    "Pages",
-                    Icons.Default.Pages,
-                    listOf("About Us", "Contact Us"),
-                    selectedMenuItem,
-                    onMenuItemClick
-                )
-            }
-        }
-    }
-}
 
 @Composable
 fun MenuItem(
