@@ -55,8 +55,6 @@ fun App() {
         Dashboard(windowSizeClass)
     }
 }
-data class DataPoint(val x: Float, val y: Float)
-
 @Composable
 fun DashboardChart(title: String, modifier: Modifier = Modifier) {
     val testLineParameters: List<LineParameters> = listOf(
@@ -82,15 +80,6 @@ fun DashboardChart(title: String, modifier: Modifier = Modifier) {
             lineShadow = false,
         )
     )
-    val dataPoints = listOf(
-        DataPoint(0f, 100f),
-        DataPoint(1f, 120f),
-        DataPoint(2f, 90f),
-        DataPoint(3f, 160f),
-        DataPoint(4f, 130f),
-        DataPoint(5f, 180f)
-    )
-
     Card(
         shape = RoundedCornerShape(8.dp),
         modifier = modifier
