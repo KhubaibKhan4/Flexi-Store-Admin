@@ -8,6 +8,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -52,13 +53,43 @@ fun RecentOrdersCard(modifier: Modifier, orders: List<Orders>,products: List<Pro
         shape = RoundedCornerShape(8.dp),
         modifier = modifier
             .padding(8.dp)
-            .fillMaxWidth(),
+            .fillMaxWidth()
+            .animateContentSize(tween(durationMillis = 500, delayMillis = 400, easing = FastOutSlowInEasing))
+            .height(if (isViewAll) IntrinsicSize.Max else IntrinsicSize.Min),
         colors = CardDefaults.cardColors(containerColor = Color(0xFFf1f4f9))
     ) {
         Column(
             modifier = Modifier.padding(16.dp)
         ) {
-            Text(text = "Recent Orders", fontSize = 16.sp, color = Color.Gray)
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Start,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(text = "Recent Orders", fontSize = 16.sp, color = Color.Gray)
+                Spacer(modifier = Modifier.weight(1f))
+                Row(
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = if(isViewAll) "View Less" else "View All",
+                        fontSize = 13.sp, color = Color.Gray
+                    )
+                    Spacer(modifier = Modifier.width(3.dp))
+                    Icon(
+                        imageVector = Icons.Default.ArrowBackIosNew,
+                        contentDescription = null,
+                        modifier = Modifier.rotate(if(isViewAll) 90f else 270f).size(15.dp)
+                            .animateContentSize(tween(durationMillis = 500, delayMillis = 400, easing = FastOutSlowInEasing))
+                            .clickable {
+                                isViewAll = !isViewAll
+                            },
+                        tint = Color.Gray
+                    )
+                }
+            }
+
             Spacer(modifier = Modifier.height(8.dp))
             ordersData.forEach { order ->
                 val product = products.find { it.id == order.productIds }
@@ -101,26 +132,6 @@ fun RecentOrdersCard(modifier: Modifier, orders: List<Orders>,products: List<Pro
                     }
                     Spacer(modifier = Modifier.height(8.dp))
                 }
-            }
-            Row(
-                modifier = Modifier.align(Alignment.End),
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = if(isViewAll) "View Less" else "View All",
-                    fontSize = 13.sp
-                )
-                Spacer(modifier = Modifier.width(3.dp))
-                Icon(
-                    imageVector = Icons.Default.ArrowBackIosNew,
-                    contentDescription = null,
-                    modifier = Modifier.rotate(if(isViewAll) 90f else 270f).size(15.dp)
-                        .animateContentSize(tween(durationMillis = 500, delayMillis = 400, easing = FastOutSlowInEasing))
-                        .clickable {
-                            isViewAll = !isViewAll
-                        }
-                )
             }
         }
     }

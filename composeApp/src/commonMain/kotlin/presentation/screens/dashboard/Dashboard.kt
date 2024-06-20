@@ -49,6 +49,7 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.minus
 import kotlinx.datetime.toLocalDateTime
 import org.koin.compose.koinInject
+import presentation.screens.ProductContent
 import presentation.screens.components.CustomTopAppBar
 import presentation.screens.components.DashboardCard
 import presentation.screens.components.DashboardChart
@@ -132,7 +133,7 @@ fun DashboardContent(isCompact: Boolean, selectedMenuItem: String, viewModel: Ma
     }
     when (selectedMenuItem) {
         "Dashboard" -> DashboardMainContent(viewModel,productList,orderList)
-        "Products" -> Text("Products Screen")
+        "Products" -> ProductContent(productList)
         "Categories" -> Text("Categories Screen")
         "Orders" -> Text("Orders Screen")
         "Reviews" -> Text("Reviews Screen")
