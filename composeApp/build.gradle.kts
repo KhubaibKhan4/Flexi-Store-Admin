@@ -6,6 +6,8 @@ plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.jetbrainsCompose)
     alias(libs.plugins.compose.compiler)
+    alias(libs.plugins.kotlinx.serialization)
+    alias(libs.plugins.sqlDelight)
 }
 
 kotlin {
@@ -42,9 +44,26 @@ kotlin {
             implementation("dev.chrisbanes.material3:material3-window-size-class-multiplatform:0.5.0")
             implementation("io.github.thechance101:chart:Beta-0.0.5")
             implementation(libs.kamel.image)
+            implementation(libs.voyager.navigator)
+            implementation(libs.voyager.transitions)
+            implementation(libs.voyager.tab.navigator)
+            implementation(libs.ktor.core)
+            implementation(libs.ktor.client.content.negotiation)
+            implementation(libs.kotlinx.serialization.json)
+            implementation(libs.kotlinx.datetime)
+            implementation(project.dependencies.platform("io.insert-koin:koin-bom:3.6.0-wasm-alpha2"))
+            implementation("io.insert-koin:koin-core")
+            implementation("io.insert-koin:koin-compose")
+            implementation(libs.ktor.client.logging)
+            implementation(libs.io.ktor.ktor.client.serialization)
+            implementation(libs.sqlDelight.extension)
+            implementation("org.jetbrains.androidx.navigation:navigation-compose:2.7.0-alpha03")
+            implementation("org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-compose:2.8.0-beta02")
         }
         desktopMain.dependencies {
             implementation(compose.desktop.currentOs)
+            implementation(libs.ktor.client.okhttp)
+            implementation(libs.sqlDelight.driver.sqlite)
         }
     }
 }
