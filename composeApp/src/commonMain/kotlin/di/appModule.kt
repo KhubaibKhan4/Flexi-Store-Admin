@@ -12,6 +12,11 @@ import io.ktor.client.plugins.logging.Logging
 import io.ktor.http.HttpHeaders
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
+import org.koin.core.module.dsl.singleOf
+import org.koin.core.module.dsl.withOptions
+import org.koin.core.qualifier.Qualifier
+import org.koin.core.qualifier.named
+import org.koin.core.qualifier.qualifier
 import org.koin.dsl.module
 import presentation.viewmodel.MainViewModel
 import utils.Constant
@@ -45,6 +50,8 @@ val appModule = module {
         }
     }
     single {FlexiStoreClient(get())}
-    single<FlexiRepository> { Repository(get()) }
-    single { MainViewModel(get()) }
+    single{ Repository(get()) } withOptions {
+        qualifier = qualifier("repo")
+    }
+    singleOf(::MainViewModel)
 }

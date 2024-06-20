@@ -35,6 +35,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import org.koin.compose.koinInject
 import presentation.screens.components.CustomTopAppBar
 import presentation.screens.components.DashboardCard
 import presentation.screens.components.DashboardChart
@@ -43,9 +44,13 @@ import presentation.screens.components.RecentOrdersCard
 import presentation.screens.components.SidebarMenu
 import presentation.screens.components.TrafficSourceCard
 import presentation.screens.components.TransactionsCard
+import presentation.viewmodel.MainViewModel
 
 @Composable
-fun Dashboard(windowSizeClass: WindowSizeClass) {
+fun Dashboard(
+    windowSizeClass: WindowSizeClass,
+    viewModel: MainViewModel = koinInject()
+) {
     var selectedMenuItem by remember { mutableStateOf("Dashboard") }
     val isCompact = windowSizeClass.widthSizeClass == WindowWidthSizeClass.Compact
 
