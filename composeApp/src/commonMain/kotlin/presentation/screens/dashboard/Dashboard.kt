@@ -1,6 +1,5 @@
 package presentation.screens.dashboard
 
-import DashboardPieChart
 import RecentOrdersCard
 import TrafficSourceCard
 import TransactionsCard
@@ -42,6 +41,7 @@ import androidx.compose.ui.unit.sp
 import presentation.screens.components.CustomTopAppBar
 import presentation.screens.components.DashboardCard
 import presentation.screens.components.DashboardChart
+import presentation.screens.components.DashboardPieChart
 import presentation.screens.components.SidebarMenu
 
 @Composable
