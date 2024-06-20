@@ -21,11 +21,12 @@ import com.aay.compose.lineChart.LineChart
 import com.aay.compose.lineChart.model.LineParameters
 import com.aay.compose.lineChart.model.LineType
 import domain.model.order.Orders
-import presentation.screens.dashboard.aggregateSalesData
+import domain.model.products.Products
+import presentation.screens.dashboard.aggregateSalesDataByCategory
 
 @Composable
-fun DashboardChart(title: String, orders: List<Orders>, modifier: Modifier = Modifier) {
-    val categorySalesPercentage = aggregateSalesData(orders)
+fun DashboardChart(title: String, orders: List<Orders>,products: List<Products>, modifier: Modifier = Modifier) {
+    val categorySalesPercentage = aggregateSalesDataByCategory(orders,products)
         .mapValues { (it.value / orders.sumOf { order -> order.totalPrice }) * 100 }
 
     val xAxisData = listOf("0", "18", "28", "55", "75", "100")

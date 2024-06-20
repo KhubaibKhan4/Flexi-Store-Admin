@@ -39,6 +39,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import domain.model.order.Orders
+import domain.model.products.Products
 import domain.usecase.UiState
 import kotlinx.coroutines.delay
 import kotlinx.datetime.Clock
@@ -99,12 +100,16 @@ fun DashboardMainContent(viewModel: MainViewModel) {
     val columns = if (isCompact) 1 else 2
 
     var orderList by remember { mutableStateOf(emptyList<Orders>()) }
+    var productList by remember { mutableStateOf(emptyList<Products>()) }
 
     LaunchedEffect(Unit) {
         delay(3000)
         viewModel.getAllOrders()
     }
+
+
     val orderState by viewModel.allOrders.collectAsState()
+    val productsState by viewModel.productDetail.collectAsState()
     when (orderState) {
         is UiState.ERROR -> {
             val error = (orderState as UiState.ERROR).throwable
@@ -120,6 +125,28 @@ fun DashboardMainContent(viewModel: MainViewModel) {
         is UiState.SUCCESS -> {
             val orders = (orderState as UiState.SUCCESS).response
             orderList = orders
+            val idsList = orders.map { it.productIds.toString().trim() }.joinToString(separator = ",")
+            println("PRODUCT: $idsList")
+            LaunchedEffect(orderList) {
+                viewModel.getProductsByIds(idsList)
+                println("PRODUCT: $idsList")
+            }
+        }
+    }
+    when (productsState) {
+        is UiState.LOADING -> {
+            CircularProgressIndicator()
+        }
+
+        is UiState.ERROR -> {
+            val error = (productsState as UiState.ERROR).throwable
+            Text("Error loading products: ${error.message}")
+        }
+
+        is UiState.SUCCESS -> {
+            val products = (productsState as UiState.SUCCESS).response
+            productList = products
+            println("PRODUCT: $productList")
         }
     }
     val totalSales = orderList.sumOf { it.totalPrice }
@@ -149,7 +176,11 @@ fun DashboardMainContent(viewModel: MainViewModel) {
         return LocalDate(year, month, day)
     }
 
-    fun filterOrdersByDate(orders: List<Orders>, startDate: LocalDate, endDate: LocalDate): List<Orders> {
+    fun filterOrdersByDate(
+        orders: List<Orders>,
+        startDate: LocalDate,
+        endDate: LocalDate,
+    ): List<Orders> {
         return orders.filter {
             val orderDate = parseDate(it.orderDate)
             orderDate in startDate..endDate
@@ -168,9 +199,12 @@ fun DashboardMainContent(viewModel: MainViewModel) {
     val previousNewCustomers = previousOrders.count { it.orderProgress == "On Progress" }
     val previousPendingOrders = previousOrders.count { it.orderProgress == "On The Way" }
 
-    val salesPercentageChange = if (previousTotalSales != 0) ((totalSales - previousTotalSales).toDouble() / previousTotalSales * 100).toInt() else 0
-    val newCustomersPercentageChange = if (previousNewCustomers != 0) ((newCustomers - previousNewCustomers).toDouble() / previousNewCustomers * 100).toInt() else 0
-    val pendingOrdersPercentageChange = if (previousPendingOrders != 0) ((pendingOrders - previousPendingOrders).toDouble() / previousPendingOrders * 100).toInt() else 0
+    val salesPercentageChange =
+        if (previousTotalSales != 0) ((totalSales - previousTotalSales).toDouble() / previousTotalSales * 100).toInt() else 0
+    val newCustomersPercentageChange =
+        if (previousNewCustomers != 0) ((newCustomers - previousNewCustomers).toDouble() / previousNewCustomers * 100).toInt() else 0
+    val pendingOrdersPercentageChange =
+        if (previousPendingOrders != 0) ((pendingOrders - previousPendingOrders).toDouble() / previousPendingOrders * 100).toInt() else 0
 
 
     LazyColumn(
@@ -273,8 +307,18 @@ fun DashboardMainContent(viewModel: MainViewModel) {
                     .padding(vertical = 8.dp),
                 horizontalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                DashboardChart(title = "Sales Statistics", modifier = Modifier.weight(1f), orders = orderList)
-                DashboardPieChart(title = "Most Selling Category", modifier = Modifier.weight(1f), orders = orderList)
+                DashboardChart(
+                    title = "Sales Statistics",
+                    modifier = Modifier.weight(1f),
+                    orders = orderList,
+                    products = productList
+                )
+                DashboardPieChart(
+                    title = "Most Selling Category",
+                    modifier = Modifier.weight(1f),
+                    orders = orderList,
+                    products = productList
+                )
             }
         }
         item {
@@ -292,21 +336,23 @@ fun DashboardMainContent(viewModel: MainViewModel) {
         }
     }
 }
-fun getCategoryByProductId(productId: Int): String {
-    return when (productId) {
-        12, 19, 51 -> "Electronics"
-        32, 33, 34 -> "Clothing"
-        43, 52, 53 -> "Home & Kitchen"
-        36, 37, 41 -> "Grocery"
-        else -> "Other"
+fun aggregateSalesDataByCategory(
+    orders: List<Orders>,
+    products: List<Products>
+): Map<String, Double> {
+    // Map categoryId to categoryTitle
+    val categoryMap = products.associate { it.id.toString() to it.categoryTitle }
+
+    // Initialize a mutable map to store aggregated sales for each category
+    val categorySales = mutableMapOf<String, Double>().withDefault { 0.0 }
+
+    // Iterate through orders and aggregate sales by category
+    orders.forEach { order ->
+        val categoryTitle = categoryMap[order.productIds.toString()]
+        if (categoryTitle != null) {
+            categorySales[categoryTitle] = categorySales.getValue(categoryTitle) + order.totalPrice.toDouble()
+        }
     }
-}
-fun aggregateSalesData(orders: List<Orders>): Map<String, Double> {
-    val categorySales = mutableMapOf<String, Double>()
-    for (order in orders) {
-        val category = getCategoryByProductId(order.productIds)
-        val currentSales = categorySales[category] ?: 0.0
-        categorySales[category] = currentSales + order.totalPrice
-    }
+
     return categorySales
 }
