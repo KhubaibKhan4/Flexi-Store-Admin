@@ -55,69 +55,7 @@ fun App() {
         Dashboard(windowSizeClass)
     }
 }
-@Composable
-fun DashboardChart(title: String, modifier: Modifier = Modifier) {
-    val testLineParameters: List<LineParameters> = listOf(
-        LineParameters(
-            label = "Sales",
-            data = listOf(70.0, 00.0, 50.33, 40.0, 100.500, 50.0),
-            lineColor = Color.Gray,
-            lineType = LineType.CURVED_LINE,
-            lineShadow = true,
-        ),
-        LineParameters(
-            label = "Visitors",
-            data = listOf(60.0, 80.6, 40.33, 86.232, 88.0, 90.0),
-            lineColor = Color(0xFFFF7F50),
-            lineType = LineType.DEFAULT_LINE,
-            lineShadow = true
-        ),
-        LineParameters(
-            label = "Products",
-            data = listOf(1.0, 40.0, 11.33, 55.23, 1.0, 100.0),
-            lineColor = Color(0xFF81BE88),
-            lineType = LineType.CURVED_LINE,
-            lineShadow = false,
-        )
-    )
-    Card(
-        shape = RoundedCornerShape(8.dp),
-        modifier = modifier
-            .padding(8.dp)
-            .fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = Color(0xFFf1f4f9))
-    ) {
-        Column(
-            modifier = Modifier.padding(16.dp)
-        ) {
-            Text(text = title, fontSize = 16.sp, color = Color.Gray)
-            Spacer(modifier = Modifier.height(8.dp))
 
-            LineChart(
-                modifier = Modifier.fillMaxWidth()
-                    .height(300.dp),
-                linesParameters = testLineParameters,
-                isGrid = true,
-                gridColor = Color.Blue,
-                xAxisData = listOf("0", "15", "25", "50", "75", "100"),
-                animateChart = true,
-                showGridWithSpacer = true,
-                yAxisStyle = TextStyle(
-                    fontSize = 14.sp,
-                    color = Color.Gray,
-                ),
-                xAxisStyle = TextStyle(
-                    fontSize = 14.sp,
-                    color = Color.Gray,
-                    fontWeight = FontWeight.W400
-                ),
-                yAxisRange = 14,
-                oneLineChart = false,
-                gridOrientation = GridOrientation.VERTICAL
-            )
-        }
-    }
-}
 
 @Composable
 fun DashboardPieChart(title: String, modifier: Modifier) {
