@@ -80,25 +80,6 @@ fun Dashboard(
 
 @Composable
 fun DashboardContent(isCompact: Boolean, selectedMenuItem: String, viewModel: MainViewModel) {
-    when (selectedMenuItem) {
-        "Dashboard" -> DashboardMainContent(viewModel)
-        "Products" -> Text("Products Screen")
-        "Categories" -> Text("Categories Screen")
-        "Orders" -> Text("Orders Screen")
-        "Reviews" -> Text("Reviews Screen")
-        "Coupons" -> Text("Coupons Screen")
-        "Profile" -> Text("Profile Screen")
-        "Shop Settings" -> Text("Shop Settings Screen")
-        "Pages" -> Text("Pages Screen")
-    }
-}
-
-@OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
-@Composable
-fun DashboardMainContent(viewModel: MainViewModel) {
-    val isCompact = calculateWindowSizeClass().widthSizeClass == WindowWidthSizeClass.Compact
-    val columns = if (isCompact) 1 else 2
-
     var orderList by remember { mutableStateOf(emptyList<Orders>()) }
     var productList by remember { mutableStateOf(emptyList<Products>()) }
 
@@ -149,6 +130,24 @@ fun DashboardMainContent(viewModel: MainViewModel) {
             println("PRODUCT: $productList")
         }
     }
+    when (selectedMenuItem) {
+        "Dashboard" -> DashboardMainContent(viewModel,productList,orderList)
+        "Products" -> Text("Products Screen")
+        "Categories" -> Text("Categories Screen")
+        "Orders" -> Text("Orders Screen")
+        "Reviews" -> Text("Reviews Screen")
+        "Coupons" -> Text("Coupons Screen")
+        "Profile" -> Text("Profile Screen")
+        "Shop Settings" -> Text("Shop Settings Screen")
+        "Pages" -> Text("Pages Screen")
+    }
+}
+
+@OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
+@Composable
+fun DashboardMainContent(viewModel: MainViewModel, productList: List<Products>, orderList: List<Orders>) {
+    val isCompact = calculateWindowSizeClass().widthSizeClass == WindowWidthSizeClass.Compact
+    val columns = if (isCompact) 1 else 2
     val totalSales = orderList.sumOf { it.totalPrice }
     val averageDailySales = if (orderList.isNotEmpty()) totalSales / orderList.size else 0
     val newCustomers = orderList.count { it.orderProgress == "On Progress" }
@@ -340,13 +339,10 @@ fun aggregateSalesDataByCategory(
     orders: List<Orders>,
     products: List<Products>
 ): Map<String, Double> {
-    // Map categoryId to categoryTitle
     val categoryMap = products.associate { it.id.toString() to it.categoryTitle }
 
-    // Initialize a mutable map to store aggregated sales for each category
     val categorySales = mutableMapOf<String, Double>().withDefault { 0.0 }
 
-    // Iterate through orders and aggregate sales by category
     orders.forEach { order ->
         val categoryTitle = categoryMap[order.productIds.toString()]
         if (categoryTitle != null) {

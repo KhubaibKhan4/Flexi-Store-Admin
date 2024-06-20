@@ -1,7 +1,12 @@
 package presentation.screens.components
 
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -12,13 +17,21 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBackIosNew
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
@@ -33,6 +46,8 @@ import utils.Constant.BASE_URL
 
 @Composable
 fun RecentOrdersCard(modifier: Modifier, orders: List<Orders>,products: List<Products>) {
+    var isViewAll by remember { mutableStateOf(false) }
+    val ordersData = if (isViewAll) orders else orders.take(4)
     Card(
         shape = RoundedCornerShape(8.dp),
         modifier = modifier
@@ -45,7 +60,7 @@ fun RecentOrdersCard(modifier: Modifier, orders: List<Orders>,products: List<Pro
         ) {
             Text(text = "Recent Orders", fontSize = 16.sp, color = Color.Gray)
             Spacer(modifier = Modifier.height(8.dp))
-            orders.forEach { order ->
+            ordersData.forEach { order ->
                 val product = products.find { it.id == order.productIds }
                 if (product != null) {
                     val image : Resource<Painter> = asyncPainterResource(BASE_URL+product.imageUrl)
@@ -86,6 +101,26 @@ fun RecentOrdersCard(modifier: Modifier, orders: List<Orders>,products: List<Pro
                     }
                     Spacer(modifier = Modifier.height(8.dp))
                 }
+            }
+            Row(
+                modifier = Modifier.align(Alignment.End),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = if(isViewAll) "View Less" else "View All",
+                    fontSize = 13.sp
+                )
+                Spacer(modifier = Modifier.width(3.dp))
+                Icon(
+                    imageVector = Icons.Default.ArrowBackIosNew,
+                    contentDescription = null,
+                    modifier = Modifier.rotate(if(isViewAll) 90f else 270f).size(15.dp)
+                        .animateContentSize(tween(durationMillis = 500, delayMillis = 400, easing = FastOutSlowInEasing))
+                        .clickable {
+                            isViewAll = !isViewAll
+                        }
+                )
             }
         }
     }
