@@ -1,6 +1,7 @@
 package di
 
 import data.remote.FlexiStoreClient
+import data.repository.FlexiRepository
 import domain.repository.Repository
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
@@ -12,6 +13,7 @@ import io.ktor.http.HttpHeaders
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 import org.koin.dsl.module
+import presentation.viewmodel.MainViewModel
 import utils.Constant
 
 val appModule = module {
@@ -43,5 +45,6 @@ val appModule = module {
         }
     }
     single {FlexiStoreClient(get())}
-    single { Repository(get()) }
+    single<FlexiRepository> { Repository(get()) }
+    single { MainViewModel(get()) }
 }
