@@ -51,6 +51,7 @@ kotlin {
             implementation(libs.ktor.client.content.negotiation)
             implementation(libs.kotlinx.serialization.json)
             implementation(libs.kotlinx.datetime)
+            implementation(libs.kotlinx.coroutines.core)
             implementation(project.dependencies.platform("io.insert-koin:koin-bom:3.6.0-wasm-alpha2"))
             implementation("io.insert-koin:koin-core")
             implementation("io.insert-koin:koin-compose")
@@ -64,6 +65,7 @@ kotlin {
             implementation(compose.desktop.currentOs)
             implementation(libs.ktor.client.okhttp)
             implementation(libs.sqlDelight.driver.sqlite)
+            implementation("org.jetbrains.kotlinx:kotlinx-coroutines-swing:1.8.1")
         }
     }
 }

@@ -17,6 +17,7 @@ import androidx.compose.material.icons.outlined.CurrencyBitcoin
 import androidx.compose.material.icons.outlined.Pending
 import androidx.compose.material.icons.outlined.ShoppingBag
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -25,6 +26,8 @@ import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -35,6 +38,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import domain.model.order.Orders
+import domain.usecase.UiState
 import org.koin.compose.koinInject
 import presentation.screens.components.CustomTopAppBar
 import presentation.screens.components.DashboardCard
@@ -49,7 +54,7 @@ import presentation.viewmodel.MainViewModel
 @Composable
 fun Dashboard(
     windowSizeClass: WindowSizeClass,
-    viewModel: MainViewModel = koinInject()
+    viewModel: MainViewModel = koinInject(),
 ) {
     var selectedMenuItem by remember { mutableStateOf("Dashboard") }
     val isCompact = windowSizeClass.widthSizeClass == WindowWidthSizeClass.Compact
@@ -58,15 +63,15 @@ fun Dashboard(
         CustomTopAppBar(windowSizeClass)
         Row(modifier = Modifier.fillMaxSize()) {
             SidebarMenu(isCompact, selectedMenuItem) { selectedMenuItem = it }
-            DashboardContent(isCompact, selectedMenuItem)
+            DashboardContent(isCompact, selectedMenuItem, viewModel)
         }
     }
 }
 
 @Composable
-fun DashboardContent(isCompact: Boolean, selectedMenuItem: String) {
+fun DashboardContent(isCompact: Boolean, selectedMenuItem: String, viewModel: MainViewModel) {
     when (selectedMenuItem) {
-        "Dashboard" -> DashboardMainContent()
+        "Dashboard" -> DashboardMainContent(viewModel)
         "Products" -> Text("Products Screen")
         "Categories" -> Text("Categories Screen")
         "Orders" -> Text("Orders Screen")
@@ -80,9 +85,31 @@ fun DashboardContent(isCompact: Boolean, selectedMenuItem: String) {
 
 @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
 @Composable
-fun DashboardMainContent() {
+fun DashboardMainContent(viewModel: MainViewModel) {
     val isCompact = calculateWindowSizeClass().widthSizeClass == WindowWidthSizeClass.Compact
     val columns = if (isCompact) 1 else 2
+
+    var orderList by remember { mutableStateOf(emptyList<Orders>()) }
+
+    LaunchedEffect(Unit) {
+        viewModel.getAllOrders()
+    }
+    val orderState by viewModel.allOrders.collectAsState()
+    when (orderState) {
+        is UiState.ERROR -> {
+            val error = (orderState as UiState.ERROR).throwable
+            Text("Error : $error")
+        }
+
+        UiState.LOADING -> {
+            CircularProgressIndicator()
+        }
+
+        is UiState.SUCCESS -> {
+            val orders = (orderState as UiState.SUCCESS).response
+            orderList = orders
+        }
+    }
 
     LazyColumn(
         modifier = Modifier
@@ -136,7 +163,7 @@ fun DashboardMainContent() {
                 ) {
                     DashboardCard(
                         title = "Orders Received",
-                        value = "400",
+                        value = orderList.size.toString() ?: "400",
                         percentage = "15%",
                         modifier = Modifier.weight(1f),
                         icon = Icons.Outlined.Checklist,
