@@ -1,7 +1,5 @@
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.animateContentSize
-import androidx.compose.animation.core.FastOutLinearInEasing
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.animateDpAsState
@@ -10,7 +8,6 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -21,7 +18,6 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -39,30 +35,23 @@ import androidx.compose.material.icons.filled.LocalOffer
 import androidx.compose.material.icons.filled.Pages
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Receipt
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.outlined.Checklist
 import androidx.compose.material.icons.outlined.CurrencyBitcoin
-import androidx.compose.material.icons.outlined.NotificationsActive
 import androidx.compose.material.icons.outlined.Pending
 import androidx.compose.material.icons.outlined.ShoppingBag
 import androidx.compose.material.icons.outlined.StackedLineChart
-import androidx.compose.material3.Badge
-import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedButton
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
@@ -89,12 +78,12 @@ import com.aay.compose.lineChart.LineChart
 import com.aay.compose.lineChart.model.LineParameters
 import com.aay.compose.lineChart.model.LineType
 import flexi_store_admin.composeapp.generated.resources.Res
-import flexi_store_admin.composeapp.generated.resources.avatar
 import flexi_store_admin.composeapp.generated.resources.avatar_1
 import flexi_store_admin.composeapp.generated.resources.avatar_2
 import flexi_store_admin.composeapp.generated.resources.avatar_3
 import flexi_store_admin.composeapp.generated.resources.avatar_4
 import org.jetbrains.compose.resources.painterResource
+import presentation.screens.components.CustomTopAppBar
 
 @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
 @Composable
@@ -116,99 +105,6 @@ fun Dashboard(windowSizeClass: WindowSizeClass) {
             SidebarMenu(isCompact, selectedMenuItem) { selectedMenuItem = it }
             DashboardContent(isCompact, selectedMenuItem)
         }
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun CustomTopAppBar(windowSizeClass: WindowSizeClass) {
-    val isCompact = windowSizeClass.widthSizeClass == WindowWidthSizeClass.Compact
-    var isSearchQuery by remember { mutableStateOf("") }
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(Color(0XFFf1f4f9))
-            .padding(6.dp),
-        horizontalArrangement = Arrangement.Start,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Spacer(modifier = Modifier.width(12.dp))
-        Text(
-            text = "Flexi-Store",
-            color = Color(0xFF007BFF),
-            fontWeight = FontWeight.Bold,
-            fontSize = MaterialTheme.typography.headlineSmall.fontSize
-        )
-        Spacer(modifier = Modifier.width(120.dp))
-        AnimatedVisibility(
-            visible = !isCompact,
-        ) {
-            OutlinedTextField(
-                value = isSearchQuery,
-                onValueChange = {
-                    isSearchQuery = it
-                },
-                modifier = Modifier
-                    .padding(14.dp)
-                    .weight(1f)
-                    .border(width = 1.dp, color = Color.Gray, shape = RoundedCornerShape(6.dp)),
-                trailingIcon = {
-                    Icon(
-                        imageVector = Icons.Default.Search,
-                        contentDescription = "Image Search"
-                    )
-                },
-                placeholder = {
-                    Text(text = "Search Here ...")
-                },
-                colors = TextFieldDefaults.textFieldColors(
-                    containerColor = Color.White,
-                    focusedIndicatorColor = Color.Transparent,
-                    unfocusedIndicatorColor = Color.Transparent,
-                    focusedTextColor = Color.Black,
-                    unfocusedTextColor = Color.Black
-                ),
-                singleLine = true,
-            )
-        }
-
-        Spacer(modifier = Modifier.weight(1f))
-
-        val item = 4
-        BadgedBox(badge = {
-            if (item > 0) {
-                Badge {
-                    Text(text = item.toString())
-                }
-            }
-        }) {
-            Icon(
-                imageVector = Icons.Outlined.NotificationsActive,
-                contentDescription = "Notifications"
-            )
-        }
-        Spacer(modifier = Modifier.width(20.dp))
-        Box(
-            modifier = Modifier.size(35.dp),
-            contentAlignment = Alignment.Center
-        ) {
-            Image(
-                painter = painterResource(Res.drawable.avatar),
-                contentDescription = "Image",
-                contentScale = ContentScale.Crop,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .clip(CircleShape)
-            )
-            Box(
-                modifier = Modifier
-                    .size(10.dp)
-                    .background(Color.Green, CircleShape)
-                    .align(Alignment.TopEnd)
-                    .offset(x = (-2).dp, y = 2.dp)
-            )
-        }
-        Spacer(modifier = Modifier.width(10.dp))
     }
 }
 
@@ -243,8 +139,8 @@ fun SidebarMenu(isCompact: Boolean, selectedMenuItem: String, onMenuItemClick: (
 
         androidx.compose.animation.AnimatedVisibility(
             visible = expanded,
-            enter = fadeIn(tween(1000,50, easing = LinearEasing)),
-            exit = fadeOut(tween(1000,50, easing = LinearEasing))
+            enter = fadeIn(tween(1000, 50, easing = LinearEasing)),
+            exit = fadeOut(tween(1000, 50, easing = LinearEasing))
         ) {
             Column {
                 MenuItem(
@@ -734,7 +630,7 @@ fun TransactionsCard(modifier: Modifier) {
                         modifier = Modifier
                             .size(40.dp)
                             .background(Color.Gray, shape = CircleShape)
-                    ){
+                    ) {
                         Image(
                             painter = painterResource(amount),
                             contentDescription = null,
@@ -745,8 +641,10 @@ fun TransactionsCard(modifier: Modifier) {
                     Spacer(modifier = Modifier.width(8.dp))
                     Column {
                         Text(text = name.first, fontSize = 14.sp)
-                        Text(text = name.second, fontSize = 14.sp, fontWeight = FontWeight.Bold,
-                            color = if (name.second.contains("-")) Color.Red else Color.Green)
+                        Text(
+                            text = name.second, fontSize = 14.sp, fontWeight = FontWeight.Bold,
+                            color = if (name.second.contains("-")) Color.Red else Color.Green
+                        )
                     }
                 }
                 Spacer(modifier = Modifier.height(8.dp))
