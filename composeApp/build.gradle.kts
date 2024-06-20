@@ -41,6 +41,7 @@ kotlin {
             implementation(compose.materialIconsExtended)
             implementation("dev.chrisbanes.material3:material3-window-size-class-multiplatform:0.5.0")
             implementation("io.github.thechance101:chart:Beta-0.0.5")
+            implementation(libs.kamel.image)
         }
         desktopMain.dependencies {
             implementation(compose.desktop.currentOs)
