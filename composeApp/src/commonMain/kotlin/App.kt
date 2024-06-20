@@ -386,11 +386,12 @@ fun DashboardMainContent() {
 
     LazyColumn(
         modifier = Modifier
-            .padding(16.dp)
+            .padding(start = 16.dp, end = 16.dp)
             .fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         item {
+            Spacer(modifier = Modifier.height(16.dp))
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.Start,
@@ -498,8 +499,7 @@ fun DashboardMainContent() {
                 RecentOrdersCard(modifier = Modifier.weight(1f))
                 TrafficSourceCard(modifier = Modifier.weight(1f))
             }
-        }
-        item {
+            Spacer(modifier = Modifier.height(16.dp))
         }
     }
 }
