@@ -1,6 +1,5 @@
 package presentation.screens.dashboard
 
-import RecentOrdersCard
 import TrafficSourceCard
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -41,6 +40,7 @@ import presentation.screens.components.CustomTopAppBar
 import presentation.screens.components.DashboardCard
 import presentation.screens.components.DashboardChart
 import presentation.screens.components.DashboardPieChart
+import presentation.screens.components.RecentOrdersCard
 import presentation.screens.components.SidebarMenu
 import presentation.screens.components.TransactionsCard
 
