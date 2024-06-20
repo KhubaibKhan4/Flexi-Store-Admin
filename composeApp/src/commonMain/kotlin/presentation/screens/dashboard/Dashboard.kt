@@ -329,7 +329,7 @@ fun DashboardMainContent(viewModel: MainViewModel) {
                 horizontalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 TransactionsCard(modifier = Modifier.weight(1f))
-                RecentOrdersCard(modifier = Modifier.weight(1f))
+                RecentOrdersCard(modifier = Modifier.weight(1f),orderList,productList)
                 TrafficSourceCard(modifier = Modifier.weight(1f))
             }
             Spacer(modifier = Modifier.height(16.dp))
