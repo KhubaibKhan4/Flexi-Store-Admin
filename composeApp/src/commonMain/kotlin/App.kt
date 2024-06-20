@@ -39,19 +39,27 @@ import com.aay.compose.donutChart.model.PieChartData
 import com.aay.compose.lineChart.LineChart
 import com.aay.compose.lineChart.model.LineParameters
 import com.aay.compose.lineChart.model.LineType
+import di.appModule
 import flexi_store_admin.composeapp.generated.resources.Res
 import flexi_store_admin.composeapp.generated.resources.avatar_1
 import flexi_store_admin.composeapp.generated.resources.avatar_2
 import flexi_store_admin.composeapp.generated.resources.avatar_3
 import flexi_store_admin.composeapp.generated.resources.avatar_4
 import org.jetbrains.compose.resources.painterResource
+import org.koin.compose.KoinApplication
 import presentation.screens.dashboard.Dashboard
 
 @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
 @Composable
 fun App() {
-    val windowSizeClass = calculateWindowSizeClass()
-    MaterialTheme {
-        Dashboard(windowSizeClass)
+    KoinApplication(
+        application = {
+            modules(appModule)
+        }
+    ){
+        val windowSizeClass = calculateWindowSizeClass()
+        MaterialTheme {
+            Dashboard(windowSizeClass)
+        }
     }
 }
