@@ -273,8 +273,8 @@ fun DashboardMainContent(viewModel: MainViewModel) {
                     .padding(vertical = 8.dp),
                 horizontalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                DashboardChart(title = "Sales Statistics", modifier = Modifier.weight(1f))
-                DashboardPieChart(title = "Most Selling Category", modifier = Modifier.weight(1f))
+                DashboardChart(title = "Sales Statistics", modifier = Modifier.weight(1f), orders = orderList)
+                DashboardPieChart(title = "Most Selling Category", modifier = Modifier.weight(1f), orders = orderList)
             }
         }
         item {
@@ -291,4 +291,22 @@ fun DashboardMainContent(viewModel: MainViewModel) {
             Spacer(modifier = Modifier.height(16.dp))
         }
     }
+}
+fun getCategoryByProductId(productId: Int): String {
+    return when (productId) {
+        12, 19, 51 -> "Electronics"
+        32, 33, 34 -> "Clothing"
+        43, 52, 53 -> "Home & Kitchen"
+        36, 37, 41 -> "Grocery"
+        else -> "Other"
+    }
+}
+fun aggregateSalesData(orders: List<Orders>): Map<String, Double> {
+    val categorySales = mutableMapOf<String, Double>()
+    for (order in orders) {
+        val category = getCategoryByProductId(order.productIds)
+        val currentSales = categorySales[category] ?: 0.0
+        categorySales[category] = currentSales + order.totalPrice
+    }
+    return categorySales
 }

@@ -20,32 +20,34 @@ import com.aay.compose.baseComponents.model.GridOrientation
 import com.aay.compose.lineChart.LineChart
 import com.aay.compose.lineChart.model.LineParameters
 import com.aay.compose.lineChart.model.LineType
+import domain.model.order.Orders
+import presentation.screens.dashboard.aggregateSalesData
 
 @Composable
-fun DashboardChart(title: String, modifier: Modifier = Modifier) {
-    val testLineParameters: List<LineParameters> = listOf(
+fun DashboardChart(title: String, orders: List<Orders>, modifier: Modifier = Modifier) {
+    val categorySalesPercentage = aggregateSalesData(orders)
+        .mapValues { (it.value / orders.sumOf { order -> order.totalPrice }) * 100 }
+
+    val xAxisData = listOf("0", "18", "28", "55", "75", "100")
+    val xAxisDataPoints = xAxisData.size
+
+    val testLineParameters: List<LineParameters> = categorySalesPercentage.entries.mapIndexed { index, entry ->
         LineParameters(
-            label = "Sales",
-            data = listOf(70.0, 00.0, 50.33, 40.0, 100.500, 50.0),
-            lineColor = Color.Gray,
+            label = entry.key,
+            data = List(xAxisDataPoints) { entry.value * (0.5 + 0.5 * it / (xAxisDataPoints - 1)) },
+            lineColor = when (index) {
+                0 -> Color(0xFF22A699)
+                1 -> Color(0xFFF2BE22)
+                2 -> Color(0xFFF29727)
+                3 -> Color(0xFFF24C3D)
+                4 -> Color(0xFFF24C9D)
+                else -> Color.Gray
+            },
             lineType = LineType.CURVED_LINE,
             lineShadow = true,
-        ),
-        LineParameters(
-            label = "Visitors",
-            data = listOf(60.0, 80.6, 40.33, 86.232, 88.0, 90.0),
-            lineColor = Color(0xFFFF7F50),
-            lineType = LineType.DEFAULT_LINE,
-            lineShadow = true
-        ),
-        LineParameters(
-            label = "Products",
-            data = listOf(1.0, 40.0, 11.33, 55.23, 1.0, 100.0),
-            lineColor = Color(0xFF81BE88),
-            lineType = LineType.CURVED_LINE,
-            lineShadow = false,
         )
-    )
+    }
+
     Card(
         shape = RoundedCornerShape(8.dp),
         modifier = modifier
@@ -65,7 +67,7 @@ fun DashboardChart(title: String, modifier: Modifier = Modifier) {
                 linesParameters = testLineParameters,
                 isGrid = true,
                 gridColor = Color.Blue,
-                xAxisData = listOf("0", "15", "25", "50", "75", "100"),
+                xAxisData = xAxisData,
                 animateChart = true,
                 showGridWithSpacer = true,
                 yAxisStyle = TextStyle(
