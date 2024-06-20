@@ -109,61 +109,6 @@ fun Dashboard(windowSizeClass: WindowSizeClass) {
     }
 }
 
-
-
-@Composable
-fun MenuItem(
-    name: String,
-    icon: ImageVector,
-    subMenuItems: List<String> = emptyList(),
-    selectedMenuItem: String,
-    onMenuItemClick: (String) -> Unit,
-) {
-    val backgroundColor by animateColorAsState(if (selectedMenuItem == name) Color(0xFF007BFF) else Color.Transparent)
-    val contentColor by animateColorAsState(if (selectedMenuItem == name) Color.White else Color.Black)
-    val fontWeight = if (selectedMenuItem == name) FontWeight.Bold else FontWeight.Normal
-    var expanded by remember { mutableStateOf(false) }
-
-    Column {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(backgroundColor, shape = RoundedCornerShape(8.dp))
-                .clickable {
-                    onMenuItemClick(name)
-                    if (subMenuItems.isNotEmpty()) expanded = !expanded
-                }
-                .padding(8.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Icon(icon, contentDescription = name, tint = contentColor)
-            Spacer(modifier = Modifier.width(8.dp))
-            Text(name, color = contentColor, fontWeight = fontWeight)
-            if (subMenuItems.isNotEmpty()) {
-                Icon(
-                    imageVector = if (expanded) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
-                    contentDescription = if (expanded) "Collapse" else "Expand",
-                    tint = contentColor,
-                    modifier = Modifier.align(Alignment.CenterVertically)
-                )
-            }
-        }
-
-        if (expanded) {
-            subMenuItems.forEach { subMenuItem ->
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(start = 16.dp, top = 4.dp, bottom = 4.dp)
-                        .clickable { onMenuItemClick(subMenuItem) }
-                ) {
-                    Text(subMenuItem, color = Color.Gray)
-                }
-            }
-        }
-    }
-}
-
 @Composable
 fun DashboardContent(isCompact: Boolean, selectedMenuItem: String) {
     when (selectedMenuItem) {
