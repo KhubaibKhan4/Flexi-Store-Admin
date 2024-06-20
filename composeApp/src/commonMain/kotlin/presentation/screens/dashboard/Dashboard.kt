@@ -116,6 +116,10 @@ fun DashboardMainContent(viewModel: MainViewModel) {
             orderList = orders
         }
     }
+    val totalSales = orderList.sumOf { it.totalPrice }
+    val averageDailySales = if (orderList.isNotEmpty()) totalSales / orderList.size else 0
+    val newCustomers = orderList.count { it.orderProgress == "On Progress" }
+    val pendingOrders = orderList.count { it.orderProgress == "On The Way" }
 
     LazyColumn(
         modifier = Modifier
@@ -177,7 +181,7 @@ fun DashboardMainContent(viewModel: MainViewModel) {
                     )
                     DashboardCard(
                         title = "Average Daily Sales",
-                        value = "\$6433",
+                        value = "\$${averageDailySales}",
                         percentage = "25%",
                         modifier = Modifier.weight(1f),
                         icon = Icons.Outlined.CurrencyBitcoin,
@@ -185,7 +189,7 @@ fun DashboardMainContent(viewModel: MainViewModel) {
                     )
                     DashboardCard(
                         title = "New Customers This Month",
-                        value = "8.9K",
+                        value = "${newCustomers}",
                         percentage = "18%",
                         modifier = Modifier.weight(1f),
                         icon = Icons.Outlined.ShoppingBag,
@@ -193,7 +197,7 @@ fun DashboardMainContent(viewModel: MainViewModel) {
                     )
                     DashboardCard(
                         title = "Pending Orders",
-                        value = "563",
+                        value = "${pendingOrders}",
                         percentage = "10%",
                         modifier = Modifier.weight(1f),
                         icon = Icons.Outlined.Pending,
