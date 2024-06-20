@@ -1,6 +1,7 @@
 package di
 
 import data.remote.FlexiStoreClient
+import domain.repository.Repository
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.defaultRequest
@@ -42,4 +43,5 @@ val appModule = module {
         }
     }
     single {FlexiStoreClient(get())}
+    single { Repository(get()) }
 }
