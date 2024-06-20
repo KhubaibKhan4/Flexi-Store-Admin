@@ -40,11 +40,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import domain.model.order.Orders
 import domain.usecase.UiState
+import kotlinx.coroutines.delay
 import org.koin.compose.koinInject
 import presentation.screens.components.CustomTopAppBar
 import presentation.screens.components.DashboardCard
 import presentation.screens.components.DashboardChart
 import presentation.screens.components.DashboardPieChart
+import presentation.screens.components.ErrorScreen
+import presentation.screens.components.LoadingScreen
 import presentation.screens.components.RecentOrdersCard
 import presentation.screens.components.SidebarMenu
 import presentation.screens.components.TrafficSourceCard
@@ -92,17 +95,20 @@ fun DashboardMainContent(viewModel: MainViewModel) {
     var orderList by remember { mutableStateOf(emptyList<Orders>()) }
 
     LaunchedEffect(Unit) {
+        delay(3000)
         viewModel.getAllOrders()
     }
     val orderState by viewModel.allOrders.collectAsState()
     when (orderState) {
         is UiState.ERROR -> {
             val error = (orderState as UiState.ERROR).throwable
-            Text("Error : $error")
+            ErrorScreen(errorMessage = error.message ?: "Unknown error", onRetry = {
+                viewModel.getAllOrders()
+            })
         }
 
         UiState.LOADING -> {
-            CircularProgressIndicator()
+            LoadingScreen()
         }
 
         is UiState.SUCCESS -> {
