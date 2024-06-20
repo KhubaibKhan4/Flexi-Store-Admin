@@ -41,6 +41,12 @@ import androidx.compose.ui.unit.sp
 import domain.model.order.Orders
 import domain.usecase.UiState
 import kotlinx.coroutines.delay
+import kotlinx.datetime.Clock
+import kotlinx.datetime.DateTimeUnit
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.minus
+import kotlinx.datetime.toLocalDateTime
 import org.koin.compose.koinInject
 import presentation.screens.components.CustomTopAppBar
 import presentation.screens.components.DashboardCard
@@ -121,6 +127,52 @@ fun DashboardMainContent(viewModel: MainViewModel) {
     val newCustomers = orderList.count { it.orderProgress == "On Progress" }
     val pendingOrders = orderList.count { it.orderProgress == "On The Way" }
 
+    fun parseDate(dateString: String): LocalDate {
+        val parts = dateString.split(" ")
+        val month = when (parts[1]) {
+            "Jan" -> 1
+            "Feb" -> 2
+            "Mar" -> 3
+            "Apr" -> 4
+            "May" -> 5
+            "Jun" -> 6
+            "Jul" -> 7
+            "Aug" -> 8
+            "Sep" -> 9
+            "Oct" -> 10
+            "Nov" -> 11
+            "Dec" -> 12
+            else -> 1
+        }
+        val day = parts[2].toInt()
+        val year = parts[5].toInt()
+        return LocalDate(year, month, day)
+    }
+
+    fun filterOrdersByDate(orders: List<Orders>, startDate: LocalDate, endDate: LocalDate): List<Orders> {
+        return orders.filter {
+            val orderDate = parseDate(it.orderDate)
+            orderDate in startDate..endDate
+        }
+    }
+
+    val today = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
+    val currentStartDate = today.minus(1, DateTimeUnit.MONTH)
+    val previousStartDate = currentStartDate.minus(1, DateTimeUnit.MONTH)
+    val previousEndDate = currentStartDate.minus(1, DateTimeUnit.DAY)
+
+    val currentOrders = filterOrdersByDate(orderList, currentStartDate, today)
+    val previousOrders = filterOrdersByDate(orderList, previousStartDate, previousEndDate)
+
+    val previousTotalSales = previousOrders.sumOf { it.totalPrice }
+    val previousNewCustomers = previousOrders.count { it.orderProgress == "On Progress" }
+    val previousPendingOrders = previousOrders.count { it.orderProgress == "On The Way" }
+
+    val salesPercentageChange = if (previousTotalSales != 0) ((totalSales - previousTotalSales).toDouble() / previousTotalSales * 100).toInt() else 0
+    val newCustomersPercentageChange = if (previousNewCustomers != 0) ((newCustomers - previousNewCustomers).toDouble() / previousNewCustomers * 100).toInt() else 0
+    val pendingOrdersPercentageChange = if (previousPendingOrders != 0) ((pendingOrders - previousPendingOrders).toDouble() / previousPendingOrders * 100).toInt() else 0
+
+
     LazyColumn(
         modifier = Modifier
             .padding(start = 16.dp, end = 16.dp)
@@ -173,7 +225,7 @@ fun DashboardMainContent(viewModel: MainViewModel) {
                 ) {
                     DashboardCard(
                         title = "Orders Received",
-                        value = orderList.size.toString() ?: "400",
+                        value = orderList.size.toString(),
                         percentage = "15%",
                         modifier = Modifier.weight(1f),
                         icon = Icons.Outlined.Checklist,
@@ -181,24 +233,24 @@ fun DashboardMainContent(viewModel: MainViewModel) {
                     )
                     DashboardCard(
                         title = "Average Daily Sales",
-                        value = "\$${averageDailySales}",
-                        percentage = "25%",
+                        value = "\$$averageDailySales",
+                        percentage = "${salesPercentageChange}%",
                         modifier = Modifier.weight(1f),
                         icon = Icons.Outlined.CurrencyBitcoin,
                         background = Color(0XFF723bde)
                     )
                     DashboardCard(
                         title = "New Customers This Month",
-                        value = "${newCustomers}",
-                        percentage = "18%",
+                        value = "$newCustomers",
+                        percentage = "${newCustomersPercentageChange}%",
                         modifier = Modifier.weight(1f),
                         icon = Icons.Outlined.ShoppingBag,
                         background = Color(0XFF3e93f6)
                     )
                     DashboardCard(
                         title = "Pending Orders",
-                        value = "${pendingOrders}",
-                        percentage = "10%",
+                        value = "$pendingOrders",
+                        percentage = "${pendingOrdersPercentageChange}%",
                         modifier = Modifier.weight(1f),
                         icon = Icons.Outlined.Pending,
                         background = Color(0XFFfe9603)
