@@ -1,5 +1,6 @@
 package presentation.screens
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -33,6 +34,7 @@ import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -42,6 +44,7 @@ import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -277,7 +280,78 @@ fun ProductGridScreen(productList: List<Products>) {
         }
         HorizontalDivider(thickness = 1.dp, color = Color.LightGray)
         Spacer(modifier = Modifier.height(8.dp))
-        ProductGrid(filteredProductList)
+        PaginatedProductGrid(filteredProductList)
+    }
+}
+@Composable
+fun PaginatedProductGrid(productList: List<Products>) {
+    var currentPage by remember { mutableStateOf(1) }
+    val productsPerPage = 20
+    val totalPages = (productList.size + productsPerPage - 1) / productsPerPage
+
+    val startIndex = (currentPage - 1) * productsPerPage
+    val endIndex = minOf(startIndex + productsPerPage, productList.size)
+    val currentProductList = productList.subList(startIndex, endIndex)
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp)
+    ) {
+        ProductGrid(currentProductList)
+        Spacer(modifier = Modifier.height(16.dp))
+        PaginationControls(
+            currentPage = currentPage,
+            totalPages = totalPages,
+            onPrevious = { if (currentPage > 1) currentPage-- },
+            onNext = { if (currentPage < totalPages) currentPage++ },
+            onPageSelected = { selectedPage -> currentPage = selectedPage }
+        )
+    }
+}
+
+@Composable
+fun PaginationControls(
+    currentPage: Int,
+    totalPages: Int,
+    onPrevious: () -> Unit,
+    onNext: () -> Unit,
+    onPageSelected: (Int) -> Unit
+) {
+    Row(
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp)
+    ) {
+        if (currentPage > 1) {
+            OutlinedButton(onClick = onPrevious) {
+                Text("Previous")
+            }
+            Spacer(modifier = Modifier.width(8.dp))
+        }
+
+        for (page in 1..totalPages) {
+            OutlinedButton(
+                onClick = { onPageSelected(page) },
+                colors = ButtonDefaults.outlinedButtonColors(
+                    containerColor = if (page == currentPage) Color.Blue else Color.White,
+                    contentColor = if (page == currentPage) Color.White else Color.Black
+                ),
+                border = BorderStroke(1.dp, if (page == currentPage) Color.Blue else Color.Gray)
+            ) {
+                Text(page.toString())
+            }
+            Spacer(modifier = Modifier.width(4.dp))
+        }
+
+        if (currentPage < totalPages) {
+            Spacer(modifier = Modifier.width(8.dp))
+            OutlinedButton(onClick = onNext) {
+                Text("Next")
+            }
+        }
     }
 }
 
