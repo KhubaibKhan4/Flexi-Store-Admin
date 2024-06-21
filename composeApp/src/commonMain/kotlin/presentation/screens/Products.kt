@@ -17,10 +17,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Clear
@@ -65,83 +68,67 @@ import utils.Constant.BASE_URL
 
 @Composable
 fun ProductContent(productList: List<Products>, isCompact: Boolean) {
-    Column(
-        modifier = Modifier.fillMaxWidth()
-            .padding(start = 16.dp, end = 16.dp, top = 16.dp),
-        horizontalAlignment = Alignment.Start,
-        verticalArrangement = Arrangement.Center
+    LazyColumn(
+        modifier = Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, top = 16.dp)
     ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.Start,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Column(
-                horizontalAlignment = Alignment.Start,
-                verticalArrangement = Arrangement.Center
-            ) {
-                Text(
-                    text = "Products",
-                    fontSize = 24.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color(0xFF007BFF)
-                )
-            }
-            Spacer(modifier = Modifier.weight(1f))
-            ElevatedButton(
-                onClick = {},
-                shape = RoundedCornerShape(8.dp),
-                colors = ButtonDefaults.elevatedButtonColors(
-                    containerColor = Color.White,
-                    contentColor = Color.Black
-                )
-            ) {
-                Icon(
-                    imageVector = Icons.Default.CloudUpload,
-                    contentDescription = null,
-                    modifier = Modifier.size(25.dp),
-                    tint = Color.LightGray
-                )
-                Spacer(modifier = Modifier.width(4.dp))
-                Text("Export")
-            }
-            Spacer(modifier = Modifier.width(6.dp))
-            ElevatedButton(
-                onClick = {},
-                shape = RoundedCornerShape(8.dp),
-                colors = ButtonDefaults.elevatedButtonColors(
-                    containerColor = Color(0XFF0a8af9),
-                    contentColor = Color.White
-                )
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Add,
-                    contentDescription = null,
-                    modifier = Modifier.size(15.dp)
-                )
-                Spacer(modifier = Modifier.width(4.dp))
-                Text("Add Product")
-            }
-        }
-        Spacer(modifier = Modifier.height(16.dp))
-        if (isCompact) {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(Color(0xFFF7F7F7))
-                    .padding(start = 8.dp, end = 8.dp)
-            ) {
-                ProductGridScreen(productList)
-            }
-        } else {
+        item {
             Row(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(Color(0xFFF7F7F7))
-                    .padding(start = 16.dp, end = 16.dp)
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Start,
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                ProductGridScreen(productList)
+                Column(
+                    horizontalAlignment = Alignment.Start,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Text(
+                        text = "Products",
+                        fontSize = 24.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color(0xFF007BFF)
+                    )
+                }
+                Spacer(modifier = Modifier.weight(1f))
+                ElevatedButton(
+                    onClick = {},
+                    shape = RoundedCornerShape(8.dp),
+                    colors = ButtonDefaults.elevatedButtonColors(
+                        containerColor = Color.White,
+                        contentColor = Color.Black
+                    )
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.CloudUpload,
+                        contentDescription = null,
+                        modifier = Modifier.size(25.dp),
+                        tint = Color.LightGray
+                    )
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Text("Export")
+                }
+                Spacer(modifier = Modifier.width(6.dp))
+                ElevatedButton(
+                    onClick = {},
+                    shape = RoundedCornerShape(8.dp),
+                    colors = ButtonDefaults.elevatedButtonColors(
+                        containerColor = Color(0XFF0a8af9),
+                        contentColor = Color.White
+                    )
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Add,
+                        contentDescription = null,
+                        modifier = Modifier.size(15.dp)
+                    )
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Text("Add Product")
+                }
             }
+            Spacer(modifier = Modifier.height(16.dp))
+        }
+
+        item {
+            ProductGridScreen(productList)
         }
     }
 }
@@ -300,6 +287,7 @@ fun ProductGrid(productList: List<Products>) {
         columns = GridCells.Adaptive(215.dp),
         contentPadding = PaddingValues(start = 8.dp, end = 8.dp),
         modifier = Modifier.fillMaxWidth()
+            .height(1200.dp)
     ) {
         items(productList) { product ->
             ProductCard(product)
