@@ -49,7 +49,7 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.minus
 import kotlinx.datetime.toLocalDateTime
 import org.koin.compose.koinInject
-import presentation.screens.ProductContent
+import presentation.screens.product.ProductContent
 import presentation.screens.components.CustomTopAppBar
 import presentation.screens.components.DashboardCard
 import presentation.screens.components.DashboardChart

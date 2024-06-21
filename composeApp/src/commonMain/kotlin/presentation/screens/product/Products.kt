@@ -1,4 +1,4 @@
-package presentation.screens
+package presentation.screens.product
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
@@ -44,6 +44,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedCard
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
@@ -407,9 +408,11 @@ fun ProductGrid(productList: List<Products>) {
 
 @Composable
 fun ProductCard(product: Products) {
+    var isEditProduct by remember { mutableStateOf(false) }
     Card(
         modifier = Modifier
             .fillMaxWidth()
+            .clickable { isEditProduct = !isEditProduct }
             .padding(8.dp),
         elevation = CardDefaults.cardElevation(4.dp),
         colors = CardDefaults.cardColors(
@@ -488,6 +491,183 @@ fun ProductCard(product: Products) {
                         }
                     }
                 }
+            }
+        }
+    }
+}
+
+@Composable
+fun EditProductScreen(product: Products) {
+    var productName by remember { mutableStateOf(product.name) }
+    var category by remember { mutableStateOf(product.categoryTitle) }
+    var gender by remember { mutableStateOf("Male") }
+    var brand by remember { mutableStateOf(product.brand) }
+    var description by remember { mutableStateOf(product.description) }
+    var price by remember { mutableStateOf(product.price.toString()) }
+    var discount by remember { mutableStateOf("20%") }
+    var discountPrice by remember { mutableStateOf(product.discountPrice.toString()) }
+    var addSize by remember { mutableStateOf("EU-44") }
+    var productDate by remember { mutableStateOf(product.createdAt) }
+
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp)
+    ) {
+        Text(
+            text = "Edit Products",
+            fontSize = 24.sp,
+            fontWeight = FontWeight.Bold,
+            color = Color.Black
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+        Text(
+            text = "The most important feature in the product editing section is the product adding part. When adding products here, do not ignore to fill in all the required fields completely and follow the products adding rules.",
+            fontSize = 14.sp,
+            color = Color.Gray
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+
+        OutlinedTextField(
+            value = productName,
+            onValueChange = { productName = it },
+            label = { Text("Product Name") },
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Row {
+            Column(modifier = Modifier.weight(1f)) {
+                OutlinedTextField(
+                    value = category,
+                    onValueChange = { category = it },
+                    label = { Text("Category") },
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+            Spacer(modifier = Modifier.width(8.dp))
+            Column(modifier = Modifier.weight(1f)) {
+                OutlinedTextField(
+                    value = gender,
+                    onValueChange = { gender = it },
+                    label = { Text("Gender") },
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        OutlinedTextField(
+            value = brand,
+            onValueChange = { brand = it },
+            label = { Text("Brand") },
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        OutlinedTextField(
+            value = description,
+            onValueChange = { description = it },
+            label = { Text("Description") },
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Row {
+            Column(modifier = Modifier.weight(1f)) {
+                OutlinedTextField(
+                    value = price,
+                    onValueChange = { price = it },
+                    label = { Text("Price") },
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+            Spacer(modifier = Modifier.width(8.dp))
+            Column(modifier = Modifier.weight(1f)) {
+                OutlinedTextField(
+                    value = discount,
+                    onValueChange = { discount = it },
+                    label = { Text("Discount") },
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+            Spacer(modifier = Modifier.width(8.dp))
+            Column(modifier = Modifier.weight(1f)) {
+                OutlinedTextField(
+                    value = discountPrice,
+                    onValueChange = { discountPrice = it },
+                    label = { Text("Discount Price") },
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Row {
+            Column(modifier = Modifier.weight(1f)) {
+                OutlinedTextField(
+                    value = addSize,
+                    onValueChange = { addSize = it },
+                    label = { Text("Add Size") },
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+            Spacer(modifier = Modifier.width(8.dp))
+            Column(modifier = Modifier.weight(1f)) {
+                OutlinedTextField(
+                    value = productDate,
+                    onValueChange = { productDate = it },
+                    label = { Text("Product Date") },
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Row {
+            ElevatedButton(
+                onClick = {
+                    // Handle add product logic
+                },
+                shape = RoundedCornerShape(8.dp),
+                colors = ButtonDefaults.elevatedButtonColors(
+                    containerColor = Color(0XFF0a8af9),
+                    contentColor = Color.White
+                )
+            ) {
+                Text("Add Product")
+            }
+            Spacer(modifier = Modifier.width(8.dp))
+            ElevatedButton(
+                onClick = {
+                    // Handle save product logic
+                },
+                shape = RoundedCornerShape(8.dp),
+                colors = ButtonDefaults.elevatedButtonColors(
+                    containerColor = Color(0XFF0a8af9),
+                    contentColor = Color.White
+                )
+            ) {
+                Text("Save Product")
+            }
+            Spacer(modifier = Modifier.width(8.dp))
+            ElevatedButton(
+                onClick = {
+                    // Handle schedule product logic
+                },
+                shape = RoundedCornerShape(8.dp),
+                colors = ButtonDefaults.elevatedButtonColors(
+                    containerColor = Color(0XFF0a8af9),
+                    contentColor = Color.White
+                )
+            ) {
+                Text("Schedule")
             }
         }
     }

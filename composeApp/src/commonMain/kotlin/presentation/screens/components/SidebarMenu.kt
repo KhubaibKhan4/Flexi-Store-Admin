@@ -1,6 +1,7 @@
 package presentation.screens.components
 
 import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.FastOutLinearInEasing
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.animateDpAsState
@@ -57,7 +58,7 @@ fun SidebarMenu(isCompact: Boolean, selectedMenuItem: String, onMenuItemClick: (
                     tween(
                         durationMillis = 300,
                         delayMillis = 400,
-                        easing = LinearOutSlowInEasing
+                        easing = FastOutLinearInEasing
                     )
                 )
                 .align(Alignment.End)
@@ -65,71 +66,74 @@ fun SidebarMenu(isCompact: Boolean, selectedMenuItem: String, onMenuItemClick: (
             Icon(expandIcon, contentDescription = "Expand/Collapse Sidebar")
         }
 
-        androidx.compose.animation.AnimatedVisibility(
-            visible = expanded,
-            enter = fadeIn(tween(1000, 50, easing = LinearEasing)),
-            exit = fadeOut(tween(1000, 50, easing = LinearEasing))
-        ) {
-            Column {
-                MenuItem(
-                    "Dashboard",
-                    Icons.Default.Dashboard,
-                    selectedMenuItem = selectedMenuItem,
-                    onMenuItemClick = onMenuItemClick
-                )
-                MenuItem(
-                    "Products",
-                    Icons.Default.ShoppingCart,
-                    listOf("Add Product", "Product List"),
-                    selectedMenuItem,
-                    onMenuItemClick
-                )
-                MenuItem(
-                    "Categories",
-                    Icons.Default.Category,
-                    listOf("Add Category", "Category List"),
-                    selectedMenuItem,
-                    onMenuItemClick
-                )
-                MenuItem(
-                    "Orders",
-                    Icons.Default.Receipt,
-                    listOf("New Orders", "Completed Orders"),
-                    selectedMenuItem,
-                    onMenuItemClick
-                )
-                MenuItem(
-                    "Reviews",
-                    Icons.Default.Star,
-                    selectedMenuItem = selectedMenuItem,
-                    onMenuItemClick = onMenuItemClick
-                )
-                MenuItem(
-                    "Coupons",
-                    Icons.Default.LocalOffer,
-                    selectedMenuItem = selectedMenuItem,
-                    onMenuItemClick = onMenuItemClick
-                )
-                MenuItem(
-                    "Profile",
-                    Icons.Default.Person,
-                    selectedMenuItem = selectedMenuItem,
-                    onMenuItemClick = onMenuItemClick
-                )
-                MenuItem(
-                    "Shop Settings",
-                    Icons.Default.Settings,
-                    selectedMenuItem = selectedMenuItem,
-                    onMenuItemClick = onMenuItemClick
-                )
-                MenuItem(
-                    "Pages",
-                    Icons.Default.Pages,
-                    listOf("About Us", "Contact Us"),
-                    selectedMenuItem,
-                    onMenuItemClick
-                )
-            }
+        Column {
+            MenuItem(
+                name = "Dashboard",
+                icon = Icons.Default.Dashboard,
+                selectedMenuItem = selectedMenuItem,
+                onMenuItemClick = onMenuItemClick,
+                expanded = expanded
+            )
+            MenuItem(
+                name = "Products",
+                icon = Icons.Default.ShoppingCart,
+                subMenuItems = listOf("Add Product", "Product List"),
+                selectedMenuItem = selectedMenuItem,
+                onMenuItemClick = onMenuItemClick,
+                expanded = expanded
+            )
+            MenuItem(
+                name = "Categories",
+                icon = Icons.Default.Category,
+                subMenuItems = listOf("Add Category", "Category List"),
+                selectedMenuItem = selectedMenuItem,
+                onMenuItemClick = onMenuItemClick,
+                expanded = expanded
+            )
+            MenuItem(
+                name = "Orders",
+                icon = Icons.Default.Receipt,
+                subMenuItems = listOf("New Orders", "Completed Orders"),
+                selectedMenuItem = selectedMenuItem,
+                onMenuItemClick = onMenuItemClick,
+                expanded = expanded
+            )
+            MenuItem(
+                name = "Reviews",
+                icon = Icons.Default.Star,
+                selectedMenuItem = selectedMenuItem,
+                onMenuItemClick = onMenuItemClick,
+                expanded = expanded
+            )
+            MenuItem(
+                name = "Coupons",
+                icon = Icons.Default.LocalOffer,
+                selectedMenuItem = selectedMenuItem,
+                onMenuItemClick = onMenuItemClick,
+                expanded = expanded
+            )
+            MenuItem(
+                name = "Profile",
+                icon = Icons.Default.Person,
+                selectedMenuItem = selectedMenuItem,
+                onMenuItemClick = onMenuItemClick,
+                expanded = expanded
+            )
+            MenuItem(
+                name = "Shop Settings",
+                icon = Icons.Default.Settings,
+                selectedMenuItem = selectedMenuItem,
+                onMenuItemClick = onMenuItemClick,
+                expanded = expanded
+            )
+            MenuItem(
+                name = "Pages",
+                icon = Icons.Default.Pages,
+                subMenuItems = listOf("About Us", "Contact Us"),
+                selectedMenuItem = selectedMenuItem,
+                onMenuItemClick = onMenuItemClick,
+                expanded = expanded
+            )
         }
     }
 }
