@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
@@ -27,7 +28,6 @@ import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Divider
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.HorizontalDivider
@@ -49,6 +49,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import domain.model.products.Products
 import io.kamel.core.Resource
@@ -63,7 +64,7 @@ fun ProductContent(productList: List<Products>, isCompact: Boolean) {
             modifier = Modifier
                 .fillMaxSize()
                 .background(Color(0xFFF7F7F7))
-                .padding(8.dp)
+                .padding(start = 8.dp, end = 8.dp)
         ) {
             ProductGridScreen(productList)
         }
@@ -72,7 +73,7 @@ fun ProductContent(productList: List<Products>, isCompact: Boolean) {
             modifier = Modifier
                 .fillMaxSize()
                 .background(Color(0xFFF7F7F7))
-                .padding(16.dp)
+                .padding(start = 16.dp, end = 16.dp)
         ) {
             ProductGridScreen(productList)
         }
@@ -86,6 +87,8 @@ fun ProductGridScreen(productList: List<Products>) {
     var sortOrder by remember { mutableStateOf("Last added") }
     var categoryExpanded by remember { mutableStateOf(false) }
     var sortExpanded by remember { mutableStateOf(false) }
+
+    val categories = productList.map { it.categoryTitle }.distinct().sorted()
 
     val filteredProductList = productList.filter { product ->
         (selectedCategory == "Category" || product.categoryTitle == selectedCategory) &&
@@ -101,7 +104,7 @@ fun ProductGridScreen(productList: List<Products>) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp),
+            .padding(start = 16.dp, end = 16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
@@ -136,24 +139,26 @@ fun ProductGridScreen(productList: List<Products>) {
                 ),
                 shape = RoundedCornerShape(8.dp)
             )
-            Spacer(modifier = Modifier.weight(2.65f))
+            Spacer(modifier = Modifier.weight(1.2f))
             Box(
                 modifier = Modifier.weight(1f)
                     .padding(8.dp)
                     .border(1.dp, Color.LightGray, RoundedCornerShape(8.dp))
                     .clickable { categoryExpanded = !categoryExpanded }
-                    .padding(8.dp)
+                    .padding(8.dp),
+                contentAlignment = Alignment.Center
             ) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.Center
                 ) {
-                    Text(selectedCategory)
-                    Spacer(modifier = Modifier.width(4.dp))
+                    Text(selectedCategory.take(16))
+                    Spacer(modifier = Modifier.weight(1f).width(4.dp))
                     Icon(
                         imageVector = if (categoryExpanded) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
-                        contentDescription = null
+                        contentDescription = null,
+                        modifier = Modifier.weight(1f)
                     )
                 }
                 DropdownMenu(
@@ -164,19 +169,18 @@ fun ProductGridScreen(productList: List<Products>) {
                         selectedCategory = "Category"
                         categoryExpanded = false
                     }, text = { Text("Category") })
-                    DropdownMenuItem(onClick = {
-                        selectedCategory = "Category 1"
-                        categoryExpanded = false
-                    }, text = { Text("Category 1") })
-                    DropdownMenuItem(onClick = {
-                        selectedCategory = "Category 2"
-                        categoryExpanded = false
-                    }, text = { Text("Category 2") })
+                    categories.forEach { category ->
+                        DropdownMenuItem(onClick = {
+                            selectedCategory = category
+                            categoryExpanded = false
+                        }, text = { Text(category) })
+                    }
                 }
             }
             Spacer(modifier = Modifier.width(16.dp))
             Box(
                 modifier = Modifier.weight(1f)
+                    .wrapContentWidth()
                     .padding(8.dp)
                     .border(1.dp, Color.LightGray, RoundedCornerShape(8.dp))
                     .clickable { sortExpanded = !sortExpanded }
@@ -225,7 +229,7 @@ fun ProductGridScreen(productList: List<Products>) {
 fun ProductGrid(productList: List<Products>) {
     LazyVerticalGrid(
         columns = GridCells.Adaptive(215.dp),
-        contentPadding = PaddingValues(8.dp),
+        contentPadding = PaddingValues(start = 8.dp, end = 8.dp),
         modifier = Modifier.fillMaxWidth()
     ) {
         items(productList) { product ->
