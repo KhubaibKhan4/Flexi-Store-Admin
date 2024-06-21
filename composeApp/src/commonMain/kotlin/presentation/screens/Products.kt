@@ -1,6 +1,5 @@
 package presentation.screens
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -16,14 +15,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.pager.HorizontalPager
-import androidx.compose.foundation.pager.PageSize
-import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
@@ -86,39 +80,23 @@ fun ProductContent(productList: List<Products>, isCompact: Boolean) {
 }
 
 @Composable
-fun ProductList(productList: List<Products>) {
-    LazyColumn {
-        items(productList) { product ->
-            ProductCard(product)
-            Spacer(modifier = Modifier.height(16.dp))
-        }
-    }
-}
-
-@OptIn(ExperimentalFoundationApi::class)
-@Composable
-fun ImageSlider(images: List<String>) {
-    val pagerState = rememberPagerState(pageCount = { images.size })
-    HorizontalPager(pageSize = PageSize.Fill, state = pagerState) { page ->
-        val productImages: Resource<Painter> = asyncPainterResource(BASE_URL + images[page])
-        KamelImage(
-            resource = productImages,
-            contentDescription = null,
-            modifier = Modifier
-                .fillMaxWidth()
-                .aspectRatio(1f)
-                .clip(RoundedCornerShape(8.dp))
-        )
-    }
-}
-
-@Composable
 fun ProductGridScreen(productList: List<Products>) {
     var searchQuery by remember { mutableStateOf("") }
     var selectedCategory by remember { mutableStateOf("Category") }
     var sortOrder by remember { mutableStateOf("Last added") }
     var categoryExpanded by remember { mutableStateOf(false) }
     var sortExpanded by remember { mutableStateOf(false) }
+
+    val filteredProductList = productList.filter { product ->
+        (selectedCategory == "Category" || product.categoryTitle == selectedCategory) &&
+                (searchQuery.isEmpty() || product.name.contains(searchQuery, ignoreCase = true))
+    }.sortedWith(
+        when (sortOrder) {
+            "Price: Low to High" -> compareBy { it.price }
+            "Price: High to Low" -> compareByDescending { it.price }
+            else -> compareByDescending { it.createdAt }
+        }
+    )
 
     Column(
         modifier = Modifier
@@ -239,7 +217,7 @@ fun ProductGridScreen(productList: List<Products>) {
         }
         HorizontalDivider(thickness = 1.dp, color = Color.LightGray)
         Spacer(modifier = Modifier.height(8.dp))
-        ProductGrid(productList)
+        ProductGrid(filteredProductList)
     }
 }
 
