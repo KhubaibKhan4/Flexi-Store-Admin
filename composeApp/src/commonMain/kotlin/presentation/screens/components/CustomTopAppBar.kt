@@ -1,9 +1,7 @@
 package presentation.screens.components
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -18,8 +16,8 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBackIosNew
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.outlined.Notifications
+import androidx.compose.material.icons.outlined.WbSunny
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Card
@@ -27,9 +25,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
@@ -69,48 +65,34 @@ fun CustomTopAppBar(windowSizeClass: WindowSizeClass) {
             fontWeight = FontWeight.Bold,
             fontSize = MaterialTheme.typography.headlineSmall.fontSize
         )
-        Spacer(modifier = Modifier.width(120.dp))
-        AnimatedVisibility(
-            visible = !isCompact,
-        ) {
-            OutlinedTextField(
-                value = isSearchQuery,
-                onValueChange = {
-                    isSearchQuery = it
-                },
-                modifier = Modifier
-                    .padding(14.dp)
-                    .weight(1f)
-                    .border(width = 1.dp, color = Color.Gray, shape = RoundedCornerShape(6.dp)),
-                trailingIcon = {
-                    Icon(
-                        imageVector = Icons.Default.Search,
-                        contentDescription = "Image Search"
-                    )
-                },
-                placeholder = {
-                    Text(text = "Search Here ...")
-                },
-                colors = TextFieldDefaults.textFieldColors(
-                    containerColor = Color.White,
-                    focusedIndicatorColor = Color.Transparent,
-                    unfocusedIndicatorColor = Color.Transparent,
-                    focusedTextColor = Color.Black,
-                    unfocusedTextColor = Color.Black
-                ),
-                singleLine = true,
+
+        Spacer(modifier = Modifier.weight(4f))
+
+        Card(
+            modifier = Modifier.size(40.dp),
+            shape = RoundedCornerShape(8.dp),
+            colors = CardDefaults.cardColors(
+                containerColor = Color(0xFFe6f0f9)
             )
+        ) {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = Icons.Outlined.WbSunny,
+                    contentDescription = "Light Mode"
+                )
+            }
         }
-
-        Spacer(modifier = Modifier.weight(1f))
-
+        Spacer(modifier = Modifier.width(10.dp))
         val item = 4
         Card(
             modifier = Modifier.size(40.dp),
             shape = RoundedCornerShape(8.dp),
-           colors = CardDefaults.cardColors(
-               containerColor = Color(0xFFe6f0f9)
-           )
+            colors = CardDefaults.cardColors(
+                containerColor = Color(0xFFe6f0f9)
+            )
         ) {
             Box(
                 modifier = Modifier.fillMaxSize(),

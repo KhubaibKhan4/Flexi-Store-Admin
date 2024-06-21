@@ -42,7 +42,7 @@ fun SidebarMenu(isCompact: Boolean, selectedMenuItem: String, onMenuItemClick: (
     var expanded by remember { mutableStateOf(true) }
 
     val expandIcon = if (expanded) Icons.Default.ArrowBack else Icons.Default.ArrowForward
-    val sidebarWidth by animateDpAsState(targetValue = if (expanded) 200.dp else 60.dp)
+    val sidebarWidth by animateDpAsState(targetValue = if (expanded) 200.dp else 75.dp)
 
     Column(
         modifier = Modifier
