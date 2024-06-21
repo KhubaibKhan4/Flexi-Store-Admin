@@ -83,8 +83,10 @@ fun Dashboard(
 fun DashboardContent(isCompact: Boolean, selectedMenuItem: String, viewModel: MainViewModel) {
     var orderList by remember { mutableStateOf(emptyList<Orders>()) }
     var productList by remember { mutableStateOf(emptyList<Products>()) }
+    var allProductList by remember { mutableStateOf(emptyList<Products>()) }
 
     LaunchedEffect(Unit) {
+        viewModel.getAllProducts()
         delay(3000)
         viewModel.getAllOrders()
     }
@@ -92,6 +94,7 @@ fun DashboardContent(isCompact: Boolean, selectedMenuItem: String, viewModel: Ma
 
     val orderState by viewModel.allOrders.collectAsState()
     val productsState by viewModel.productDetail.collectAsState()
+    val allProState by viewModel.allProducts.collectAsState()
     when (orderState) {
         is UiState.ERROR -> {
             val error = (orderState as UiState.ERROR).throwable
@@ -131,9 +134,26 @@ fun DashboardContent(isCompact: Boolean, selectedMenuItem: String, viewModel: Ma
             println("PRODUCT: $productList")
         }
     }
+
+    when (allProState) {
+        is UiState.LOADING -> {
+            CircularProgressIndicator()
+        }
+
+        is UiState.ERROR -> {
+            val error = (allProState as UiState.ERROR).throwable
+            Text("Error loading products: ${error.message}")
+        }
+
+        is UiState.SUCCESS -> {
+            val products = (allProState as UiState.SUCCESS).response
+            allProductList = products
+            println("ALL PRODUCT: $allProductList")
+        }
+    }
     when (selectedMenuItem) {
         "Dashboard" -> DashboardMainContent(viewModel,productList,orderList)
-        "Products" -> ProductContent(productList,isCompact)
+        "Products" -> ProductContent(allProductList,isCompact)
         "Categories" -> Text("Categories Screen")
         "Orders" -> Text("Orders Screen")
         "Reviews" -> Text("Reviews Screen")

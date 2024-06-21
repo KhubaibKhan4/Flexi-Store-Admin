@@ -47,12 +47,12 @@ class MainViewModel(
     }
     fun getAllProducts(){
         viewModelScope.launch {
-            _productDetail.value = UiState.LOADING
+            _allProducts.value = UiState.LOADING
             try {
                 val response = repository.getAllProducts()
-                _productDetail.value = UiState.SUCCESS(response)
+                _allProducts.value = UiState.SUCCESS(response)
             }catch (e: Exception){
-                _productDetail.value = UiState.ERROR(e)
+                _allProducts.value = UiState.ERROR(e)
             }
         }
     }
