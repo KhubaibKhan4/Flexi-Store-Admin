@@ -2,6 +2,8 @@ package presentation.screens
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,7 +15,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -24,22 +25,24 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PageSize
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Divider
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -95,9 +98,9 @@ fun ProductList(productList: List<Products>) {
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ImageSlider(images: List<String>) {
-    val pagerState = rememberPagerState(pageCount = {images.size})
+    val pagerState = rememberPagerState(pageCount = { images.size })
     HorizontalPager(pageSize = PageSize.Fill, state = pagerState) { page ->
-        val productImages : Resource<Painter> = asyncPainterResource(BASE_URL+images[page])
+        val productImages: Resource<Painter> = asyncPainterResource(BASE_URL + images[page])
         KamelImage(
             resource = productImages,
             contentDescription = null,
@@ -108,58 +111,134 @@ fun ImageSlider(images: List<String>) {
         )
     }
 }
+
 @Composable
 fun ProductGridScreen(productList: List<Products>) {
     var searchQuery by remember { mutableStateOf("") }
     var selectedCategory by remember { mutableStateOf("Category") }
     var sortOrder by remember { mutableStateOf("Last added") }
+    var categoryExpanded by remember { mutableStateOf(false) }
+    var sortExpanded by remember { mutableStateOf(false) }
 
     Column(
         modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
+            .fillMaxWidth()
+            .padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(bottom = 16.dp),
+                .padding(16.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            BasicTextField(
+            TextField(
                 value = searchQuery,
                 onValueChange = { searchQuery = it },
                 modifier = Modifier
-                    .weight(1f)
-                    .background(Color.White, RoundedCornerShape(8.dp))
-                    .padding(16.dp),
-                decorationBox = { innerTextField ->
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.padding(horizontal = 8.dp)
-                    ) {
-                        Icon(Icons.Default.Search, contentDescription = null)
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Box(Modifier.weight(1f)) { innerTextField() }
-                    }
-                }
+                    .weight(2f)
+                    .padding(8.dp)
+                    .border(width = 1.dp, Color.LightGray, RoundedCornerShape(8.dp)),
+                placeholder = {
+                    Text("Search")
+                },
+                trailingIcon = {
+                    Icon(
+                        imageVector = Icons.Default.Search,
+                        contentDescription = null
+                    )
+                },
+                colors = TextFieldDefaults.colors(
+                    unfocusedIndicatorColor = Color.Transparent,
+                    focusedIndicatorColor = Color.Transparent,
+                    focusedContainerColor = Color.White,
+                    unfocusedContainerColor = Color.White
+                ),
+                shape = RoundedCornerShape(8.dp)
             )
-            Spacer(modifier = Modifier.width(16.dp))
-            DropdownMenu(
-                expanded = false, // Implement logic to handle dropdown state
-                onDismissRequest = { /* Implement dismiss logic */ }
+            Spacer(modifier = Modifier.weight(2.65f))
+            Box(
+                modifier = Modifier.weight(1f)
+                    .padding(8.dp)
+                    .border(1.dp, Color.LightGray, RoundedCornerShape(8.dp))
+                    .clickable { categoryExpanded = !categoryExpanded }
+                    .padding(8.dp)
             ) {
-                DropdownMenuItem(onClick = { selectedCategory = "Category" }, text = { Text("Category")})
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    Text(selectedCategory)
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Icon(
+                        imageVector = if (categoryExpanded) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
+                        contentDescription = null
+                    )
+                }
+                DropdownMenu(
+                    expanded = categoryExpanded,
+                    onDismissRequest = { categoryExpanded = false },
+                ) {
+                    DropdownMenuItem(onClick = {
+                        selectedCategory = "Category"
+                        categoryExpanded = false
+                    }, text = { Text("Category") })
+                    DropdownMenuItem(onClick = {
+                        selectedCategory = "Category 1"
+                        categoryExpanded = false
+                    }, text = { Text("Category 1") })
+                    DropdownMenuItem(onClick = {
+                        selectedCategory = "Category 2"
+                        categoryExpanded = false
+                    }, text = { Text("Category 2") })
+                }
             }
             Spacer(modifier = Modifier.width(16.dp))
-            DropdownMenu(
-                expanded = false, // Implement logic to handle dropdown state
-                onDismissRequest = { /* Implement dismiss logic */ }
+            Box(
+                modifier = Modifier.weight(1f)
+                    .padding(8.dp)
+                    .border(1.dp, Color.LightGray, RoundedCornerShape(8.dp))
+                    .clickable { sortExpanded = !sortExpanded }
+                    .padding(8.dp)
             ) {
-                DropdownMenuItem(onClick = { sortOrder = "Last added" },
-                    text = {Text("Last added")})
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    Text(sortOrder)
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Icon(
+                        imageVector = if (sortExpanded) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
+                        contentDescription = null
+                    )
+                }
+                DropdownMenu(
+                    expanded = sortExpanded,
+                    onDismissRequest = { sortExpanded = false }
+                ) {
+                    DropdownMenuItem(onClick = {
+                        sortOrder = "Last added"
+                        sortExpanded = false
+                    },
+                        text = { Text("Last added") })
+                    DropdownMenuItem(onClick = {
+                        sortOrder = "Price: Low to High"
+                        sortExpanded = false
+                    },
+                        text = { Text("Price: Low to High") })
+                    DropdownMenuItem(onClick = {
+                        sortOrder = "Price: High to Low"
+                        sortExpanded = false
+                    }, text = { Text("Price: High to Low") })
+                }
             }
         }
+        HorizontalDivider(thickness = 1.dp, color = Color.LightGray)
+        Spacer(modifier = Modifier.height(8.dp))
         ProductGrid(productList)
     }
 }
@@ -190,7 +269,7 @@ fun ProductCard(product: Products) {
         shape = RoundedCornerShape(8.dp)
     ) {
         Column(modifier = Modifier.fillMaxWidth()) {
-            val productImages : Resource<Painter> = asyncPainterResource(BASE_URL+product.imageUrl)
+            val productImages: Resource<Painter> = asyncPainterResource(BASE_URL + product.imageUrl)
             KamelImage(
                 resource = productImages,
                 contentDescription = null,
@@ -206,7 +285,7 @@ fun ProductCard(product: Products) {
             ) {
                 Text(
                     text = product.name,
-                    style = MaterialTheme.typography.bodyLarge.copy(color = Color.Gray,),
+                    style = MaterialTheme.typography.bodyLarge.copy(color = Color.Gray),
                     maxLines = 1
                 )
                 Text(
