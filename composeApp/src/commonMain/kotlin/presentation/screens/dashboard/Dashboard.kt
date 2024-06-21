@@ -133,7 +133,7 @@ fun DashboardContent(isCompact: Boolean, selectedMenuItem: String, viewModel: Ma
     }
     when (selectedMenuItem) {
         "Dashboard" -> DashboardMainContent(viewModel,productList,orderList)
-        "Products" -> ProductContent(productList)
+        "Products" -> ProductContent(productList,isCompact)
         "Categories" -> Text("Categories Screen")
         "Orders" -> Text("Orders Screen")
         "Reviews" -> Text("Reviews Screen")
