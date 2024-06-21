@@ -1,7 +1,8 @@
 package presentation.screens
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -22,9 +23,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Clear
@@ -34,7 +33,6 @@ import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -61,8 +59,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.PopupProperties
 import domain.model.products.Products
 import io.kamel.core.Resource
 import io.kamel.image.KamelImage
@@ -140,7 +140,7 @@ fun ProductContent(productList: List<Products>, isCompact: Boolean) {
 fun ProductGridScreen(productList: List<Products>) {
     var searchQuery by remember { mutableStateOf("") }
     var selectedCategory by remember { mutableStateOf("All Categories") }
-    var sortOrder by remember { mutableStateOf("Last added") }
+    var sortOrder by remember { mutableStateOf("Latest") }
     var categoryExpanded by remember { mutableStateOf(false) }
     var sortExpanded by remember { mutableStateOf(false) }
 
@@ -151,8 +151,15 @@ fun ProductGridScreen(productList: List<Products>) {
                 (searchQuery.isEmpty() || product.name.contains(searchQuery, ignoreCase = true))
     }.sortedWith(
         when (sortOrder) {
-            "Price: Low to High" -> compareBy { it.price }
-            "Price: High to Low" -> compareByDescending { it.price }
+            "Latest" -> compareByDescending { it.createdAt }
+            "Most Popular" -> compareByDescending { it.averageRating }
+            "Cheap" -> compareBy { it.price }
+            "Most Expensive" -> compareByDescending { it.price }
+            "Top Rated" -> compareByDescending { it.averageRating }
+            "Trending" -> compareByDescending { it.isFeatured }
+            "Limited Edition" -> compareByDescending<Products> { it.isAvailable }.thenByDescending { it.totalStack }
+            "Best Sellers" -> compareByDescending<Products> { it.averageRating }.thenBy { it.discountPrice }
+            "Exclusive Deals" -> compareBy<Products> { !it.isFeatured }.thenBy { it.discountPrice }
             else -> compareByDescending { it.createdAt }
         }
     )
@@ -232,7 +239,7 @@ fun ProductGridScreen(productList: List<Products>) {
                         DropdownMenuItem(onClick = {
                             selectedCategory = category
                             categoryExpanded = false
-                        }, text = { Text(category) })
+                        }, text = { Text(category, textAlign = TextAlign.Center) })
                     }
                 }
             }
@@ -262,19 +269,41 @@ fun ProductGridScreen(productList: List<Products>) {
                     onDismissRequest = { sortExpanded = false }
                 ) {
                     DropdownMenuItem(onClick = {
-                        sortOrder = "Last added"
+                        sortOrder = "Latest"
                         sortExpanded = false
-                    },
-                        text = { Text("Last added") })
+                    }, text = { Text("Latest") })
                     DropdownMenuItem(onClick = {
-                        sortOrder = "Price: Low to High"
+                        sortOrder = "Most Popular"
                         sortExpanded = false
-                    },
-                        text = { Text("Price: Low to High") })
+                    }, text = { Text("Most Popular") })
                     DropdownMenuItem(onClick = {
-                        sortOrder = "Price: High to Low"
+                        sortOrder = "Cheap"
                         sortExpanded = false
-                    }, text = { Text("Price: High to Low") })
+                    }, text = { Text("Cheap") })
+                    DropdownMenuItem(onClick = {
+                        sortOrder = "Most Expensive"
+                        sortExpanded = false
+                    }, text = { Text("Most Expensive") })
+                    DropdownMenuItem(onClick = {
+                        sortOrder = "Top Rated"
+                        sortExpanded = false
+                    }, text = { Text("Top Rated") })
+                    DropdownMenuItem(onClick = {
+                        sortOrder = "Trending"
+                        sortExpanded = false
+                    }, text = { Text("Trending") })
+                    DropdownMenuItem(onClick = {
+                        sortOrder = "Limited Edition"
+                        sortExpanded = false
+                    }, text = { Text("Limited Edition") })
+                    DropdownMenuItem(onClick = {
+                        sortOrder = "Best Sellers"
+                        sortExpanded = false
+                    }, text = { Text("Best Sellers") })
+                    DropdownMenuItem(onClick = {
+                        sortOrder = "Exclusive Deals"
+                        sortExpanded = false
+                    }, text = { Text("Exclusive Deals") })
                 }
             }
         }
@@ -283,6 +312,7 @@ fun ProductGridScreen(productList: List<Products>) {
         PaginatedProductGrid(filteredProductList)
     }
 }
+
 @Composable
 fun PaginatedProductGrid(productList: List<Products>) {
     var currentPage by remember { mutableStateOf(1) }
@@ -316,7 +346,7 @@ fun PaginationControls(
     totalPages: Int,
     onPrevious: () -> Unit,
     onNext: () -> Unit,
-    onPageSelected: (Int) -> Unit
+    onPageSelected: (Int) -> Unit,
 ) {
     Row(
         horizontalArrangement = Arrangement.Center,
@@ -333,13 +363,17 @@ fun PaginationControls(
         }
 
         for (page in 1..totalPages) {
+            val backgroundColor by animateColorAsState(if (page == currentPage) Color.Blue else Color.White)
+            val contentColor by animateColorAsState(if (page == currentPage) Color.White else Color.Black)
+            val borderColor by animateColorAsState(if (page == currentPage) Color.Blue else Color.Gray)
+
             OutlinedButton(
                 onClick = { onPageSelected(page) },
                 colors = ButtonDefaults.outlinedButtonColors(
-                    containerColor = if (page == currentPage) Color.Blue else Color.White,
-                    contentColor = if (page == currentPage) Color.White else Color.Black
+                    containerColor = backgroundColor,
+                    contentColor = contentColor
                 ),
-                border = BorderStroke(1.dp, if (page == currentPage) Color.Blue else Color.Gray)
+                border = BorderStroke(1.dp, borderColor)
             ) {
                 Text(page.toString())
             }
@@ -360,11 +394,14 @@ fun ProductGrid(productList: List<Products>) {
     LazyVerticalGrid(
         columns = GridCells.Adaptive(215.dp),
         contentPadding = PaddingValues(start = 8.dp, end = 8.dp),
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier
+            .fillMaxWidth()
             .height(1200.dp)
     ) {
         items(productList) { product ->
-            ProductCard(product)
+            AnimatedVisibility(visible = true) {
+                ProductCard(product)
+            }
         }
     }
 }
@@ -409,7 +446,8 @@ fun ProductCard(product: Products) {
                 Row(
                     horizontalArrangement = Arrangement.SpaceAround,
                     verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier
+                        .fillMaxWidth()
                         .padding(4.dp)
                 ) {
                     OutlinedCard(
