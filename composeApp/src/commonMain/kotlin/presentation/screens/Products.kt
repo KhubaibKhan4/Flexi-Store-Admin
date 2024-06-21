@@ -24,6 +24,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.CloudUpload
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.KeyboardArrowDown
@@ -87,6 +88,24 @@ fun ProductContent(productList: List<Products>, isCompact: Boolean) {
                 )
             }
             Spacer(modifier = Modifier.weight(1f))
+            ElevatedButton(
+                onClick = {},
+                shape = RoundedCornerShape(8.dp),
+                colors = ButtonDefaults.elevatedButtonColors(
+                    containerColor = Color.White,
+                    contentColor = Color.Black
+                )
+            ) {
+                Icon(
+                    imageVector = Icons.Default.CloudUpload,
+                    contentDescription = null,
+                    modifier = Modifier.size(25.dp),
+                    tint = Color.LightGray
+                )
+                Spacer(modifier = Modifier.width(4.dp))
+                Text("Export")
+            }
+            Spacer(modifier = Modifier.width(6.dp))
             ElevatedButton(
                 onClick = {},
                 shape = RoundedCornerShape(8.dp),
