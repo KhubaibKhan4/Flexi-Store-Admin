@@ -20,6 +20,9 @@ class MainViewModel(
     private val _productDetail: MutableStateFlow<UiState<List<Products>>> = MutableStateFlow(UiState.LOADING)
     val productDetail  = _productDetail.asStateFlow()
 
+    private val _allProducts: MutableStateFlow<UiState<List<Products>>> = MutableStateFlow(UiState.LOADING)
+    val allProducts  = _allProducts.asStateFlow()
+
     fun getAllOrders(){
         viewModelScope.launch {
             _allOrders.value = UiState.LOADING
@@ -36,6 +39,17 @@ class MainViewModel(
             _productDetail.value = UiState.LOADING
             try {
                 val response = repository.getProductsByMultipleIds(ids)
+                _productDetail.value = UiState.SUCCESS(response)
+            }catch (e: Exception){
+                _productDetail.value = UiState.ERROR(e)
+            }
+        }
+    }
+    fun getAllProducts(){
+        viewModelScope.launch {
+            _productDetail.value = UiState.LOADING
+            try {
+                val response = repository.getAllProducts()
                 _productDetail.value = UiState.SUCCESS(response)
             }catch (e: Exception){
                 _productDetail.value = UiState.ERROR(e)

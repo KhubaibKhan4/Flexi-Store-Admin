@@ -15,4 +15,7 @@ class Repository(
     override suspend fun getProductsByMultipleIds(ids: String): List<Products> {
         return flexiStoreClient.getProductsByMultipleIds(ids)
     }
+    override suspend fun getAllProducts(): List<Products> {
+        return flexiStoreClient.getAllProducts()
+    }
 }

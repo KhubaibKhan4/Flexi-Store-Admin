@@ -15,7 +15,7 @@ class FlexiStoreClient(
     suspend fun getProductsByMultipleIds(ids: String): List<Products>{
         return client.get("v1/products/multiple?ids=$ids").body()
     }
-    suspend fun getAllProducts(ids: String): List<Products>{
+    suspend fun getAllProducts(): List<Products>{
         return client.get("v1/products").body()
     }
 }
