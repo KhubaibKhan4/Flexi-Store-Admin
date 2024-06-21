@@ -58,6 +58,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.input.pointer.PointerIcon
+import androidx.compose.ui.input.pointer.pointerHoverIcon
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -211,7 +213,8 @@ fun ProductGridScreen(productList: List<Products>) {
                     .padding(8.dp)
                     .border(1.dp, Color.LightGray, RoundedCornerShape(8.dp))
                     .clickable { categoryExpanded = !categoryExpanded }
-                    .padding(8.dp),
+                    .padding(8.dp)
+                    .pointerHoverIcon(PointerIcon.Hand),
                 contentAlignment = Alignment.Center
             ) {
                 Row(
@@ -230,16 +233,21 @@ fun ProductGridScreen(productList: List<Products>) {
                 DropdownMenu(
                     expanded = categoryExpanded,
                     onDismissRequest = { categoryExpanded = false },
+                    modifier = Modifier.pointerHoverIcon(PointerIcon.Hand)
                 ) {
                     DropdownMenuItem(onClick = {
                         selectedCategory = "All Categories"
                         categoryExpanded = false
-                    }, text = { Text("All Categories") })
+                    }, text = { Text("All Categories") },
+                        modifier = Modifier.pointerHoverIcon(PointerIcon.Hand)
+                    )
                     categories.forEach { category ->
                         DropdownMenuItem(onClick = {
                             selectedCategory = category
                             categoryExpanded = false
-                        }, text = { Text(category, textAlign = TextAlign.Center) })
+                        }, text = { Text(category, textAlign = TextAlign.Center) },
+                            modifier = Modifier.pointerHoverIcon(PointerIcon.Hand)
+                        )
                     }
                 }
             }
@@ -251,6 +259,7 @@ fun ProductGridScreen(productList: List<Products>) {
                     .border(1.dp, Color.LightGray, RoundedCornerShape(8.dp))
                     .clickable { sortExpanded = !sortExpanded }
                     .padding(8.dp)
+                    .pointerHoverIcon(PointerIcon.Hand)
             ) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -266,44 +275,63 @@ fun ProductGridScreen(productList: List<Products>) {
                 }
                 DropdownMenu(
                     expanded = sortExpanded,
-                    onDismissRequest = { sortExpanded = false }
+                    onDismissRequest = { sortExpanded = false },
+                    modifier = Modifier.pointerHoverIcon(PointerIcon.Hand)
                 ) {
                     DropdownMenuItem(onClick = {
                         sortOrder = "Latest"
                         sortExpanded = false
-                    }, text = { Text("Latest") })
+                    }, text = { Text("Latest") },
+                        modifier = Modifier.pointerHoverIcon(PointerIcon.Hand)
+                    )
                     DropdownMenuItem(onClick = {
                         sortOrder = "Most Popular"
                         sortExpanded = false
-                    }, text = { Text("Most Popular") })
+                    }, text = { Text("Most Popular") },
+                        modifier = Modifier.pointerHoverIcon(PointerIcon.Hand)
+                    )
                     DropdownMenuItem(onClick = {
                         sortOrder = "Cheap"
                         sortExpanded = false
-                    }, text = { Text("Cheap") })
+                    }, text = { Text("Cheap") },
+                        modifier = Modifier.pointerHoverIcon(PointerIcon.Hand)
+                    )
                     DropdownMenuItem(onClick = {
                         sortOrder = "Most Expensive"
                         sortExpanded = false
-                    }, text = { Text("Most Expensive") })
+                    }, text = { Text("Most Expensive") },
+                        modifier = Modifier.pointerHoverIcon(PointerIcon.Hand)
+                    )
                     DropdownMenuItem(onClick = {
                         sortOrder = "Top Rated"
                         sortExpanded = false
-                    }, text = { Text("Top Rated") })
+                    }, text = { Text("Top Rated") },
+                        modifier = Modifier.pointerHoverIcon(PointerIcon.Hand)
+                    )
                     DropdownMenuItem(onClick = {
                         sortOrder = "Trending"
                         sortExpanded = false
-                    }, text = { Text("Trending") })
+                    }, text = { Text("Trending") },
+                        modifier = Modifier.pointerHoverIcon(PointerIcon.Hand)
+                    )
                     DropdownMenuItem(onClick = {
                         sortOrder = "Limited Edition"
                         sortExpanded = false
-                    }, text = { Text("Limited Edition") })
+                    }, text = { Text("Limited Edition") },
+                        modifier = Modifier.pointerHoverIcon(PointerIcon.Hand)
+                    )
                     DropdownMenuItem(onClick = {
                         sortOrder = "Best Sellers"
                         sortExpanded = false
-                    }, text = { Text("Best Sellers") })
+                    }, text = { Text("Best Sellers") },
+                        modifier = Modifier.pointerHoverIcon(PointerIcon.Hand)
+                    )
                     DropdownMenuItem(onClick = {
                         sortOrder = "Exclusive Deals"
                         sortExpanded = false
-                    }, text = { Text("Exclusive Deals") })
+                    }, text = { Text("Exclusive Deals") },
+                        modifier = Modifier.pointerHoverIcon(PointerIcon.Hand)
+                    )
                 }
             }
         }
@@ -356,7 +384,10 @@ fun PaginationControls(
             .padding(16.dp)
     ) {
         if (currentPage > 1) {
-            OutlinedButton(onClick = onPrevious) {
+            OutlinedButton(
+                onClick = onPrevious,
+                modifier = Modifier.pointerHoverIcon(PointerIcon.Hand)
+            ) {
                 Text("Previous")
             }
             Spacer(modifier = Modifier.width(8.dp))
@@ -373,7 +404,8 @@ fun PaginationControls(
                     containerColor = backgroundColor,
                     contentColor = contentColor
                 ),
-                border = BorderStroke(1.dp, borderColor)
+                border = BorderStroke(1.dp, borderColor),
+                modifier = Modifier.pointerHoverIcon(PointerIcon.Hand)
             ) {
                 Text(page.toString())
             }
@@ -382,7 +414,10 @@ fun PaginationControls(
 
         if (currentPage < totalPages) {
             Spacer(modifier = Modifier.width(8.dp))
-            OutlinedButton(onClick = onNext) {
+            OutlinedButton(
+                onClick = onNext,
+                modifier = Modifier.pointerHoverIcon(PointerIcon.Hand)
+            ) {
                 Text("Next")
             }
         }
@@ -458,7 +493,8 @@ fun ProductCard(product: Products) {
                             containerColor = Color.White,
                             contentColor = Color.Black
                         ),
-                        elevation = CardDefaults.cardElevation(4.dp)
+                        elevation = CardDefaults.cardElevation(4.dp),
+                        modifier = Modifier.pointerHoverIcon(PointerIcon.Hand)
                     ) {
                         Row(
                             modifier = Modifier
@@ -477,7 +513,8 @@ fun ProductCard(product: Products) {
                             containerColor = Color.White,
                             contentColor = Color.Red
                         ),
-                        elevation = CardDefaults.cardElevation(4.dp)
+                        elevation = CardDefaults.cardElevation(4.dp),
+                        modifier = Modifier.pointerHoverIcon(PointerIcon.Hand)
                     ) {
                         Row(
                             modifier = Modifier

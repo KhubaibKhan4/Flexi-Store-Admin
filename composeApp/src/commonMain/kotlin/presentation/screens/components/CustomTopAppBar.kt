@@ -45,6 +45,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.PointerIcon
+import androidx.compose.ui.input.pointer.pointerHoverIcon
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -87,7 +89,8 @@ fun CustomTopAppBar(windowSizeClass: WindowSizeClass) {
             ) {
                 Icon(
                     imageVector =Icons.Outlined.LightMode,
-                    contentDescription = "Light Mode"
+                    contentDescription = "Light Mode",
+                    modifier = Modifier.pointerHoverIcon(PointerIcon.Hand)
                 )
             }
         }
@@ -113,7 +116,8 @@ fun CustomTopAppBar(windowSizeClass: WindowSizeClass) {
                 }) {
                     Icon(
                         imageVector = Icons.Outlined.Notifications,
-                        contentDescription = "Notifications"
+                        contentDescription = "Notifications",
+                        modifier = Modifier.pointerHoverIcon(PointerIcon.Hand)
                     )
                 }
             }
@@ -131,6 +135,7 @@ fun CustomTopAppBar(windowSizeClass: WindowSizeClass) {
                 modifier = Modifier
                     .fillMaxSize()
                     .clip(RoundedCornerShape(8.dp))
+                    .pointerHoverIcon(PointerIcon.Hand)
             )
             Box(
                 modifier = Modifier
@@ -158,6 +163,7 @@ fun CustomTopAppBar(windowSizeClass: WindowSizeClass) {
                 modifier = Modifier
                     .size(15.dp)
                     .rotate(270f)
+                    .pointerHoverIcon(PointerIcon.Hand)
             )
         }
         Spacer(modifier = Modifier.width(10.dp))
