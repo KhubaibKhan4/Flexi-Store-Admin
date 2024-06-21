@@ -21,6 +21,8 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.ClearAll
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.KeyboardArrowDown
@@ -83,7 +85,7 @@ fun ProductContent(productList: List<Products>, isCompact: Boolean) {
 @Composable
 fun ProductGridScreen(productList: List<Products>) {
     var searchQuery by remember { mutableStateOf("") }
-    var selectedCategory by remember { mutableStateOf("Category") }
+    var selectedCategory by remember { mutableStateOf("All Categories") }
     var sortOrder by remember { mutableStateOf("Last added") }
     var categoryExpanded by remember { mutableStateOf(false) }
     var sortExpanded by remember { mutableStateOf(false) }
@@ -91,7 +93,7 @@ fun ProductGridScreen(productList: List<Products>) {
     val categories = productList.map { it.categoryTitle }.distinct().sorted()
 
     val filteredProductList = productList.filter { product ->
-        (selectedCategory == "Category" || product.categoryTitle == selectedCategory) &&
+        (selectedCategory == "All Categories" || product.categoryTitle == selectedCategory) &&
                 (searchQuery.isEmpty() || product.name.contains(searchQuery, ignoreCase = true))
     }.sortedWith(
         when (sortOrder) {
@@ -127,8 +129,11 @@ fun ProductGridScreen(productList: List<Products>) {
                 },
                 trailingIcon = {
                     Icon(
-                        imageVector = Icons.Default.Search,
-                        contentDescription = null
+                        imageVector =if (searchQuery.isEmpty()) Icons.Default.Search else Icons.Default.Clear,
+                        contentDescription = null,
+                        modifier = Modifier.clickable {
+                            searchQuery = ""
+                        }
                     )
                 },
                 colors = TextFieldDefaults.colors(
@@ -166,9 +171,9 @@ fun ProductGridScreen(productList: List<Products>) {
                     onDismissRequest = { categoryExpanded = false },
                 ) {
                     DropdownMenuItem(onClick = {
-                        selectedCategory = "Category"
+                        selectedCategory = "All Categories"
                         categoryExpanded = false
-                    }, text = { Text("Category") })
+                    }, text = { Text("All Categories") })
                     categories.forEach { category ->
                         DropdownMenuItem(onClick = {
                             selectedCategory = category
