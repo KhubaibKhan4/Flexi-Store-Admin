@@ -49,7 +49,6 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.minus
 import kotlinx.datetime.toLocalDateTime
 import org.koin.compose.koinInject
-import presentation.screens.product.ProductContent
 import presentation.screens.components.CustomTopAppBar
 import presentation.screens.components.DashboardCard
 import presentation.screens.components.DashboardChart
@@ -60,6 +59,7 @@ import presentation.screens.components.RecentOrdersCard
 import presentation.screens.components.SidebarMenu
 import presentation.screens.components.TrafficSourceCard
 import presentation.screens.components.TransactionsCard
+import presentation.screens.product.ProductContent
 import presentation.viewmodel.MainViewModel
 
 @Composable
@@ -110,7 +110,8 @@ fun DashboardContent(isCompact: Boolean, selectedMenuItem: String, viewModel: Ma
         is UiState.SUCCESS -> {
             val orders = (orderState as UiState.SUCCESS).response
             orderList = orders
-            val idsList = orders.map { it.productIds.toString().trim() }.joinToString(separator = ",")
+            val idsList =
+                orders.map { it.productIds.toString().trim() }.joinToString(separator = ",")
             println("PRODUCT: $idsList")
             LaunchedEffect(orderList) {
                 viewModel.getProductsByIds(idsList)
@@ -152,8 +153,8 @@ fun DashboardContent(isCompact: Boolean, selectedMenuItem: String, viewModel: Ma
         }
     }
     when (selectedMenuItem) {
-        "Dashboard" -> DashboardMainContent(viewModel,productList,orderList)
-        "Products" -> ProductContent(allProductList,isCompact)
+        "Dashboard" -> DashboardMainContent(viewModel, productList, orderList)
+        "Products" -> ProductContent(allProductList, isCompact)
         "Categories" -> Text("Categories Screen")
         "Orders" -> Text("Orders Screen")
         "Reviews" -> Text("Reviews Screen")
@@ -166,7 +167,11 @@ fun DashboardContent(isCompact: Boolean, selectedMenuItem: String, viewModel: Ma
 
 @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
 @Composable
-fun DashboardMainContent(viewModel: MainViewModel, productList: List<Products>, orderList: List<Orders>) {
+fun DashboardMainContent(
+    viewModel: MainViewModel,
+    productList: List<Products>,
+    orderList: List<Orders>,
+) {
     val isCompact = calculateWindowSizeClass().widthSizeClass == WindowWidthSizeClass.Compact
     val columns = if (isCompact) 1 else 2
     val totalSales = orderList.sumOf { it.totalPrice }
@@ -349,16 +354,17 @@ fun DashboardMainContent(viewModel: MainViewModel, productList: List<Products>, 
                 horizontalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 TransactionsCard(modifier = Modifier.weight(1f))
-                RecentOrdersCard(modifier = Modifier.weight(1f),orderList,productList)
+                RecentOrdersCard(modifier = Modifier.weight(1f), orderList, productList)
                 TrafficSourceCard(modifier = Modifier.weight(1f))
             }
             Spacer(modifier = Modifier.height(16.dp))
         }
     }
 }
+
 fun aggregateSalesDataByCategory(
     orders: List<Orders>,
-    products: List<Products>
+    products: List<Products>,
 ): Map<String, Double> {
     val categoryMap = products.associate { it.id.toString() to it.categoryTitle }
 
@@ -367,7 +373,8 @@ fun aggregateSalesDataByCategory(
     orders.forEach { order ->
         val categoryTitle = categoryMap[order.productIds.toString()]
         if (categoryTitle != null) {
-            categorySales[categoryTitle] = categorySales.getValue(categoryTitle) + order.totalPrice.toDouble()
+            categorySales[categoryTitle] =
+                categorySales.getValue(categoryTitle) + order.totalPrice.toDouble()
         }
     }
 
