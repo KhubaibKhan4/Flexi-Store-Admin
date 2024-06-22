@@ -493,7 +493,6 @@ fun ProductCard(product: Products) {
                             containerColor = Color.White,
                             contentColor = Color.Black
                         ),
-                        elevation = CardDefaults.cardElevation(4.dp),
                         modifier = Modifier.pointerHoverIcon(PointerIcon.Hand)
                     ) {
                         Row(
@@ -513,7 +512,6 @@ fun ProductCard(product: Products) {
                             containerColor = Color.White,
                             contentColor = Color.Red
                         ),
-                        elevation = CardDefaults.cardElevation(4.dp),
                         modifier = Modifier.pointerHoverIcon(PointerIcon.Hand)
                     ) {
                         Row(
