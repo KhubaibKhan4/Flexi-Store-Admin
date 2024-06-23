@@ -41,6 +41,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asSkiaBitmap
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.graphics.toComposeImageBitmap
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -59,10 +61,7 @@ import kotlinx.datetime.Clock
 import org.jetbrains.skia.EncodedImageFormat
 import org.jetbrains.skia.Image
 import org.koin.compose.koinInject
-import presentation.screens.components.ErrorScreen
-import presentation.screens.components.LoadingScreen
 import presentation.viewmodel.MainViewModel
-import toImageBitmap
 import utils.Constant.BASE_URL
 import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi
@@ -170,14 +169,19 @@ fun EditProductScreen(
             contentAlignment = Alignment.Center
         ) {
             if (imageBytes != null) {
-                val imageBitmap = imageBytes?.toImageBitmap()
+                Image(
+                    contentDescription = "image",
+                    bitmap = Image.Companion.makeFromEncoded(imageBytes!!).toComposeImageBitmap()
+                )
+                val imageBitmap = imageBytes
                 imageBitmap?.let {
                     Image(
-                        bitmap = imageBitmap,
-                        contentDescription = "Product Image",
+                        contentDescription = "image",
+                        bitmap = Image.Companion.makeFromEncoded(imageBytes!!).toComposeImageBitmap(),
                         modifier = Modifier
                             .size(128.dp)
-                            .clip(RoundedCornerShape(8.dp))
+                            .clip(RoundedCornerShape(8.dp)),
+                        contentScale = ContentScale.FillBounds
                     )
                 }
 
@@ -383,10 +387,4 @@ fun EditProductScreen(
             )
         }
     }
-}
-
-@OptIn(ExperimentalEncodingApi::class)
-fun ImageBitmap.toBase64(): String {
-    val encodedBytes = Image.makeFromBitmap(this.asSkiaBitmap()).encodeToData(EncodedImageFormat.PNG, 100)?.bytes
-    return Base64.Default.encode(encodedBytes!!)
 }

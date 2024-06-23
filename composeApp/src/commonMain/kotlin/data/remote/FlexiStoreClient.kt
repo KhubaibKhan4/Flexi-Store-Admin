@@ -71,7 +71,8 @@ class FlexiStoreClient(
             append("colors", colors ?: "")
             if (imageBytes != null) {
                 append("image", imageBytes, Headers.build {
-                    append(HttpHeaders.ContentDisposition, "filename={$name}product_image{$id}.jpg")
+                    append(HttpHeaders.ContentDisposition, "form-data; name=\"image\"; filename=\"${name ?: "product_image"}.jpg\"")
+                    append(HttpHeaders.ContentType, "image/jpeg")
                 })
             }
         }
