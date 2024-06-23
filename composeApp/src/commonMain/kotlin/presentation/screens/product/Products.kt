@@ -66,10 +66,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import cafe.adriel.voyager.core.screen.Screen
+import cafe.adriel.voyager.navigator.LocalNavigator
 import domain.model.products.Products
 import io.kamel.core.Resource
 import io.kamel.image.KamelImage
 import io.kamel.image.asyncPainterResource
+import presentation.screens.edit.EditProduct
 import utils.Constant.BASE_URL
 class ProductsScreen(
     private val product: List<Products>,
@@ -453,6 +455,7 @@ fun ProductGrid(productList: List<Products>) {
 
 @Composable
 fun ProductCard(product: Products) {
+    val navigator = LocalNavigator.current
     var isEditProduct by remember { mutableStateOf(false) }
     Card(
         modifier = Modifier
@@ -504,6 +507,9 @@ fun ProductCard(product: Products) {
                             contentColor = Color.Black
                         ),
                         modifier = Modifier.pointerHoverIcon(PointerIcon.Hand)
+                            .clickable {
+                                navigator?.push(EditProduct(product))
+                            }
                     ) {
                         Row(
                             modifier = Modifier

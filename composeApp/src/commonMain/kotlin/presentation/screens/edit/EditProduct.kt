@@ -1,6 +1,8 @@
 package presentation.screens.edit
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -10,9 +12,14 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBackIosNew
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ElevatedButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -29,12 +36,20 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import cafe.adriel.voyager.core.screen.Screen
+import cafe.adriel.voyager.navigator.LocalNavigator
 import domain.model.products.Products
 import io.kamel.core.Resource
 import io.kamel.image.KamelImage
 import io.kamel.image.asyncPainterResource
 import utils.Constant.BASE_URL
-
+class EditProduct(
+    private val product: Products
+):Screen{
+    @Composable
+    override fun Content() {
+        EditProductScreen(product)
+    }
+}
 @Composable
 fun EditProductScreen(product: Products) {
     var productName by remember { mutableStateOf(product.name) }
@@ -48,18 +63,33 @@ fun EditProductScreen(product: Products) {
     var addSize by remember { mutableStateOf("EU-44") }
     var productDate by remember { mutableStateOf(product.createdAt) }
     val productImageUrl = product.imageUrl
+    val navigator = LocalNavigator.current
 
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .padding(16.dp)
+            .verticalScroll(rememberScrollState())
     ) {
-        Text(
-            text = "Edit Products",
-            fontSize = 24.sp,
-            fontWeight = FontWeight.Bold,
-            color = Color.Black
-        )
+       Row(
+           modifier = Modifier.fillMaxWidth(),
+           horizontalArrangement = Arrangement.Start,
+           verticalAlignment = Alignment.CenterVertically
+       ) {
+           Icon(
+               imageVector = Icons.Default.ArrowBackIosNew,
+               contentDescription = "Arrow Back",
+               modifier = Modifier.clickable {
+                   navigator?.pop()
+               }
+           )
+           Text(
+               text = "Edit Products",
+               fontSize = 24.sp,
+               fontWeight = FontWeight.Bold,
+               color = Color.Black
+           )
+       }
         Spacer(modifier = Modifier.height(8.dp))
         Text(
             text = "The most important feature in the product editing section is the product adding part. When adding products here, do not ignore to fill in all the required fields completely and follow the products adding rules.",
@@ -191,18 +221,6 @@ fun EditProductScreen(product: Products) {
         Spacer(modifier = Modifier.height(16.dp))
 
         Row {
-            ElevatedButton(
-                onClick = {
-                    // Handle add product logic
-                },
-                shape = RoundedCornerShape(8.dp),
-                colors = ButtonDefaults.elevatedButtonColors(
-                    containerColor = Color(0XFF0a8af9),
-                    contentColor = Color.White
-                )
-            ) {
-                Text("Add Product")
-            }
             Spacer(modifier = Modifier.width(8.dp))
             ElevatedButton(
                 onClick = {
@@ -219,15 +237,15 @@ fun EditProductScreen(product: Products) {
             Spacer(modifier = Modifier.width(8.dp))
             ElevatedButton(
                 onClick = {
-                    // Handle schedule product logic
+                   navigator?.pop()
                 },
                 shape = RoundedCornerShape(8.dp),
                 colors = ButtonDefaults.elevatedButtonColors(
-                    containerColor = Color(0XFF0a8af9),
+                    containerColor = Color.Red,
                     contentColor = Color.White
                 )
             ) {
-                Text("Schedule")
+                Text("Cancel")
             }
         }
     }
