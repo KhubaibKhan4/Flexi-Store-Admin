@@ -38,6 +38,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import cafe.adriel.voyager.core.screen.Screen
 import domain.model.order.Orders
 import domain.model.products.Products
 import domain.usecase.UiState
@@ -62,113 +63,20 @@ import presentation.screens.components.TransactionsCard
 import presentation.screens.product.ProductContent
 import presentation.viewmodel.MainViewModel
 
-@Composable
-fun Dashboard(
-    windowSizeClass: WindowSizeClass,
-    viewModel: MainViewModel = koinInject(),
-) {
-    var selectedMenuItem by remember { mutableStateOf("Dashboard") }
-    val isCompact = windowSizeClass.widthSizeClass == WindowWidthSizeClass.Compact
-
-    Column(modifier = Modifier.fillMaxSize().background(Color(0xFFe6f0f9))) {
-        CustomTopAppBar(windowSizeClass)
-        Row(modifier = Modifier.fillMaxSize()) {
-            SidebarMenu(isCompact, selectedMenuItem) { selectedMenuItem = it }
-            DashboardContent(isCompact, selectedMenuItem, viewModel)
-        }
-    }
-}
-
-@Composable
-fun DashboardContent(isCompact: Boolean, selectedMenuItem: String, viewModel: MainViewModel) {
-    var orderList by remember { mutableStateOf(emptyList<Orders>()) }
-    var productList by remember { mutableStateOf(emptyList<Products>()) }
-    var allProductList by remember { mutableStateOf(emptyList<Products>()) }
-
-    LaunchedEffect(Unit) {
-        viewModel.getAllProducts()
-        delay(3000)
-        viewModel.getAllOrders()
+class DashboardScreen(
+    private val ordersList: List<Orders>,
+    private val productList: List<Products>
+):Screen{
+    @Composable
+    override fun Content() {
+        DashboardMainContent(productList = productList, orderList = ordersList)
     }
 
-
-    val orderState by viewModel.allOrders.collectAsState()
-    val productsState by viewModel.productDetail.collectAsState()
-    val allProState by viewModel.allProducts.collectAsState()
-    when (orderState) {
-        is UiState.ERROR -> {
-            val error = (orderState as UiState.ERROR).throwable
-            ErrorScreen(errorMessage = error.message ?: "Unknown error", onRetry = {
-                viewModel.getAllOrders()
-            })
-        }
-
-        UiState.LOADING -> {
-            LoadingScreen()
-        }
-
-        is UiState.SUCCESS -> {
-            val orders = (orderState as UiState.SUCCESS).response
-            orderList = orders
-            val idsList =
-                orders.map { it.productIds.toString().trim() }.joinToString(separator = ",")
-            println("PRODUCT: $idsList")
-            LaunchedEffect(orderList) {
-                viewModel.getProductsByIds(idsList)
-                println("PRODUCT: $idsList")
-            }
-        }
-    }
-    when (productsState) {
-        is UiState.LOADING -> {
-            CircularProgressIndicator()
-        }
-
-        is UiState.ERROR -> {
-            val error = (productsState as UiState.ERROR).throwable
-            Text("Error loading products: ${error.message}")
-        }
-
-        is UiState.SUCCESS -> {
-            val products = (productsState as UiState.SUCCESS).response
-            productList = products
-            println("PRODUCT: $productList")
-        }
-    }
-
-    when (allProState) {
-        is UiState.LOADING -> {
-            CircularProgressIndicator()
-        }
-
-        is UiState.ERROR -> {
-            val error = (allProState as UiState.ERROR).throwable
-            Text("Error loading products: ${error.message}")
-        }
-
-        is UiState.SUCCESS -> {
-            val products = (allProState as UiState.SUCCESS).response
-            allProductList = products
-            println("ALL PRODUCT: $allProductList")
-        }
-    }
-    when (selectedMenuItem) {
-        "Dashboard" -> DashboardMainContent(viewModel, productList, orderList)
-        "Products" -> ProductContent(allProductList, isCompact)
-        "Categories" -> Text("Categories Screen")
-        "Orders" -> Text("Orders Screen")
-        "Reviews" -> Text("Reviews Screen")
-        "Coupons" -> Text("Coupons Screen")
-        "Profile" -> Text("Profile Screen")
-        "Shop Settings" -> Text("Shop Settings Screen")
-        "Pages" -> Text("Pages Screen")
-    }
 }
 
 @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
 @Composable
 fun DashboardMainContent(
-    viewModel: MainViewModel,
     productList: List<Products>,
     orderList: List<Orders>,
 ) {

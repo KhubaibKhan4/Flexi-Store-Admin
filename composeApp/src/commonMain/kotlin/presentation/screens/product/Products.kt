@@ -65,12 +65,22 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import cafe.adriel.voyager.core.screen.Screen
 import domain.model.products.Products
 import io.kamel.core.Resource
 import io.kamel.image.KamelImage
 import io.kamel.image.asyncPainterResource
 import utils.Constant.BASE_URL
+class ProductsScreen(
+    private val product: List<Products>,
+    private val isCompact: Boolean
+): Screen {
+    @Composable
+    override fun Content() {
+        ProductContent(productList =product , isCompact = isCompact)
+    }
 
+}
 @Composable
 fun ProductContent(productList: List<Products>, isCompact: Boolean) {
     LazyColumn(
