@@ -61,6 +61,8 @@ kotlin {
             implementation("org.jetbrains.androidx.navigation:navigation-compose:2.7.0-alpha03")
             implementation("org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-compose:2.8.0-beta02")
             implementation("io.github.alexzhirkevich:compottie:1.1.2")
+            implementation("io.github.vinceglb:filekit-core:0.5.0")
+            implementation("io.github.vinceglb:filekit-compose:0.5.0")
         }
         desktopMain.dependencies {
             implementation(compose.desktop.currentOs)
