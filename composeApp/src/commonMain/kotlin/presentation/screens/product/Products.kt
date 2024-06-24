@@ -72,6 +72,7 @@ import io.kamel.core.Resource
 import io.kamel.image.KamelImage
 import io.kamel.image.asyncPainterResource
 import presentation.screens.edit.EditProduct
+import presentation.screens.view.ProductView
 import utils.Constant.BASE_URL
 class ProductsScreen(
     private val product: List<Products>,
@@ -478,6 +479,9 @@ fun ProductCard(product: Products) {
                     .fillMaxWidth()
                     .aspectRatio(1f)
                     .clip(RoundedCornerShape(8.dp))
+                    .clickable {
+                        navigator?.push(ProductView(product))
+                    }
             )
             Spacer(modifier = Modifier.height(8.dp))
             Column(
