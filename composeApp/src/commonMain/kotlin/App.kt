@@ -270,7 +270,7 @@ fun AppContent(viewModel: MainViewModel = koinInject()) {
                     onMenuItemClick = { index ->
                         selectedItemIndex = index
                     },
-                    initialExpandedState = true
+                    initialExpandedState = false
                 )
             }
 
