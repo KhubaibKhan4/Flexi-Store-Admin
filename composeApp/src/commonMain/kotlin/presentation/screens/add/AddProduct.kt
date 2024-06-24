@@ -1,7 +1,9 @@
 package presentation.screens.add
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -20,6 +22,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBackIosNew
+import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.CalendarToday
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Image
@@ -28,10 +31,15 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -48,11 +56,16 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
+import domain.usecase.UiState
 import io.github.vinceglb.filekit.compose.rememberFilePickerLauncher
 import io.github.vinceglb.filekit.core.PickerMode
 import io.github.vinceglb.filekit.core.PickerType
+import io.ktor.client.statement.HttpResponse
 import kotlinx.coroutines.launch
 import org.jetbrains.skia.Image
+import org.koin.compose.koinInject
+import presentation.screens.components.ErrorScreen
+import presentation.viewmodel.MainViewModel
 
 class AddProduct : Screen {
     @Composable
@@ -63,7 +76,7 @@ class AddProduct : Screen {
 
 
 @Composable
-fun AddProductContent() {
+fun AddProductContent(viewModel: MainViewModel = koinInject()) {
     val navigator = LocalNavigator.current
     var name by remember { mutableStateOf("") }
     var description by remember { mutableStateOf("") }
@@ -84,6 +97,55 @@ fun AddProductContent() {
     var isFeature by remember { mutableStateOf(false) }
     var manufacturer by remember { mutableStateOf("") }
     var colors by remember { mutableStateOf("") }
+    var isLoading by remember { mutableStateOf(false) }
+    var serverResponse by remember { mutableStateOf<HttpResponse?>(null) }
+
+    val createState by viewModel.createProduct.collectAsState()
+    when (createState) {
+        is UiState.ERROR -> {
+            val error = (createState as UiState.ERROR).throwable
+            ErrorScreen(
+                errorMessage = error.message.toString(),
+                onRetry = {
+
+                }
+            )
+            isLoading = false
+        }
+
+        UiState.LOADING -> {
+
+        }
+
+        is UiState.SUCCESS -> {
+            val response = (createState as UiState.SUCCESS).response
+            serverResponse = response
+            isLoading = false
+        }
+    }
+
+    val categories = listOf(
+        Category(17, "Baby & Toddler"),
+        Category(5, "Clothing"),
+        Category(6, "Home & Kitchen"),
+        Category(7, "Books & Literature"),
+        Category(8, "Health & Beauty"),
+        Category(9, "Sports & Outdoors"),
+        Category(10, "Toys & Games"),
+        Category(24, "Home Decor"),
+        Category(11, "Automotive"),
+        Category(12, "Pet Supplies"),
+        Category(13, "Furniture & Decor"),
+        Category(14, "Office Supplies"),
+        Category(15, "Food & Groceries"),
+        Category(16, "Jewelry & Accessories"),
+        Category(18, "Tools & Hardware"),
+        Category(19, "Gardening & Outdoor Living"),
+        Category(20, "Arts & Crafts"),
+        Category(21, "Travel & Luggage"),
+        Category(22, "Electronics Accessories"),
+        Category(23, "Fitness & Exercise")
+    )
 
     Column(
         modifier = Modifier
@@ -129,6 +191,13 @@ fun AddProductContent() {
                     description = description,
                     onDescriptionChange = { description = it }
                 )
+                CategoryDropdown(
+                    categories = categories,
+                    onCategorySelected = { selectedCategory ->
+                        categoryId = selectedCategory.id.toString()
+                        categoryTitle = selectedCategory.name
+                    }
+                )
             }
 
             Spacer(modifier = Modifier.width(16.dp))
@@ -143,8 +212,6 @@ fun AddProductContent() {
                 StockInformationSection(
                     totalStack = totalStack,
                     onTotalStackChange = { totalStack = it },
-                    categoryId = categoryId,
-                    onCategoryIdChange = { categoryId = it },
                     weight = weight,
                     onWeightChange = { weight = it },
                     dimensions = dimensions,
@@ -184,17 +251,97 @@ fun AddProductContent() {
                 Text("Save to Draft")
             }
             Spacer(modifier = Modifier.width(8.dp))
-            Button(onClick = { /* Handle Scan to Fill Form */ }) {
+            Button(onClick = {
+                imageBytes?.let {
+                    viewModel.createProduct(
+                        name,
+                        description,
+                        price.toLong(),
+                        categoryId.toLong(),
+                        categoryTitle,
+                        it,
+                        createdAt,
+                        updatedAt,
+                        totalStack.toLong(),
+                        brand,
+                        weight.toDouble(),
+                        dimensions,
+                        isAvailable,
+                        discountPrice.toLong(),
+                        promotionDescription,
+                        averageRating.toDouble(),
+                        isFeature,
+                        manufacturer,
+                        colors
+                    )
+                }
+                isLoading = true
+            }) {
                 Text("Publish Now")
+                AnimatedVisibility(isLoading){
+                    CircularProgressIndicator()
+                }
+            }
+        }
+        if (serverResponse?.status?.value == 200){
+            Text(
+                text = "Published Successfully...."
+            )
+        }else{
+            Text(
+                text = "Failed to Publish...."
+            )
+        }
+    }
+}
+
+data class Category(val id: Int, val name: String)
+
+@Composable
+fun CategoryDropdown(categories: List<Category>, onCategorySelected: (Category) -> Unit) {
+    var expanded by remember { mutableStateOf(false) }
+    var selectedText by remember { mutableStateOf("Select Category") }
+
+    Box(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
+       Row(
+           modifier = Modifier.fillMaxWidth()
+               .background(Color.White, shape = RoundedCornerShape(12.dp))
+               .border(width = 1.dp, color = Color.Black, shape = RoundedCornerShape(12.dp)),
+           horizontalArrangement = Arrangement.Start,
+           verticalAlignment = Alignment.CenterVertically
+       ) {
+           Text(
+               text = selectedText,
+               modifier = Modifier.fillMaxWidth().clickable { expanded = !expanded }
+           )
+           Icon(
+               imageVector = Icons.Default.ArrowDropDown,
+               contentDescription = null
+           )
+       }
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false }
+        ) {
+            categories.forEach { category ->
+                DropdownMenuItem(onClick = {
+                    selectedText = category.name
+                    onCategorySelected(category)
+                    expanded = false
+                },
+                    text = {
+                        Text(text = category.name)
+                    })
             }
         }
     }
 }
 
+
 @Composable
 fun ProductImageSection(
     imageBytes: ByteArray?,
-    onImageSelected: (ByteArray) -> Unit
+    onImageSelected: (ByteArray) -> Unit,
 ) {
     val scope = rememberCoroutineScope()
 
@@ -245,8 +392,7 @@ fun ProductImageSection(
                             contentScale = ContentScale.Crop
                         )
                     }
-                }
-                else{
+                } else {
                     Icon(
                         imageVector = Icons.Default.Image,
                         contentDescription = "Product Image",
@@ -263,7 +409,7 @@ fun ProductImageSection(
                         .clip(CircleShape)
                         .align(Alignment.BottomEnd)
                         .clickable {
-                                   launcher.launch()
+                            launcher.launch()
                         },
                     contentAlignment = Alignment.Center
                 ) {
@@ -375,8 +521,6 @@ fun PriceInformationSection(
 fun StockInformationSection(
     totalStack: String,
     onTotalStackChange: (String) -> Unit,
-    categoryId: String,
-    onCategoryIdChange: (String) -> Unit,
     weight: String,
     onWeightChange: (String) -> Unit,
     dimensions: String,
@@ -400,13 +544,6 @@ fun StockInformationSection(
                 value = totalStack,
                 onValueChange = onTotalStackChange,
                 label = { Text("Stock") },
-                modifier = Modifier.fillMaxWidth()
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            OutlinedTextField(
-                value = categoryId,
-                onValueChange = onCategoryIdChange,
-                label = { Text("Category ID") },
                 modifier = Modifier.fillMaxWidth()
             )
             Spacer(modifier = Modifier.height(8.dp))

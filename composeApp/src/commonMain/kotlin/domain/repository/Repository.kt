@@ -44,4 +44,28 @@ class Repository(
     ): HttpResponse {
         return flexiStoreClient.updateProductById(id, name, description, price, categoryId, categoryTitle, imageBytes, created_at, updated_at, total_stack, brand, weight, dimensions, isAvailable, discountPrice, promotionDescription, averageRating, isFeature, manufacturer, colors)
     }
+
+    override suspend fun createProduct(
+        name: String,
+        description: String,
+        price: Long,
+        categoryId: Long,
+        categoryTitle: String,
+        imageBytes: ByteArray,
+        createdAt: String,
+        updatedAt: String,
+        totalStack: Long,
+        brand: String,
+        weight: Double,
+        dimensions: String,
+        isAvailable: Boolean,
+        discountPrice: Long,
+        promotionDescription: String,
+        averageRating: Double,
+        isFeature: Boolean,
+        manufacturer: String,
+        colors: String,
+    ): HttpResponse {
+        return flexiStoreClient.createProduct(name, description, price, categoryId, categoryTitle, imageBytes, createdAt, updatedAt, totalStack, brand, weight, dimensions, isAvailable, discountPrice, promotionDescription, averageRating, isFeature, manufacturer, colors)
+    }
 }

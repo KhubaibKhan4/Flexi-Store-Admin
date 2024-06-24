@@ -32,4 +32,27 @@ interface FlexiRepository {
         manufacturer: String?,
         colors: String?
     ): HttpResponse
+
+    @OptIn(InternalAPI::class)
+    suspend fun createProduct(
+        name: String,
+        description: String,
+        price: Long,
+        categoryId: Long,
+        categoryTitle: String,
+        imageBytes: ByteArray,
+        createdAt: String,
+        updatedAt: String,
+        totalStack: Long,
+        brand: String,
+        weight: Double,
+        dimensions: String,
+        isAvailable: Boolean,
+        discountPrice: Long,
+        promotionDescription: String,
+        averageRating: Double,
+        isFeature: Boolean,
+        manufacturer: String,
+        colors: String
+    ): HttpResponse
 }

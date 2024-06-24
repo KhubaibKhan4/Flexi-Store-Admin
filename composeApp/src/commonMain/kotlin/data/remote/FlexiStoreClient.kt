@@ -7,6 +7,7 @@ import io.ktor.client.call.body
 import io.ktor.client.request.forms.MultiPartFormDataContent
 import io.ktor.client.request.forms.formData
 import io.ktor.client.request.get
+import io.ktor.client.request.post
 import io.ktor.client.request.put
 import io.ktor.client.statement.HttpResponse
 import io.ktor.http.Headers
@@ -78,6 +79,57 @@ class FlexiStoreClient(
         }
 
         return client.put("v1/products/$id") {
+            body = MultiPartFormDataContent(formData)
+        }
+    }
+    @OptIn(InternalAPI::class)
+    suspend fun createProduct(
+        name: String,
+        description: String,
+        price: Long,
+        categoryId: Long,
+        categoryTitle: String,
+        imageBytes: ByteArray,
+        createdAt: String,
+        updatedAt: String,
+        totalStack: Long,
+        brand: String,
+        weight: Double,
+        dimensions: String,
+        isAvailable: Boolean,
+        discountPrice: Long,
+        promotionDescription: String,
+        averageRating: Double,
+        isFeature: Boolean,
+        manufacturer: String,
+        colors: String
+    ): HttpResponse {
+        val formData = formData {
+            append("name", name)
+            append("description", description)
+            append("price", price.toString())
+            append("categoryId", categoryId.toString())
+            append("categoryTitle", categoryTitle)
+            append("created_at", createdAt)
+            append("updated_at", updatedAt)
+            append("total_stack", totalStack.toString())
+            append("brand", brand)
+            append("weight", weight.toString())
+            append("dimensions", dimensions)
+            append("isAvailable", isAvailable.toString())
+            append("discountPrice", discountPrice.toString())
+            append("promotionDescription", promotionDescription)
+            append("averageRating", averageRating.toString())
+            append("isFeature", isFeature.toString())
+            append("manufacturer", manufacturer)
+            append("colors", colors)
+            append("image", imageBytes, Headers.build {
+                append(HttpHeaders.ContentDisposition, "form-data; name=\"image\"; filename=\"${name}.jpg\"")
+                append(HttpHeaders.ContentType, "image/jpeg")
+            })
+        }
+
+        return client.post("v1/products") {
             body = MultiPartFormDataContent(formData)
         }
     }

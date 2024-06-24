@@ -31,6 +31,9 @@ class MainViewModel(
         MutableStateFlow(UiState.LOADING)
     val updateProduct = _updateProduct.asStateFlow()
 
+    private val _createProduct: MutableStateFlow<UiState<HttpResponse>> =
+        MutableStateFlow(UiState.LOADING)
+    val createProduct = _createProduct.asStateFlow()
     fun getAllOrders() {
         viewModelScope.launch {
             _allOrders.value = UiState.LOADING
@@ -117,6 +120,38 @@ class MainViewModel(
                 _updateProduct.value = UiState.SUCCESS(response)
             } catch (e: Exception) {
                 _updateProduct.value = UiState.ERROR(e)
+            }
+        }
+    }
+
+    fun createProduct(
+        name: String,
+        description: String,
+        price: Long,
+        categoryId: Long,
+        categoryTitle: String,
+        imageBytes: ByteArray,
+        createdAt: String,
+        updatedAt: String,
+        totalStack: Long,
+        brand: String,
+        weight: Double,
+        dimensions: String,
+        isAvailable: Boolean,
+        discountPrice: Long,
+        promotionDescription: String,
+        averageRating: Double,
+        isFeature: Boolean,
+        manufacturer: String,
+        colors: String,
+    ) {
+        viewModelScope.launch {
+            _createProduct.value = UiState.LOADING
+            try {
+                val response = repository.createProduct(name, description, price, categoryId, categoryTitle, imageBytes, createdAt, updatedAt, totalStack, brand, weight, dimensions, isAvailable, discountPrice, promotionDescription, averageRating, isFeature, manufacturer, colors)
+                _createProduct.value = UiState.SUCCESS(response)
+            } catch (e: Exception) {
+                _createProduct.value = UiState.ERROR(e)
             }
         }
     }
