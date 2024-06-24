@@ -82,11 +82,9 @@ fun EditProductScreen(
 ) {
     var productName by remember { mutableStateOf(product.name) }
     var category by remember { mutableStateOf(product.categoryTitle) }
-    var gender by remember { mutableStateOf("Male") }
     var brand by remember { mutableStateOf(product.brand) }
     var description by remember { mutableStateOf(product.description) }
     var price by remember { mutableStateOf(product.price.toString()) }
-    var discount by remember { mutableStateOf("20%") }
     var discountPrice by remember { mutableStateOf(product.discountPrice.toString()) }
     var addSize by remember { mutableStateOf("EU-44") }
     var productDate by remember { mutableStateOf(product.createdAt) }
@@ -108,7 +106,7 @@ fun EditProductScreen(
                 responseMessage = (updateState as UiState.ERROR).throwable.message
             }
             UiState.LOADING -> {
-                loading = true
+                //loading = true
                 responseMessage = null
             }
             is UiState.SUCCESS -> {
@@ -220,25 +218,12 @@ fun EditProductScreen(
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        Row {
-            Column(modifier = Modifier.weight(1f)) {
-                OutlinedTextField(
-                    value = category,
-                    onValueChange = { category = it },
-                    label = { Text("Category") },
-                    modifier = Modifier.fillMaxWidth()
-                )
-            }
-            Spacer(modifier = Modifier.width(8.dp))
-            Column(modifier = Modifier.weight(1f)) {
-                OutlinedTextField(
-                    value = gender,
-                    onValueChange = { gender = it },
-                    label = { Text("Gender") },
-                    modifier = Modifier.fillMaxWidth()
-                )
-            }
-        }
+        OutlinedTextField(
+            value = category,
+            onValueChange = { category = it },
+            label = { Text("Category") },
+            modifier = Modifier.fillMaxWidth()
+        )
 
         Spacer(modifier = Modifier.height(8.dp))
 
@@ -266,15 +251,6 @@ fun EditProductScreen(
                     value = price,
                     onValueChange = { price = it },
                     label = { Text("Price") },
-                    modifier = Modifier.fillMaxWidth()
-                )
-            }
-            Spacer(modifier = Modifier.width(8.dp))
-            Column(modifier = Modifier.weight(1f)) {
-                OutlinedTextField(
-                    value = discount,
-                    onValueChange = { discount = it },
-                    label = { Text("Discount") },
                     modifier = Modifier.fillMaxWidth()
                 )
             }
@@ -348,6 +324,7 @@ fun EditProductScreen(
                             manufacturer = product.manufacturer,
                             colors = product.colors
                         )
+                        loading = true
                     }
                 },
                 shape = RoundedCornerShape(8.dp),
