@@ -63,13 +63,10 @@ import presentation.screens.components.TransactionsCard
 import presentation.screens.product.ProductContent
 import presentation.viewmodel.MainViewModel
 
-class DashboardScreen(
-    private val ordersList: List<Orders>,
-    private val productList: List<Products>
-):Screen{
+class DashboardScreen:Screen{
     @Composable
     override fun Content() {
-        DashboardMainContent(productList = productList, orderList = ordersList)
+        DashboardMainContent()
     }
 
 }
@@ -77,9 +74,85 @@ class DashboardScreen(
 @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
 @Composable
 fun DashboardMainContent(
-    productList: List<Products>,
-    orderList: List<Orders>,
+    viewModel: MainViewModel = koinInject()
 ) {
+
+    var orderList by remember { mutableStateOf(emptyList<Orders>()) }
+    var productList by remember { mutableStateOf(emptyList<Products>()) }
+    var allProductList by remember { mutableStateOf(emptyList<Products>()) }
+    var isLoading by remember { mutableStateOf(false) }
+
+    LaunchedEffect(Unit) {
+        viewModel.getAllProducts()
+        delay(3000)
+        viewModel.getAllOrders()
+    }
+
+
+    val orderState by viewModel.allOrders.collectAsState()
+    val productsState by viewModel.productDetail.collectAsState()
+    val allProState by viewModel.allProducts.collectAsState()
+    when (orderState) {
+        is UiState.ERROR -> {
+            val error = (orderState as UiState.ERROR).throwable
+            ErrorScreen(errorMessage = error.message ?: "Unknown error", onRetry = {
+                viewModel.getAllOrders()
+            })
+            isLoading = false
+        }
+
+        UiState.LOADING -> {
+            isLoading = true
+            LoadingScreen()
+        }
+
+        is UiState.SUCCESS -> {
+            val orders = (orderState as UiState.SUCCESS).response
+            orderList = orders
+            val idsList =
+                orders.map { it.productIds.toString().trim() }.joinToString(separator = ",")
+            println("PRODUCT: $idsList")
+            LaunchedEffect(orderList) {
+                viewModel.getProductsByIds(idsList)
+                println("PRODUCT: $idsList")
+            }
+            isLoading = false
+        }
+    }
+    when (productsState) {
+        is UiState.LOADING -> {
+           // CircularProgressIndicator()
+        }
+
+        is UiState.ERROR -> {
+            val error = (productsState as UiState.ERROR).throwable
+            Text("Error loading products: ${error.message}")
+        }
+
+        is UiState.SUCCESS -> {
+            val products = (productsState as UiState.SUCCESS).response
+            productList = products
+            println("PRODUCT: $productList")
+        }
+    }
+
+    when (allProState) {
+        is UiState.LOADING -> {
+            //CircularProgressIndicator()
+        }
+
+        is UiState.ERROR -> {
+            val error = (allProState as UiState.ERROR).throwable
+            Text("Error loading products: ${error.message}")
+        }
+
+        is UiState.SUCCESS -> {
+            val products = (allProState as UiState.SUCCESS).response
+            allProductList = products
+            println("ALL PRODUCT: $allProductList")
+        }
+    }
+
     val isCompact = calculateWindowSizeClass().widthSizeClass == WindowWidthSizeClass.Compact
     val columns = if (isCompact) 1 else 2
     val totalSales = orderList.sumOf { it.totalPrice }
@@ -140,133 +213,137 @@ fun DashboardMainContent(
         if (previousPendingOrders != 0) ((pendingOrders - previousPendingOrders).toDouble() / previousPendingOrders * 100).toInt() else 0
 
 
-    LazyColumn(
-        modifier = Modifier
-            .padding(start = 16.dp, end = 16.dp)
-            .fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        item {
-            Spacer(modifier = Modifier.height(16.dp))
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.Start,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Column(
-                    horizontalAlignment = Alignment.Start,
-                    verticalArrangement = Arrangement.Center
+    if (!isLoading) {
+        LazyColumn(
+            modifier = Modifier
+                .padding(start = 16.dp, end = 16.dp)
+                .fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            item {
+                Spacer(modifier = Modifier.height(16.dp))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Start,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text(
-                        text = "Dashboard",
-                        fontSize = 24.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color(0xFF007BFF)
-                    )
-                    Text(
-                        "Welcome to your dashboard",
-                        fontSize = MaterialTheme.typography.bodyMedium.fontSize
-                    )
+                    Column(
+                        horizontalAlignment = Alignment.Start,
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        Text(
+                            text = "Dashboard",
+                            fontSize = 24.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color(0xFF007BFF)
+                        )
+                        Text(
+                            "Welcome to your dashboard",
+                            fontSize = MaterialTheme.typography.bodyMedium.fontSize
+                        )
+                    }
+                    Spacer(modifier = Modifier.weight(1f))
+                    ElevatedButton(
+                        onClick = {},
+                        shape = RoundedCornerShape(8.dp),
+                        colors = ButtonDefaults.elevatedButtonColors(
+                            containerColor = Color(0XFF0a8af9),
+                            contentColor = Color.White
+                        )
+                    ) {
+                        Text("Add Product")
+                    }
                 }
-                Spacer(modifier = Modifier.weight(1f))
-                ElevatedButton(
-                    onClick = {},
-                    shape = RoundedCornerShape(8.dp),
-                    colors = ButtonDefaults.elevatedButtonColors(
-                        containerColor = Color(0XFF0a8af9),
-                        contentColor = Color.White
-                    )
-                ) {
-                    Text("Add Product")
+                Spacer(modifier = Modifier.height(16.dp))
+            }
+            item {
+                Column {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 8.dp, horizontal = 8.dp),
+                        horizontalArrangement = Arrangement.spacedBy(16.dp)
+                    ) {
+                        DashboardCard(
+                            title = "Orders Received",
+                            value = orderList.size.toString(),
+                            percentage = "15%",
+                            modifier = Modifier.weight(1f),
+                            icon = Icons.Outlined.Checklist,
+                            background = Color(0XFF51cd85)
+                        )
+                        DashboardCard(
+                            title = "Average Daily Sales",
+                            value = "\$$averageDailySales",
+                            percentage = "${salesPercentageChange}%",
+                            modifier = Modifier.weight(1f),
+                            icon = Icons.Outlined.CurrencyBitcoin,
+                            background = Color(0XFF723bde)
+                        )
+                        DashboardCard(
+                            title = "New Customers This Month",
+                            value = "$newCustomers",
+                            percentage = "${newCustomersPercentageChange}%",
+                            modifier = Modifier.weight(1f),
+                            icon = Icons.Outlined.ShoppingBag,
+                            background = Color(0XFF3e93f6)
+                        )
+                        DashboardCard(
+                            title = "Pending Orders",
+                            value = "$pendingOrders",
+                            percentage = "${pendingOrdersPercentageChange}%",
+                            modifier = Modifier.weight(1f),
+                            icon = Icons.Outlined.Pending,
+                            background = Color(0XFFfe9603)
+                        )
+                    }
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 8.dp),
+                        horizontalArrangement = Arrangement.spacedBy(16.dp)
+                    ) {
+
+                    }
                 }
             }
-            Spacer(modifier = Modifier.height(16.dp))
-        }
-        item {
-            Column {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 8.dp, horizontal = 8.dp),
-                    horizontalArrangement = Arrangement.spacedBy(16.dp)
-                ) {
-                    DashboardCard(
-                        title = "Orders Received",
-                        value = orderList.size.toString(),
-                        percentage = "15%",
-                        modifier = Modifier.weight(1f),
-                        icon = Icons.Outlined.Checklist,
-                        background = Color(0XFF51cd85)
-                    )
-                    DashboardCard(
-                        title = "Average Daily Sales",
-                        value = "\$$averageDailySales",
-                        percentage = "${salesPercentageChange}%",
-                        modifier = Modifier.weight(1f),
-                        icon = Icons.Outlined.CurrencyBitcoin,
-                        background = Color(0XFF723bde)
-                    )
-                    DashboardCard(
-                        title = "New Customers This Month",
-                        value = "$newCustomers",
-                        percentage = "${newCustomersPercentageChange}%",
-                        modifier = Modifier.weight(1f),
-                        icon = Icons.Outlined.ShoppingBag,
-                        background = Color(0XFF3e93f6)
-                    )
-                    DashboardCard(
-                        title = "Pending Orders",
-                        value = "$pendingOrders",
-                        percentage = "${pendingOrdersPercentageChange}%",
-                        modifier = Modifier.weight(1f),
-                        icon = Icons.Outlined.Pending,
-                        background = Color(0XFFfe9603)
-                    )
-                }
+            item {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(vertical = 8.dp),
                     horizontalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
-
+                    DashboardChart(
+                        title = "Sales Statistics",
+                        modifier = Modifier.weight(1f),
+                        orders = orderList,
+                        products = productList
+                    )
+                    DashboardPieChart(
+                        title = "Most Selling Category",
+                        modifier = Modifier.weight(1f),
+                        orders = orderList,
+                        products = productList
+                    )
                 }
             }
-        }
-        item {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 8.dp),
-                horizontalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                DashboardChart(
-                    title = "Sales Statistics",
-                    modifier = Modifier.weight(1f),
-                    orders = orderList,
-                    products = productList
-                )
-                DashboardPieChart(
-                    title = "Most Selling Category",
-                    modifier = Modifier.weight(1f),
-                    orders = orderList,
-                    products = productList
-                )
+            item {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 8.dp),
+                    horizontalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    TransactionsCard(modifier = Modifier.weight(1f))
+                    RecentOrdersCard(modifier = Modifier.weight(1f), orderList, productList)
+                    TrafficSourceCard(modifier = Modifier.weight(1f))
+                }
+                Spacer(modifier = Modifier.height(16.dp))
             }
         }
-        item {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 8.dp),
-                horizontalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                TransactionsCard(modifier = Modifier.weight(1f))
-                RecentOrdersCard(modifier = Modifier.weight(1f), orderList, productList)
-                TrafficSourceCard(modifier = Modifier.weight(1f))
-            }
-            Spacer(modifier = Modifier.height(16.dp))
-        }
+    }else{
+        LoadingScreen()
     }
 }
 

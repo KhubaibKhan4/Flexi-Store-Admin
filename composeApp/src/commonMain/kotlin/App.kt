@@ -281,10 +281,7 @@ fun AppContent(viewModel: MainViewModel = koinInject()) {
             ) {
                 when (selectedItemIndex) {
                     0 -> Navigator(
-                        DashboardScreen(
-                            ordersList = orderList,
-                            productList = productList
-                        )
+                        DashboardScreen()
                     )
 
                     1 -> Navigator(
