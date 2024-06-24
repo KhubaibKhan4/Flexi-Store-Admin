@@ -1,5 +1,6 @@
 package presentation.screens.add
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -34,16 +35,24 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toComposeImageBitmap
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
+import io.github.vinceglb.filekit.compose.rememberFilePickerLauncher
+import io.github.vinceglb.filekit.core.PickerMode
+import io.github.vinceglb.filekit.core.PickerType
+import kotlinx.coroutines.launch
+import org.jetbrains.skia.Image
 
 class AddProduct : Screen {
     @Composable
@@ -61,7 +70,7 @@ fun AddProductContent() {
     var price by remember { mutableStateOf("") }
     var categoryId by remember { mutableStateOf("") }
     var categoryTitle by remember { mutableStateOf("") }
-    var imageUrl by remember { mutableStateOf("") }
+    var imageBytes by remember { mutableStateOf<ByteArray?>(null) }
     var createdAt by remember { mutableStateOf("") }
     var updatedAt by remember { mutableStateOf("") }
     var totalStack by remember { mutableStateOf("") }
@@ -109,7 +118,7 @@ fun AddProductContent() {
             modifier = Modifier.fillMaxWidth()
         ) {
             Column(modifier = Modifier.weight(1f)) {
-                ProductImageSection(imageUrl) { newUrl -> imageUrl = newUrl }
+                ProductImageSection(imageBytes) { newBytes -> imageBytes = newBytes }
                 GeneralInformationSection(
                     name = name,
                     onNameChange = { name = it },
@@ -183,7 +192,24 @@ fun AddProductContent() {
 }
 
 @Composable
-fun ProductImageSection(imageUrl: String, onImageUrlChange: (String) -> Unit) {
+fun ProductImageSection(
+    imageBytes: ByteArray?,
+    onImageSelected: (ByteArray) -> Unit
+) {
+    val scope = rememberCoroutineScope()
+
+    val launcher = rememberFilePickerLauncher(
+        type = PickerType.Image,
+        mode = PickerMode.Single,
+        title = "Pick a Product Image"
+    ) { platformFile ->
+        scope.launch {
+            val bytes = platformFile?.readBytes()
+            if (bytes != null) {
+                onImageSelected(bytes)
+            }
+        }
+    }
     Card(
         modifier = Modifier.padding(8.dp),
         elevation = CardDefaults.cardElevation(4.dp),
@@ -206,12 +232,29 @@ fun ProductImageSection(imageUrl: String, onImageUrlChange: (String) -> Unit) {
                     .background(Color.Gray),
                 contentAlignment = Alignment.Center
             ) {
-                Icon(
-                    imageVector = Icons.Default.Image,
-                    contentDescription = "Product Image",
-                    modifier = Modifier.fillMaxWidth(),
-                    tint = Color.White
-                )
+                if (imageBytes != null) {
+                    val imageBitmap = imageBytes
+                    imageBitmap?.let {
+                        Image(
+                            bitmap = Image.makeFromEncoded(imageBytes).toComposeImageBitmap(),
+                            contentDescription = "Product Image",
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clip(RoundedCornerShape(8.dp))
+                                .background(Color.Gray),
+                            contentScale = ContentScale.Crop
+                        )
+                    }
+                }
+                else{
+                    Icon(
+                        imageVector = Icons.Default.Image,
+                        contentDescription = "Product Image",
+                        modifier = Modifier.fillMaxWidth(),
+                        tint = Color.White
+                    )
+                }
+
                 Box(
                     modifier = Modifier
                         .padding(4.dp)
@@ -220,7 +263,7 @@ fun ProductImageSection(imageUrl: String, onImageUrlChange: (String) -> Unit) {
                         .clip(CircleShape)
                         .align(Alignment.BottomEnd)
                         .clickable {
-
+                                   launcher.launch()
                         },
                     contentAlignment = Alignment.Center
                 ) {
