@@ -8,6 +8,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -37,7 +38,6 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -61,6 +61,8 @@ import io.github.vinceglb.filekit.compose.rememberFilePickerLauncher
 import io.github.vinceglb.filekit.core.PickerMode
 import io.github.vinceglb.filekit.core.PickerType
 import io.ktor.client.statement.HttpResponse
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import org.jetbrains.skia.Image
 import org.koin.compose.koinInject
@@ -99,6 +101,7 @@ fun AddProductContent(viewModel: MainViewModel = koinInject()) {
     var colors by remember { mutableStateOf("") }
     var isLoading by remember { mutableStateOf(false) }
     var serverResponse by remember { mutableStateOf<HttpResponse?>(null) }
+    val scope = rememberCoroutineScope()
 
     val createState by viewModel.createProduct.collectAsState()
     when (createState) {
@@ -277,20 +280,32 @@ fun AddProductContent(viewModel: MainViewModel = koinInject()) {
                 }
                 isLoading = true
             }) {
-                Text("Publish Now")
-                AnimatedVisibility(isLoading){
-                    CircularProgressIndicator()
+                Row(
+                    horizontalArrangement = Arrangement.Start,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text("Publish Now")
+                    Spacer(modifier = Modifier.width(8.dp))
+                    AnimatedVisibility(isLoading) {
+                        CircularProgressIndicator()
+                    }
                 }
             }
         }
-        if (serverResponse?.status?.value == 200){
-            Text(
-                text = "Published Successfully...."
-            )
-        }else{
-            Text(
-                text = "Failed to Publish...."
-            )
+        if (serverResponse?.isActive == true) {
+            if (serverResponse?.status?.value == 200 && serverResponse?.status?.value == 201) {
+                Text(
+                    text = "Published Successfully...."
+                )
+                scope.launch {
+                    delay(2000)
+                    navigator?.pop()
+                }
+            } else {
+                Text(
+                    text = "Failed to Publish...."
+                )
+            }
         }
     }
 }
@@ -302,23 +317,29 @@ fun CategoryDropdown(categories: List<Category>, onCategorySelected: (Category) 
     var expanded by remember { mutableStateOf(false) }
     var selectedText by remember { mutableStateOf("Select Category") }
 
-    Box(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
-       Row(
-           modifier = Modifier.fillMaxWidth()
-               .background(Color.White, shape = RoundedCornerShape(12.dp))
-               .border(width = 1.dp, color = Color.Black, shape = RoundedCornerShape(12.dp)),
-           horizontalArrangement = Arrangement.Start,
-           verticalAlignment = Alignment.CenterVertically
-       ) {
-           Text(
-               text = selectedText,
-               modifier = Modifier.fillMaxWidth().clickable { expanded = !expanded }
-           )
-           Icon(
-               imageVector = Icons.Default.ArrowDropDown,
-               contentDescription = null
-           )
-       }
+    Box(
+        modifier = Modifier.fillMaxWidth()
+            .height(IntrinsicSize.Max)
+            .padding(16.dp)
+            .background(Color.White, shape = RoundedCornerShape(6.dp))
+            .border(width = 1.dp, color = Color.Black, shape = RoundedCornerShape(6.dp))
+            .clickable { expanded = !expanded }
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth()
+                .padding(12.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = selectedText,
+            )
+            Spacer(modifier = Modifier.weight(1f))
+            Icon(
+                imageVector = Icons.Default.ArrowDropDown,
+                contentDescription = null,
+            )
+        }
         DropdownMenu(
             expanded = expanded,
             onDismissRequest = { expanded = false }
