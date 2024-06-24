@@ -71,9 +71,11 @@ import domain.model.products.Products
 import io.kamel.core.Resource
 import io.kamel.image.KamelImage
 import io.kamel.image.asyncPainterResource
+import presentation.screens.add.AddProduct
 import presentation.screens.edit.EditProduct
 import presentation.screens.view.ProductView
 import utils.Constant.BASE_URL
+
 class ProductsScreen(
     private val product: List<Products>,
     private val isCompact: Boolean
@@ -86,6 +88,7 @@ class ProductsScreen(
 }
 @Composable
 fun ProductContent(productList: List<Products>, isCompact: Boolean) {
+    val navigator = LocalNavigator.current
     LazyColumn(
         modifier = Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, top = 16.dp)
     ) {
@@ -126,7 +129,9 @@ fun ProductContent(productList: List<Products>, isCompact: Boolean) {
                 }
                 Spacer(modifier = Modifier.width(6.dp))
                 ElevatedButton(
-                    onClick = {},
+                    onClick = {
+                        navigator?.push(AddProduct())
+                    },
                     shape = RoundedCornerShape(8.dp),
                     colors = ButtonDefaults.elevatedButtonColors(
                         containerColor = Color(0XFF0a8af9),
