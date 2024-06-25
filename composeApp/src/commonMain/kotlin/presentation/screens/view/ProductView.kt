@@ -105,6 +105,7 @@ fun ProductDisplayScreen(product: Products) {
                     resource = painter,
                     contentDescription = "Product Image",
                     modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.FillHeight
                 )
             }
 
