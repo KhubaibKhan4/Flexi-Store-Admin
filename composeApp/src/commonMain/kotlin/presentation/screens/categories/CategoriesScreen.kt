@@ -150,7 +150,7 @@ fun CategoryCard(category: Categories) {
             .padding(8.dp)
             .fillMaxWidth()
             .aspectRatio(1.8f)
-            .clickable { /* Handle click */ },
+            .clickable { navigator?.push(CategoriesView(category)) },
         elevation = CardDefaults.cardElevation(4.dp),
         shape = RoundedCornerShape(16.dp)
     ) {
