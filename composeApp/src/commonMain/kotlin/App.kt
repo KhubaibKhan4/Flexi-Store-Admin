@@ -286,7 +286,7 @@ fun AppContent(viewModel: MainViewModel = koinInject()) {
 
                     1 -> Navigator(
                         ProductsScreen(
-                            product = productList,
+                            product = allProductList,
                             isCompact = showNavigationRail
                         )
                     )

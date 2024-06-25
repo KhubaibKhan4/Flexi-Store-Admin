@@ -165,6 +165,7 @@ fun ProductGridScreen(productList: List<Products>) {
     var sortExpanded by remember { mutableStateOf(false) }
 
     val categories = productList.map { it.categoryTitle }.distinct().sorted()
+    println("CATEGORIES: $categories")
 
     val filteredProductList = productList.filter { product ->
         (selectedCategory == "All Categories" || product.categoryTitle == selectedCategory) &&
