@@ -81,7 +81,7 @@ fun AddNewCategoryScreen(
     var isLoading by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
     var serverResponse by remember { mutableStateOf<HttpResponse?>(null) }
-    val categories by viewModel.createProduct.collectAsState()
+    val categories by viewModel.createCategory.collectAsState()
 
     when (categories) {
         is UiState.ERROR -> {
@@ -125,12 +125,10 @@ fun AddNewCategoryScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Image Upload Section
         ProductImageSection(imageBytes) { newBytes -> imageBytes = newBytes }
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Form Fields in a Column
         Column(
             modifier = Modifier.fillMaxWidth()
         ) {
@@ -154,7 +152,6 @@ fun AddNewCategoryScreen(
             )
         }
 
-        // Visibility Toggle
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.padding(bottom = 16.dp)
@@ -167,13 +164,12 @@ fun AddNewCategoryScreen(
             )
         }
 
-        // Action Buttons
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.End
         ) {
             Button(
-                onClick = { /* Handle Save to Draft */ },
+                onClick = { },
                 colors = ButtonDefaults.buttonColors(containerColor = Color.Gray)
             ) {
                 Text("Save to Draft")
@@ -181,12 +177,12 @@ fun AddNewCategoryScreen(
             Spacer(modifier = Modifier.width(8.dp))
             Button(onClick = {
                 imageBytes?.let {
-                    /*viewModel.createCategory(
+                    viewModel.createCategories(
                         name = categoryName,
                         description = categoryDescription,
                         isVisible = isVisible,
                         imageBytes = it
-                    )*/
+                    )
                 }
                 isLoading = true
             }) {

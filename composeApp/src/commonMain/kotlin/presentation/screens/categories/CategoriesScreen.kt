@@ -27,6 +27,7 @@ import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -35,6 +36,12 @@ import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -47,11 +54,14 @@ import androidx.compose.ui.unit.sp
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import domain.model.categories.Categories
+import domain.usecase.UiState
 import io.kamel.core.Resource
 import io.kamel.image.KamelImage
 import io.kamel.image.asyncPainterResource
+import org.koin.compose.koinInject
 import presentation.screens.add.AddProduct
 import presentation.screens.product.ProductGridScreen
+import presentation.viewmodel.MainViewModel
 import utils.Constant.BASE_URL
 
 class CategoriesScreen(
@@ -59,7 +69,30 @@ class CategoriesScreen(
 ) : Screen {
     @Composable
     override fun Content() {
+        val viewModel = koinInject<MainViewModel>()
         val navigator = LocalNavigator.current
+        var allCategories by remember { mutableStateOf(emptyList<Categories>()) }
+
+        LaunchedEffect(Unit){
+            viewModel.getCategories()
+        }
+        val categories by viewModel.categories.collectAsState()
+        when (categories) {
+            is UiState.LOADING -> {
+                CircularProgressIndicator()
+            }
+
+            is UiState.ERROR -> {
+                val error = (categories as UiState.ERROR).throwable
+                Text("Error loading products: ${error.message}")
+            }
+
+            is UiState.SUCCESS -> {
+                val categoriesList = (categories as UiState.SUCCESS).response
+                allCategories = categoriesList
+            }
+        }
+
         LazyColumn(
             modifier = Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, top = 16.dp)
         ) {
@@ -104,7 +137,7 @@ class CategoriesScreen(
             }
 
             item {
-                CategoryGrid(categories)
+                CategoryGrid(allCategories)
             }
         }
     }

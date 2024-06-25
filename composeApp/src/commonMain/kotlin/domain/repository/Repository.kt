@@ -73,4 +73,13 @@ class Repository(
     override suspend fun getAllCategories(): List<Categories> {
         return flexiStoreClient.getAllCategories()
     }
+
+    override suspend fun createCategories(
+        name: String,
+        description: String,
+        isVisible: Boolean,
+        imageBytes: ByteArray,
+    ): HttpResponse {
+        return flexiStoreClient.createCategories(name, description, isVisible, imageBytes)
+    }
 }

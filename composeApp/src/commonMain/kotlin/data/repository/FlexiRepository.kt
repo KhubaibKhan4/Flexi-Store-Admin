@@ -57,4 +57,12 @@ interface FlexiRepository {
         colors: String
     ): HttpResponse
     suspend fun getAllCategories(): List<Categories>
+    @OptIn(InternalAPI::class)
+    suspend fun createCategories(
+        name: String,
+        description: String,
+        isVisible: Boolean,
+        imageBytes: ByteArray,
+
+        ): HttpResponse
 }
