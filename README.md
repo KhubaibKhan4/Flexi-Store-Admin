@@ -30,6 +30,11 @@ Let's chat about potential projects, job opportunities, or any other collaborati
 [![Email](https://img.shields.io/badge/Email-Drop%20a%20Message-red?style=for-the-badge&logo=gmail)](mailto:18.bscs.803@gmail.com)
 
 If you find my work helpful, you can support me by [![Buy me a coffee](https://img.buymeacoffee.com/button-api/?text=Buy%20me%20a%20coffee&emoji=&slug=khubaibkhan&button_colour=FFDD00&font_colour=000000&font_family=Cookie&outline_colour=000000&coffee_colour=ffffff)](https://www.buymeacoffee.com/khubaibkhan)
+
+## Setup
+To use this Admin Panel, You need to setup the Flexi-Store Server first. To Setup the Server, you need to follow the Server Guide. [Flexi-Store-Server](https://github.com/KhubaibKhan4/Flexi-Store-Server).
+After setting up the server, You need to get the `local ip` from your terminal using `Command Prompt` or  `Terminal`. You just need to replace your ip with `BASE_URL` inside the `composeApp/src/commonMain/kotlin/utils/Constant.kt`
+
 This is a Kotlin Multiplatform project targeting Web, Desktop.
 
 * `/composeApp` is for code that will be shared across your Compose Multiplatform applications.
