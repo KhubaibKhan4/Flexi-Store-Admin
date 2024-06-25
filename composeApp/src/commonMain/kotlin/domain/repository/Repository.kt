@@ -2,6 +2,7 @@ package domain.repository
 
 import data.remote.FlexiStoreClient
 import data.repository.FlexiRepository
+import domain.model.categories.Categories
 import domain.model.order.Orders
 import domain.model.products.Products
 import io.ktor.client.statement.HttpResponse
@@ -67,5 +68,9 @@ class Repository(
         colors: String,
     ): HttpResponse {
         return flexiStoreClient.createProduct(name, description, price, categoryId, categoryTitle, imageBytes, createdAt, updatedAt, totalStack, brand, weight, dimensions, isAvailable, discountPrice, promotionDescription, averageRating, isFeature, manufacturer, colors)
+    }
+
+    override suspend fun getAllCategories(): List<Categories> {
+        return flexiStoreClient.getAllCategories()
     }
 }

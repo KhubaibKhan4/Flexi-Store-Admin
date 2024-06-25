@@ -1,5 +1,6 @@
 package data.repository
 
+import domain.model.categories.Categories
 import domain.model.order.Orders
 import domain.model.products.Products
 import io.ktor.client.statement.HttpResponse
@@ -55,4 +56,5 @@ interface FlexiRepository {
         manufacturer: String,
         colors: String
     ): HttpResponse
+    suspend fun getAllCategories(): List<Categories>
 }

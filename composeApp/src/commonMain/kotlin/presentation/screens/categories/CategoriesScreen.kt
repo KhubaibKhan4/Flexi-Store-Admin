@@ -7,15 +7,18 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import cafe.adriel.voyager.core.screen.Screen
+import domain.model.categories.Categories
 
-class CategoriesScreen : Screen {
+class CategoriesScreen(
+    private val categories: List<Categories>
+) : Screen {
     @Composable
     override fun Content() {
         Box(
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.Center
         ) {
-            Text("Categories")
+            Text("Categories $categories")
         }
     }
 }

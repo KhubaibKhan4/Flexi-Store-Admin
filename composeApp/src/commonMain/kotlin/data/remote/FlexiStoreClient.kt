@@ -1,5 +1,6 @@
 package data.remote
 
+import domain.model.categories.Categories
 import domain.model.order.Orders
 import domain.model.products.Products
 import io.ktor.client.HttpClient
@@ -132,5 +133,8 @@ class FlexiStoreClient(
         return client.post("v1/products") {
             body = MultiPartFormDataContent(formData)
         }
+    }
+    suspend fun getAllCategories(): List<Categories>{
+        return client.get("v1/categories").body()
     }
 }

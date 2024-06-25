@@ -2,6 +2,7 @@ package presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import domain.model.categories.Categories
 import domain.model.order.Orders
 import domain.model.products.Products
 import domain.repository.Repository
@@ -34,6 +35,10 @@ class MainViewModel(
     private val _createProduct: MutableStateFlow<UiState<HttpResponse>> =
         MutableStateFlow(UiState.LOADING)
     val createProduct = _createProduct.asStateFlow()
+
+    private val _categories: MutableStateFlow<UiState<List<Categories>>> =
+        MutableStateFlow(UiState.LOADING)
+    val categories = _categories.asStateFlow()
     fun getAllOrders() {
         viewModelScope.launch {
             _allOrders.value = UiState.LOADING
@@ -152,6 +157,17 @@ class MainViewModel(
                 _createProduct.value = UiState.SUCCESS(response)
             } catch (e: Exception) {
                 _createProduct.value = UiState.ERROR(e)
+            }
+        }
+    }
+    suspend fun getCategories(){
+        viewModelScope.launch {
+            _categories.value =UiState.LOADING
+            try {
+                val response = repository.getAllCategories()
+                _categories.value = UiState.SUCCESS(response)
+            }catch (e: Exception){
+                _categories.value = UiState.ERROR(e)
             }
         }
     }

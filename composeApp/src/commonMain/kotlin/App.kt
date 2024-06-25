@@ -58,6 +58,7 @@ import cafe.adriel.voyager.navigator.Navigator
 import cafe.adriel.voyager.navigator.tab.LocalTabNavigator
 import cafe.adriel.voyager.navigator.tab.Tab
 import di.appModule
+import domain.model.categories.Categories
 import domain.model.order.Orders
 import domain.model.products.Products
 import domain.usecase.UiState
@@ -99,9 +100,11 @@ fun AppContent(viewModel: MainViewModel = koinInject()) {
     var orderList by remember { mutableStateOf(emptyList<Orders>()) }
     var productList by remember { mutableStateOf(emptyList<Products>()) }
     var allProductList by remember { mutableStateOf(emptyList<Products>()) }
+    var allCategories by remember { mutableStateOf(emptyList<Categories>()) }
 
     LaunchedEffect(Unit) {
         viewModel.getAllProducts()
+        viewModel.getCategories()
         delay(3000)
         viewModel.getAllOrders()
     }
@@ -110,6 +113,7 @@ fun AppContent(viewModel: MainViewModel = koinInject()) {
     val orderState by viewModel.allOrders.collectAsState()
     val productsState by viewModel.productDetail.collectAsState()
     val allProState by viewModel.allProducts.collectAsState()
+    val categories by viewModel.categories.collectAsState()
     when (orderState) {
         is UiState.ERROR -> {
             val error = (orderState as UiState.ERROR).throwable
@@ -165,6 +169,22 @@ fun AppContent(viewModel: MainViewModel = koinInject()) {
             val products = (allProState as UiState.SUCCESS).response
             allProductList = products
             println("ALL PRODUCT: $allProductList")
+        }
+    }
+
+    when (categories) {
+        is UiState.LOADING -> {
+            CircularProgressIndicator()
+        }
+
+        is UiState.ERROR -> {
+            val error = (categories as UiState.ERROR).throwable
+            Text("Error loading products: ${error.message}")
+        }
+
+        is UiState.SUCCESS -> {
+            val categoriesList = (categories as UiState.SUCCESS).response
+            allCategories = categoriesList
         }
     }
     val items = listOf(
@@ -291,7 +311,7 @@ fun AppContent(viewModel: MainViewModel = koinInject()) {
                         )
                     )
 
-                    2 -> Navigator(CategoriesScreen())
+                    2 -> Navigator(CategoriesScreen(allCategories))
                     3 -> Navigator(OrderScreen())
                     4 -> Navigator(ReviewsScreen())
                     5 -> Navigator(CouponsScreen())
