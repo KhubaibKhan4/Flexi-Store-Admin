@@ -83,7 +83,7 @@ class CategoriesScreen(
                     Spacer(modifier = Modifier.weight(1f))
                     ElevatedButton(
                         onClick = {
-                            navigator?.push(AddProduct(categories))
+                            navigator?.push(AddCategories())
                         },
                         shape = RoundedCornerShape(8.dp),
                         colors = ButtonDefaults.elevatedButtonColors(
