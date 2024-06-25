@@ -67,6 +67,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
+import domain.model.categories.Categories
 import domain.model.products.Products
 import io.kamel.core.Resource
 import io.kamel.image.KamelImage
@@ -78,16 +79,17 @@ import utils.Constant.BASE_URL
 
 class ProductsScreen(
     private val product: List<Products>,
-    private val isCompact: Boolean
+    private val isCompact: Boolean,
+    private val categories: List<Categories>
 ): Screen {
     @Composable
     override fun Content() {
-        ProductContent(productList =product , isCompact = isCompact)
+        ProductContent(productList =product , isCompact = isCompact,categories)
     }
 
 }
 @Composable
-fun ProductContent(productList: List<Products>, isCompact: Boolean) {
+fun ProductContent(productList: List<Products>, isCompact: Boolean,categories: List<Categories>) {
     val navigator = LocalNavigator.current
     LazyColumn(
         modifier = Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, top = 16.dp)
@@ -130,7 +132,7 @@ fun ProductContent(productList: List<Products>, isCompact: Boolean) {
                 Spacer(modifier = Modifier.width(6.dp))
                 ElevatedButton(
                     onClick = {
-                        navigator?.push(AddProduct())
+                        navigator?.push(AddProduct(categories))
                     },
                     shape = RoundedCornerShape(8.dp),
                     colors = ButtonDefaults.elevatedButtonColors(

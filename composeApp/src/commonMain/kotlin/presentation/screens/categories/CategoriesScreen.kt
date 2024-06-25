@@ -15,14 +15,19 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.CloudUpload
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Switch
@@ -35,14 +40,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import cafe.adriel.voyager.core.screen.Screen
+import cafe.adriel.voyager.navigator.LocalNavigator
 import domain.model.categories.Categories
 import io.kamel.core.Resource
 import io.kamel.image.KamelImage
 import io.kamel.image.asyncPainterResource
+import presentation.screens.add.AddProduct
+import presentation.screens.product.ProductGridScreen
 import utils.Constant.BASE_URL
 
 class CategoriesScreen(
@@ -50,7 +59,54 @@ class CategoriesScreen(
 ) : Screen {
     @Composable
     override fun Content() {
-        CategoryGrid(categories)
+        val navigator = LocalNavigator.current
+        LazyColumn(
+            modifier = Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, top = 16.dp)
+        ) {
+            item {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Start,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Column(
+                        horizontalAlignment = Alignment.Start,
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        Text(
+                            text = "Categories",
+                            fontSize = 24.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color(0xFF007BFF)
+                        )
+                    }
+                    Spacer(modifier = Modifier.weight(1f))
+                    ElevatedButton(
+                        onClick = {
+                            navigator?.push(AddProduct(categories))
+                        },
+                        shape = RoundedCornerShape(8.dp),
+                        colors = ButtonDefaults.elevatedButtonColors(
+                            containerColor = Color(0XFF0a8af9),
+                            contentColor = Color.White
+                        )
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Add,
+                            contentDescription = null,
+                            modifier = Modifier.size(15.dp)
+                        )
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text("Add Categories")
+                    }
+                }
+                Spacer(modifier = Modifier.height(16.dp))
+            }
+
+            item {
+                CategoryGrid(categories)
+            }
+        }
     }
 }
 @Composable
@@ -112,6 +168,8 @@ fun CategoryCard(category: Categories) {
 @Composable
 fun CategoryGrid(categories: List<Categories>) {
     LazyVerticalGrid(
+        modifier = Modifier.fillMaxWidth()
+            .height(800.dp),
         columns = GridCells.Adaptive(minSize = 200.dp),
         contentPadding = PaddingValues(16.dp)
     ) {

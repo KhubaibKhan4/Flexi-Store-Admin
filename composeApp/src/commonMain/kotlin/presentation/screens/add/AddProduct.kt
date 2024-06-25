@@ -56,6 +56,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
+import domain.model.categories.Categories
 import domain.usecase.UiState
 import io.github.vinceglb.filekit.compose.rememberFilePickerLauncher
 import io.github.vinceglb.filekit.core.PickerMode
@@ -69,16 +70,21 @@ import org.koin.compose.koinInject
 import presentation.screens.components.ErrorScreen
 import presentation.viewmodel.MainViewModel
 
-class AddProduct : Screen {
+class AddProduct(
+    private val categories: List<Categories>,
+) : Screen {
     @Composable
     override fun Content() {
-        AddProductContent()
+        AddProductContent(categories=categories)
     }
 }
 
 
 @Composable
-fun AddProductContent(viewModel: MainViewModel = koinInject()) {
+fun AddProductContent(
+    viewModel: MainViewModel = koinInject(),
+    categories: List<Categories>,
+) {
     val navigator = LocalNavigator.current
     var name by remember { mutableStateOf("") }
     var description by remember { mutableStateOf("") }
@@ -127,28 +133,6 @@ fun AddProductContent(viewModel: MainViewModel = koinInject()) {
         }
     }
 
-    val categories = listOf(
-        Category(17, "Baby & Toddler"),
-        Category(5, "Clothing"),
-        Category(6, "Home & Kitchen"),
-        Category(7, "Books & Literature"),
-        Category(8, "Health & Beauty"),
-        Category(9, "Sports & Outdoors"),
-        Category(10, "Toys & Games"),
-        Category(24, "Home Decor"),
-        Category(11, "Automotive"),
-        Category(12, "Pet Supplies"),
-        Category(13, "Furniture & Decor"),
-        Category(14, "Office Supplies"),
-        Category(15, "Food & Groceries"),
-        Category(16, "Jewelry & Accessories"),
-        Category(18, "Tools & Hardware"),
-        Category(19, "Gardening & Outdoor Living"),
-        Category(20, "Arts & Crafts"),
-        Category(21, "Travel & Luggage"),
-        Category(22, "Electronics Accessories"),
-        Category(23, "Fitness & Exercise")
-    )
 
     Column(
         modifier = Modifier
@@ -313,7 +297,7 @@ fun AddProductContent(viewModel: MainViewModel = koinInject()) {
 data class Category(val id: Int, val name: String)
 
 @Composable
-fun CategoryDropdown(categories: List<Category>, onCategorySelected: (Category) -> Unit) {
+fun CategoryDropdown(categories: List<Categories>, onCategorySelected: (Categories) -> Unit) {
     var expanded by remember { mutableStateOf(false) }
     var selectedText by remember { mutableStateOf("Select Category") }
 
