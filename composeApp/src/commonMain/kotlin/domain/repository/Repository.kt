@@ -82,4 +82,14 @@ class Repository(
     ): HttpResponse {
         return flexiStoreClient.createCategories(name, description, isVisible, imageBytes)
     }
+
+    override suspend fun updateCategoryById(
+        id: Long,
+        name: String,
+        description: String,
+        isVisible: Boolean,
+        imageBytes: ByteArray,
+    ): HttpResponse {
+        return flexiStoreClient.updateCategoryById(id, name, description, isVisible, imageBytes)
+    }
 }

@@ -32,6 +32,10 @@ class MainViewModel(
         MutableStateFlow(UiState.LOADING)
     val updateProduct = _updateProduct.asStateFlow()
 
+    private val _updateCategories: MutableStateFlow<UiState<HttpResponse>> =
+        MutableStateFlow(UiState.LOADING)
+    val updateCategories = _updateCategories.asStateFlow()
+
     private val _createProduct: MutableStateFlow<UiState<HttpResponse>> =
         MutableStateFlow(UiState.LOADING)
     val createProduct = _createProduct.asStateFlow()
@@ -207,7 +211,7 @@ class MainViewModel(
         }
     }
 
-    suspend fun getCategories() {
+     fun getCategories() {
         viewModelScope.launch {
             _categories.value = UiState.LOADING
             try {
@@ -215,6 +219,23 @@ class MainViewModel(
                 _categories.value = UiState.SUCCESS(response)
             } catch (e: Exception) {
                 _categories.value = UiState.ERROR(e)
+            }
+        }
+    }
+    fun updateCategoryById(
+        id: Long,
+        name: String,
+        description: String,
+        isVisible: Boolean,
+        imageBytes: ByteArray
+    ){
+        viewModelScope.launch {
+            _updateCategories.value = UiState.LOADING
+            try {
+                val response = repository.updateCategoryById(id, name, description, isVisible,imageBytes)
+                _updateCategories.value  = UiState.SUCCESS(response)
+            }catch (e: Exception){
+                _updateCategories.value = UiState.ERROR(e)
             }
         }
     }

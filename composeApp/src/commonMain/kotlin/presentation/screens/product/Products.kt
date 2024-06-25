@@ -36,6 +36,7 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ElevatedButton
@@ -49,6 +50,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -69,12 +72,15 @@ import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import domain.model.categories.Categories
 import domain.model.products.Products
+import domain.usecase.UiState
 import io.kamel.core.Resource
 import io.kamel.image.KamelImage
 import io.kamel.image.asyncPainterResource
+import org.koin.compose.koinInject
 import presentation.screens.add.AddProduct
 import presentation.screens.edit.EditProduct
 import presentation.screens.view.ProductView
+import presentation.viewmodel.MainViewModel
 import utils.Constant.BASE_URL
 
 class ProductsScreen(
@@ -89,8 +95,34 @@ class ProductsScreen(
 
 }
 @Composable
-fun ProductContent(productList: List<Products>, isCompact: Boolean,categories: List<Categories>) {
+fun ProductContent(
+    productList: List<Products>,
+    isCompact: Boolean,
+    categories: List<Categories>,
+    viewModel: MainViewModel = koinInject()
+) {
+    var allProductList by remember { mutableStateOf(emptyList<Products>()) }
+    LaunchedEffect(Unit){
+        viewModel.getAllProducts()
+    }
+    val allProState by viewModel.allProducts.collectAsState()
     val navigator = LocalNavigator.current
+
+    when (allProState) {
+        is UiState.LOADING -> {
+           // CircularProgressIndicator()
+        }
+
+        is UiState.ERROR -> {
+            val error = (allProState as UiState.ERROR).throwable
+            Text("Error loading products: ${error.message}")
+        }
+
+        is UiState.SUCCESS -> {
+            val products = (allProState as UiState.SUCCESS).response
+            allProductList = products
+        }
+    }
     LazyColumn(
         modifier = Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, top = 16.dp)
     ) {
@@ -153,7 +185,7 @@ fun ProductContent(productList: List<Products>, isCompact: Boolean,categories: L
         }
 
         item {
-            ProductGridScreen(productList)
+            ProductGridScreen(allProductList)
         }
     }
 }

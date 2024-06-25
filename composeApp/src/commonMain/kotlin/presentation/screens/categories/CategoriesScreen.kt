@@ -144,6 +144,7 @@ class CategoriesScreen(
 }
 @Composable
 fun CategoryCard(category: Categories) {
+    val navigator = LocalNavigator.current
     Card(
         modifier = Modifier
             .padding(8.dp)
@@ -188,7 +189,7 @@ fun CategoryCard(category: Categories) {
                         .background(Color.White.copy(alpha = 0.6f), shape = RoundedCornerShape(8.dp))
                         .padding(4.dp)
                 ) {
-                    IconButton(onClick = { /* Handle edit */ },
+                    IconButton(onClick = { navigator?.push(EditCategories(category)) },
                         modifier = Modifier.size(20.dp)) {
                         Icon(Icons.Default.Edit, contentDescription = "Edit")
                     }

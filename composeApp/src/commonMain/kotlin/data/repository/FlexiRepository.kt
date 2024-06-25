@@ -65,4 +65,11 @@ interface FlexiRepository {
         imageBytes: ByteArray,
 
         ): HttpResponse
+    suspend fun updateCategoryById(
+        id: Long,
+        name: String,
+        description: String,
+        isVisible: Boolean,
+        imageBytes: ByteArray,
+    ): HttpResponse
 }

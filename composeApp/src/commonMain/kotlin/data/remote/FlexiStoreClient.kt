@@ -156,6 +156,29 @@ class FlexiStoreClient(
             body = MultiPartFormDataContent(formData)
         }
     }
+    @OptIn(InternalAPI::class)
+    suspend fun updateCategoryById(
+        id: Long,
+        name: String,
+        description: String,
+        isVisible: Boolean,
+        imageBytes: ByteArray,
+    ): HttpResponse {
+        val formData = formData {
+            append("id", id.toString())
+            append("name", name)
+            append("description", description)
+            append("isVisible", isVisible.toString())
+            append("imageUrl", imageBytes, Headers.build {
+                append(HttpHeaders.ContentDisposition, "form-data; name=\"image\"; filename=\"${name}.jpg\"")
+                append(HttpHeaders.ContentType, "image/jpeg")
+            })
+        }
+
+        return client.put("v1/categories/$id") {
+            body = MultiPartFormDataContent(formData)
+        }
+    }
     suspend fun getAllCategories(): List<Categories>{
         return client.get("v1/categories").body()
     }
