@@ -169,7 +169,7 @@ class FlexiStoreClient(
             append("name", name)
             append("description", description)
             append("isVisible", isVisible.toString())
-            append("imageUrl", imageBytes, Headers.build {
+            append("image", imageBytes, Headers.build {
                 append(HttpHeaders.ContentDisposition, "form-data; name=\"image\"; filename=\"${name}.jpg\"")
                 append(HttpHeaders.ContentType, "image/jpeg")
             })
