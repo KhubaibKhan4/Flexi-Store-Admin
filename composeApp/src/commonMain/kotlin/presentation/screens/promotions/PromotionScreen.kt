@@ -45,7 +45,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -62,7 +61,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
-import presentation.screens.add.AddProduct
 import presentation.screens.components.ErrorScreen
 import presentation.screens.components.LoadingScreen
 import presentation.viewmodel.MainViewModel
@@ -80,7 +78,10 @@ fun PromotionContent(viewModel: MainViewModel = koinInject()) {
     val navigator = LocalNavigator.current
     var promotionList by remember { mutableStateOf(emptyList<Promotion>()) }
     var searchQuery by remember { mutableStateOf("") }
+    var deleteMessage by remember { mutableStateOf("") }
     var enabledFilter by remember { mutableStateOf("All") }
+
+    val scope = rememberCoroutineScope()
 
     LaunchedEffect(Unit) {
         viewModel.getPromotions()
@@ -100,6 +101,36 @@ fun PromotionContent(viewModel: MainViewModel = koinInject()) {
         is UiState.SUCCESS -> {
             val promotions = (promotionState as UiState.SUCCESS).response
             promotionList = promotions
+        }
+    }
+    var serverResponse by remember { mutableStateOf<HttpResponse?>(null) }
+    val deletePromo by viewModel.deletePromo.collectAsState()
+    when (deletePromo) {
+        is UiState.ERROR -> {
+            val error = (deletePromo as UiState.ERROR).throwable
+            ErrorScreen(error.message.toString(), onRetry = {})
+        }
+
+        UiState.LOADING -> {
+
+        }
+
+        is UiState.SUCCESS -> {
+            val response = (deletePromo as UiState.SUCCESS).response
+            serverResponse = response
+            if (serverResponse?.status?.value == 200 || serverResponse?.status?.value == 201 || serverResponse?.status?.value == 202 || serverResponse?.status?.value == 203) {
+                deleteMessage = "Deleted Successfully...."
+                Text(
+                    text = deleteMessage
+                )
+                LaunchedEffect(serverResponse){
+                    viewModel.getPromotions()
+                }
+                scope.launch {
+                    delay(2000)
+                    deleteMessage = ""
+                }
+            }
         }
     }
 
@@ -193,9 +224,13 @@ fun PromotionContent(viewModel: MainViewModel = koinInject()) {
                     (enabledFilter == "All" || (enabledFilter == "Enabled" && it.enabled) || (enabledFilter == "Disabled" && !it.enabled)) &&
                             it.title.contains(searchQuery, ignoreCase = true)
                 }) { promotion ->
-                    PromotionItem(promotion) { selectedPromotion ->
+                    PromotionItem(promotion, onEditClick = { selectedPromotion ->
                         navigator?.push(EditPromotion(selectedPromotion))
-                    }
+                    },
+                        onDeleteClick = { selectedPromotion ->
+                            viewModel.deletePromotion(selectedPromotion.id.toLong())
+                        }
+                    )
                 }
             }
         } else {
@@ -206,29 +241,32 @@ fun PromotionContent(viewModel: MainViewModel = koinInject()) {
                 Text("No promotions found")
             }
         }
+        if (serverResponse?.isActive == true) {
+            if (serverResponse?.status?.value == 200 || serverResponse?.status?.value == 201 || serverResponse?.status?.value == 202 || serverResponse?.status?.value == 203) {
+                Text(
+                    text = "Deleted Successfully...."
+                )
+                scope.launch {
+                    delay(2000)
+                }
+            } else {
+                Text(
+                    text = "Failed to Delete...."
+                )
+            }
+        }
     }
 }
 
 @Composable
-fun PromotionItem(promotion: Promotion, onEditClick: (Promotion) -> Unit) {
+fun PromotionItem(
+    promotion: Promotion, onEditClick: (Promotion) -> Unit,
+    onDeleteClick: (Promotion) -> Unit,
+) {
     val viewModel: MainViewModel = koinInject()
 
     val scope = rememberCoroutineScope()
-    var serverResponse by remember { mutableStateOf<HttpResponse?>(null) }
-    val deletePromo by viewModel.deletePromo.collectAsState()
-    when(deletePromo){
-        is UiState.ERROR -> {
-            val error = (deletePromo as UiState.ERROR).throwable
-            ErrorScreen(error.message.toString(), onRetry = {})
-        }
-        UiState.LOADING -> {
 
-        }
-        is UiState.SUCCESS -> {
-            val response = (deletePromo as UiState.SUCCESS).response
-            serverResponse = response
-        }
-    }
     Column(
         modifier = Modifier
             .padding(8.dp)
@@ -276,25 +314,11 @@ fun PromotionItem(promotion: Promotion, onEditClick: (Promotion) -> Unit) {
             }
             Button(
                 onClick = {
-                    viewModel.deletePromotion(promotion.id.toLong())
+                    onDeleteClick(promotion)
                 },
                 colors = ButtonDefaults.buttonColors(containerColor = Color.Red)
             ) {
                 Text(text = "Delete", color = Color.White)
-            }
-        }
-        if (serverResponse?.isActive == true) {
-            if (serverResponse?.status?.value == 200 || serverResponse?.status?.value == 201 || serverResponse?.status?.value == 202 || serverResponse?.status?.value == 203) {
-                Text(
-                    text = "Published Successfully...."
-                )
-                scope.launch {
-                    delay(2000)
-                }
-            } else {
-                Text(
-                    text = "Failed to Publish...."
-                )
             }
         }
     }
