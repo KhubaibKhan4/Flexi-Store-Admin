@@ -5,16 +5,20 @@ import domain.model.order.Orders
 import domain.model.products.Products
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
+import io.ktor.client.request.forms.FormDataContent
 import io.ktor.client.request.forms.MultiPartFormDataContent
 import io.ktor.client.request.forms.formData
 import io.ktor.client.request.get
 import io.ktor.client.request.post
 import io.ktor.client.request.put
 import io.ktor.client.statement.HttpResponse
+import io.ktor.http.ContentType
 import io.ktor.http.Headers
 import io.ktor.http.HttpHeaders
-import io.ktor.http.content.OutgoingContent
+import io.ktor.http.Parameters
+import io.ktor.http.contentType
 import io.ktor.util.InternalAPI
+import kotlinx.datetime.Clock
 
 class FlexiStoreClient(
     private val client: HttpClient,
@@ -22,12 +26,15 @@ class FlexiStoreClient(
     suspend fun getAllOrders(): List<Orders> {
         return client.get("v1/order").body()
     }
-    suspend fun getProductsByMultipleIds(ids: String): List<Products>{
+
+    suspend fun getProductsByMultipleIds(ids: String): List<Products> {
         return client.get("v1/products/multiple?ids=$ids").body()
     }
-    suspend fun getAllProducts(): List<Products>{
+
+    suspend fun getAllProducts(): List<Products> {
         return client.get("v1/products").body()
     }
+
     @OptIn(InternalAPI::class)
     suspend fun updateProductById(
         id: Long,
@@ -49,7 +56,7 @@ class FlexiStoreClient(
         averageRating: Double?,
         isFeature: Boolean?,
         manufacturer: String?,
-        colors: String?
+        colors: String?,
     ): HttpResponse {
         val formData = formData {
             append("id", id.toString())
@@ -73,7 +80,10 @@ class FlexiStoreClient(
             append("colors", colors ?: "")
             if (imageBytes != null) {
                 append("image", imageBytes, Headers.build {
-                    append(HttpHeaders.ContentDisposition, "form-data; name=\"image\"; filename=\"${name ?: "product_image"}.jpg\"")
+                    append(
+                        HttpHeaders.ContentDisposition,
+                        "form-data; name=\"image\"; filename=\"${name ?: "product_image"}.jpg\""
+                    )
                     append(HttpHeaders.ContentType, "image/jpeg")
                 })
             }
@@ -83,6 +93,7 @@ class FlexiStoreClient(
             body = MultiPartFormDataContent(formData)
         }
     }
+
     @OptIn(InternalAPI::class)
     suspend fun createProduct(
         name: String,
@@ -103,7 +114,7 @@ class FlexiStoreClient(
         averageRating: Double,
         isFeature: Boolean,
         manufacturer: String,
-        colors: String
+        colors: String,
     ): HttpResponse {
         val formData = formData {
             append("name", name)
@@ -125,7 +136,10 @@ class FlexiStoreClient(
             append("manufacturer", manufacturer)
             append("colors", colors)
             append("image", imageBytes, Headers.build {
-                append(HttpHeaders.ContentDisposition, "form-data; name=\"image\"; filename=\"${name}.jpg\"")
+                append(
+                    HttpHeaders.ContentDisposition,
+                    "form-data; name=\"image\"; filename=\"${name}.jpg\""
+                )
                 append(HttpHeaders.ContentType, "image/jpeg")
             })
         }
@@ -134,6 +148,7 @@ class FlexiStoreClient(
             body = MultiPartFormDataContent(formData)
         }
     }
+
     @OptIn(InternalAPI::class)
     suspend fun createCategories(
         name: String,
@@ -141,13 +156,16 @@ class FlexiStoreClient(
         isVisible: Boolean,
         imageBytes: ByteArray,
 
-    ): HttpResponse {
+        ): HttpResponse {
         val formData = formData {
             append("name", name)
             append("description", description)
             append("isVisible", isVisible.toString())
             append("imageUrl", imageBytes, Headers.build {
-                append(HttpHeaders.ContentDisposition, "form-data; name=\"image\"; filename=\"${name}.jpg\"")
+                append(
+                    HttpHeaders.ContentDisposition,
+                    "form-data; name=\"image\"; filename=\"${name}.jpg\""
+                )
                 append(HttpHeaders.ContentType, "image/jpeg")
             })
         }
@@ -156,6 +174,7 @@ class FlexiStoreClient(
             body = MultiPartFormDataContent(formData)
         }
     }
+
     @OptIn(InternalAPI::class)
     suspend fun updateCategoryById(
         id: Long,
@@ -170,7 +189,10 @@ class FlexiStoreClient(
             append("description", description)
             append("isVisible", isVisible.toString())
             append("image", imageBytes, Headers.build {
-                append(HttpHeaders.ContentDisposition, "form-data; name=\"image\"; filename=\"${name}.jpg\"")
+                append(
+                    HttpHeaders.ContentDisposition,
+                    "form-data; name=\"image\"; filename=\"${name}.jpg\""
+                )
                 append(HttpHeaders.ContentType, "image/jpeg")
             })
         }
@@ -179,7 +201,19 @@ class FlexiStoreClient(
             body = MultiPartFormDataContent(formData)
         }
     }
-    suspend fun getAllCategories(): List<Categories>{
+
+    suspend fun getAllCategories(): List<Categories> {
         return client.get("v1/categories").body()
+    }
+
+    @OptIn(InternalAPI::class)
+    suspend fun updateOrderById(id: Long, orderProgress: String): HttpResponse {
+        println("ORDER STARTED")
+        return client.put("v1/order/$id") {
+            contentType(ContentType.Application.FormUrlEncoded)
+            body = FormDataContent(Parameters.build {
+                append("orderProgress", orderProgress)
+            })
+        }
     }
 }

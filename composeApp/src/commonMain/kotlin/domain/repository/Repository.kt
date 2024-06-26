@@ -92,4 +92,9 @@ class Repository(
     ): HttpResponse {
         return flexiStoreClient.updateCategoryById(id, name, description, isVisible, imageBytes)
     }
+
+    override suspend fun updateOrderById(id: Long, orderProgress: String): HttpResponse {
+        println("REPOSITORY")
+        return flexiStoreClient.updateOrderById(id,orderProgress)
+    }
 }

@@ -1,6 +1,9 @@
 package presentation.screens.order
 
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -13,19 +16,28 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.CloudUpload
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -35,20 +47,61 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import cafe.adriel.voyager.core.screen.Screen
+import domain.model.order.Orders
 import domain.model.products.Products
+import domain.usecase.UiState
 import io.kamel.core.Resource
 import io.kamel.image.KamelImage
 import io.kamel.image.asyncPainterResource
-import presentation.screens.add.AddProduct
-import presentation.screens.product.ProductGridScreen
+import io.ktor.client.statement.HttpResponse
+import kotlinx.serialization.Serializable
+import org.koin.compose.koinInject
+import presentation.viewmodel.MainViewModel
 import utils.Constant.BASE_URL
 
+@Serializable
+data class OrderProduct(
+    val order: Orders,
+    val product: Products,
+)
+
 class OrderScreen(
-    private val productList: List<Products>,
+    private val orderList: List<Orders>,
 ) : Screen {
     @Composable
     override fun Content() {
+        val viewModel = koinInject<MainViewModel>()
+        val combinedList = remember { mutableStateOf(emptyList<OrderProduct>()) }
+        val idsList =
+            orderList.map { it.productIds.toString().trim() }.joinToString(separator = ",")
+        val productsState by viewModel.productDetail.collectAsState()
+        var productList by remember { mutableStateOf(emptyList<Products>()) }
+        LaunchedEffect(orderList) {
+            viewModel.getProductsByIds(idsList)
+        }
+
+        when (productsState) {
+            is UiState.LOADING -> {
+                CircularProgressIndicator()
+            }
+
+            is UiState.ERROR -> {
+                val error = (productsState as UiState.ERROR).throwable
+                Text("Error loading products: ${error.message}")
+            }
+
+            is UiState.SUCCESS -> {
+                val products = (productsState as UiState.SUCCESS).response
+                productList = products
+                combinedList.value = orderList.mapNotNull { order ->
+                    val product = products.find { it.id == order.productIds }
+                    product?.let { OrderProduct(order, it) }
+                }
+                println("PRODUCT: $productList")
+            }
+        }
         LazyColumn(
             modifier = Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, top = 16.dp)
         ) {
@@ -93,31 +146,59 @@ class OrderScreen(
             }
 
             item {
-                OrderProductList(productList)
+                OrderProductList(combinedList.value)
             }
         }
     }
 }
+
 @Composable
-fun OrderProductList(products: List<Products>) {
+fun OrderProductList(orderProducts: List<OrderProduct>) {
     LazyVerticalGrid(
         columns = GridCells.Adaptive(minSize = 340.dp),
-        modifier = Modifier.fillMaxWidth()
-            .height(900.dp)
+        modifier = Modifier.fillMaxWidth().height(900.dp)
     ) {
-        items(products) { product ->
-            OrderProductItem(product = product)
+        items(orderProducts) { orderProduct ->
+            OrderProductItem(orderProduct = orderProduct)
         }
     }
 }
+
 @Composable
-fun OrderProductItem(product: Products) {
+fun OrderProductItem(
+    orderProduct: OrderProduct,
+    viewModel: MainViewModel = koinInject(),
+) {
+    val product = orderProduct.product
+    var order by remember { mutableStateOf(orderProduct.order) }
+    var showEditDialog by remember { mutableStateOf(false) }
+    var serverResponse by remember { mutableStateOf<HttpResponse?>(null) }
+    val updateOrderState by viewModel.updateOrder.collectAsState()
+
+    val (progress, progressLabel) = when (order.orderProgress) {
+        "On Progress" -> 0.25f to "Order Received"
+        "On The Way" -> 0.5f to "On The Way"
+        "Completed" -> 1f to "Delivered"
+        "Delivered" -> 1f to "Delivered"
+        "Cancelled" -> 0f to "Cancelled"
+        else -> 0f to "Unknown"
+    }
+
+    if (showEditDialog) {
+        EditOrderDialog(
+            order = order,
+            onDismiss = { showEditDialog = false },
+            onSave = { updatedOrder ->
+                viewModel.updateOrderById(updatedOrder.id.toLong(), updatedOrder.orderProgress)
+                order = updatedOrder
+            }
+        )
+    }
+
     Card(
         shape = RoundedCornerShape(8.dp),
         elevation = CardDefaults.cardElevation(4.dp),
-        modifier = Modifier
-            .padding(8.dp)
-            .fillMaxWidth(),
+        modifier = Modifier.padding(8.dp).fillMaxWidth(),
         colors = CardDefaults.cardColors(Color.White)
     ) {
         Row(modifier = Modifier.padding(16.dp)) {
@@ -125,13 +206,11 @@ fun OrderProductItem(product: Products) {
             KamelImage(
                 resource = image,
                 contentDescription = product.name,
-                modifier = Modifier
-                    .size(100.dp)
-                    .padding(end = 16.dp)
+                modifier = Modifier.size(100.dp).padding(end = 16.dp)
                     .clip(RoundedCornerShape(8.dp)),
                 contentScale = ContentScale.Crop
             )
-            Column(modifier = Modifier.align(Alignment.CenterVertically)) {
+            Column(modifier = Modifier.align(Alignment.CenterVertically).weight(1f)) {
                 Text(text = product.name, fontWeight = FontWeight.Bold, fontSize = 20.sp)
                 Text(text = "Price: \$${product.price}", color = Color.Gray, fontSize = 16.sp)
                 Text(
@@ -139,13 +218,141 @@ fun OrderProductItem(product: Products) {
                     color = Color.Gray,
                     fontSize = 14.sp
                 )
-                Text(text = "Order ID: ${product.id}", color = Color.Gray, fontSize = 14.sp)
+                Text(text = "Order ID: ${order.id}", color = Color.Gray, fontSize = 14.sp)
                 Spacer(modifier = Modifier.height(8.dp))
                 LinearProgressIndicator(
-                    progress = { 0.6f },
+                    progress = { progress },
                     modifier = Modifier.fillMaxWidth(),
+                    color = when(progress){
+                        0f -> Color.Red
+                        0.25f -> Color.Yellow
+                        0.5f -> Color.Blue
+                        1f -> Color.Green
+                        else -> Color.Gray
+                    },
                 )
-                Text(text = "Order Progress", fontSize = 12.sp, color = Color.Gray)
+                Text(text = progressLabel, fontSize = 12.sp, color = Color.Gray)
+                Spacer(modifier = Modifier.height(8.dp))
+                ElevatedButton(
+                    onClick = { showEditDialog = true },
+                    shape = RoundedCornerShape(8.dp),
+                    colors = ButtonDefaults.elevatedButtonColors(
+                        containerColor = Color.White,
+                        contentColor = Color.Black
+                    )
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Edit,
+                        contentDescription = null,
+                        modifier = Modifier.size(25.dp),
+                        tint = Color.LightGray
+                    )
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Text("Edit Order")
+                }
+            }
+        }
+    }
+
+    when (updateOrderState) {
+        is UiState.LOADING -> {
+            // Handle loading state if needed
+        }
+
+        is UiState.SUCCESS -> {
+            val response = (updateOrderState as UiState.SUCCESS).response
+            serverResponse = response
+            // Update products or handle success state as needed
+            println("RESPONSE: $response")
+        }
+
+        is UiState.ERROR -> {
+            val error = (updateOrderState as UiState.ERROR).throwable
+            // Handle error state if needed
+            Text("Error updating order: ${error.message}")
+            println("ERROR: $error")
+        }
+    }
+}
+
+@Composable
+fun EditOrderDialog(
+    order: Orders,
+    onDismiss: () -> Unit,
+    onSave: (Orders) -> Unit,
+) {
+    var progressStatus by remember { mutableStateOf(order.orderProgress) }
+    var expanded by remember { mutableStateOf(false) }
+
+    Dialog(onDismissRequest = onDismiss) {
+        Card(
+            shape = RoundedCornerShape(8.dp),
+            elevation = CardDefaults.cardElevation(8.dp),
+            modifier = Modifier.padding(16.dp).fillMaxWidth()
+        ) {
+            Column(modifier = Modifier.padding(16.dp)) {
+                Text(text = "Edit Order", fontWeight = FontWeight.Bold, fontSize = 20.sp)
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(text = "Order ID: ${order.id}", color = Color.Gray, fontSize = 14.sp)
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(text = "Progress Status", color = Color.Gray, fontSize = 14.sp)
+
+                Box {
+                    Text(
+                        text = progressStatus,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { expanded = true }
+                            .padding(8.dp)
+                            .border(1.dp, Color.Gray, RoundedCornerShape(4.dp))
+                    )
+                    DropdownMenu(
+                        expanded = expanded,
+                        onDismissRequest = { expanded = false }
+                    ) {
+                        DropdownMenuItem(onClick = {
+                            progressStatus = "On Progress"; expanded = false
+                        },
+                            text = { Text("On Progress") })
+                        DropdownMenuItem(onClick = {
+                            progressStatus = "On The Way"; expanded = false
+                        },
+                            text = {
+                                Text("On The Way")
+                            })
+                        DropdownMenuItem(onClick = {
+                            progressStatus = "Completed"; expanded = false
+                        },
+                            text = {
+                                Text("Delivered")
+                            })
+                        DropdownMenuItem(onClick = {
+                            progressStatus = "Cancelled"; expanded = false
+                        },
+                            text = {
+                                Text("Cancelled")
+                            })
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+                Row(
+                    horizontalArrangement = Arrangement.End,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    TextButton(onClick = onDismiss) {
+                        Text("Cancel")
+                    }
+                    Spacer(modifier = Modifier.width(8.dp))
+                    TextButton(
+                        onClick = {
+                            onSave(order.copy(orderProgress = progressStatus))
+                            onDismiss()
+                        }
+                    ) {
+                        Text("Save")
+                    }
+                }
             }
         }
     }

@@ -36,6 +36,11 @@ class MainViewModel(
         MutableStateFlow(UiState.LOADING)
     val updateCategories = _updateCategories.asStateFlow()
 
+
+    private val _updateOrder: MutableStateFlow<UiState<HttpResponse>> =
+        MutableStateFlow(UiState.LOADING)
+    val updateOrder = _updateCategories.asStateFlow()
+
     private val _createProduct: MutableStateFlow<UiState<HttpResponse>> =
         MutableStateFlow(UiState.LOADING)
     val createProduct = _createProduct.asStateFlow()
@@ -236,6 +241,21 @@ class MainViewModel(
                 _updateCategories.value  = UiState.SUCCESS(response)
             }catch (e: Exception){
                 _updateCategories.value = UiState.ERROR(e)
+            }
+        }
+    }
+
+    fun updateOrderById(id:Long,orderProgress: String){
+        viewModelScope.launch {
+            _updateOrder.value = UiState.LOADING
+            println("VIEWMODEL: LOADING")
+            try {
+                val response = repository.updateOrderById(id,orderProgress)
+                _updateOrder.value = UiState.SUCCESS(response)
+                println("VIEWMODEL: SUCCESS: $response")
+            }catch (e: Exception){
+                _updateOrder.value = UiState.ERROR(e)
+                println("VIEWMODEL: ERROR: $e")
             }
         }
     }

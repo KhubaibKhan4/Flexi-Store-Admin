@@ -313,7 +313,7 @@ fun AppContent(viewModel: MainViewModel = koinInject()) {
                     )
 
                     2 -> Navigator(CategoriesScreen(allCategories))
-                    3 -> Navigator(OrderScreen(productList))
+                    3 -> Navigator(OrderScreen(orderList))
                     4 -> Navigator(ReviewsScreen())
                     5 -> Navigator(CouponsScreen())
                     6 -> Navigator(ProfileScreen())
