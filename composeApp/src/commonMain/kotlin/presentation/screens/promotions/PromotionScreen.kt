@@ -23,6 +23,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -185,7 +186,9 @@ fun PromotionContent(viewModel: MainViewModel = koinInject()) {
                     (enabledFilter == "All" || (enabledFilter == "Enabled" && it.enabled) || (enabledFilter == "Disabled" && !it.enabled)) &&
                             it.title.contains(searchQuery, ignoreCase = true)
                 }) { promotion ->
-                    PromotionItem(promotion)
+                    PromotionItem(promotion) { selectedPromotion ->
+
+                    }
                 }
             }
         } else {
@@ -201,7 +204,7 @@ fun PromotionContent(viewModel: MainViewModel = koinInject()) {
 
 
 @Composable
-fun PromotionItem(promotion: Promotion) {
+fun PromotionItem(promotion: Promotion, onEditClick: (Promotion) -> Unit) {
     Column(
         modifier = Modifier
             .padding(8.dp)
@@ -236,5 +239,13 @@ fun PromotionItem(promotion: Promotion) {
             maxLines = 2,
             overflow = TextOverflow.Ellipsis
         )
+        Spacer(modifier = Modifier.height(8.dp))
+        Button(
+            onClick = { onEditClick(promotion) },
+            modifier = Modifier.align(Alignment.End),
+            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF007BFF))
+        ) {
+            Text(text = "Edit", color = Color.White)
+        }
     }
 }
