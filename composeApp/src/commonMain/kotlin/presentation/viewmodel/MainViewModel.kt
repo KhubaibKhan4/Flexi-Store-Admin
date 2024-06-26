@@ -2,7 +2,6 @@ package presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.compose.viewModel
 import domain.model.categories.Categories
 import domain.model.order.Orders
 import domain.model.products.Products
@@ -58,6 +57,18 @@ class MainViewModel(
     private val _promotions: MutableStateFlow<UiState<List<Promotion>>> =
         MutableStateFlow(UiState.LOADING)
     val promotions = _promotions.asStateFlow()
+
+    private val _deletePromo: MutableStateFlow<UiState<HttpResponse>> =
+        MutableStateFlow(UiState.LOADING)
+    val deletePromo = _deletePromo.asStateFlow()
+
+    private val _updatePromo: MutableStateFlow<UiState<HttpResponse>> =
+        MutableStateFlow(UiState.LOADING)
+    val updatePromo = _updatePromo.asStateFlow()
+
+    private val _createPromo: MutableStateFlow<UiState<HttpResponse>> =
+        MutableStateFlow(UiState.LOADING)
+    val createPromo = _createPromo.asStateFlow()
     fun getAllOrders() {
         viewModelScope.launch {
             _allOrders.value = UiState.LOADING
@@ -222,7 +233,7 @@ class MainViewModel(
         }
     }
 
-     fun getCategories() {
+    fun getCategories() {
         viewModelScope.launch {
             _categories.value = UiState.LOADING
             try {
@@ -233,46 +244,115 @@ class MainViewModel(
             }
         }
     }
+
     fun updateCategoryById(
         id: Long,
         name: String,
         description: String,
         isVisible: Boolean,
-        imageBytes: ByteArray
-    ){
+        imageBytes: ByteArray,
+    ) {
         viewModelScope.launch {
             _updateCategories.value = UiState.LOADING
             try {
-                val response = repository.updateCategoryById(id, name, description, isVisible,imageBytes)
-                _updateCategories.value  = UiState.SUCCESS(response)
-            }catch (e: Exception){
+                val response =
+                    repository.updateCategoryById(id, name, description, isVisible, imageBytes)
+                _updateCategories.value = UiState.SUCCESS(response)
+            } catch (e: Exception) {
                 _updateCategories.value = UiState.ERROR(e)
             }
         }
     }
 
-    fun updateOrderById(id:Long,orderProgress: String){
+    fun updateOrderById(id: Long, orderProgress: String) {
         viewModelScope.launch {
             _updateOrder.value = UiState.LOADING
             println("VIEWMODEL: LOADING")
             try {
-                val response = repository.updateOrderById(id,orderProgress)
+                val response = repository.updateOrderById(id, orderProgress)
                 _updateOrder.value = UiState.SUCCESS(response)
                 println("VIEWMODEL: SUCCESS: $response")
-            }catch (e: Exception){
+            } catch (e: Exception) {
                 _updateOrder.value = UiState.ERROR(e)
                 println("VIEWMODEL: ERROR: $e")
             }
         }
     }
-    fun getPromotions(){
+
+    fun getPromotions() {
         viewModelScope.launch {
             _promotions.value = UiState.LOADING
             try {
                 val response = repository.getPromotions()
                 _promotions.value = UiState.SUCCESS(response)
-            }catch (e: Exception){
+            } catch (e: Exception) {
                 _promotions.value = UiState.ERROR(e)
+            }
+        }
+    }
+
+    fun deletePromotion(id: Long) {
+        viewModelScope.launch {
+            _deletePromo.value = UiState.LOADING
+            try {
+                val response = repository.deletePromotionById(id)
+                _deletePromo.value = UiState.SUCCESS(response)
+            } catch (e: Exception) {
+                _deletePromo.value = UiState.ERROR(e)
+            }
+        }
+    }
+
+    fun updatePromotionById(
+        id: Long,
+        title: String,
+        description: String,
+        startDate: String,
+        endDate: String,
+        enable: String,
+        imageBytes: ByteArray,
+    ) {
+        viewModelScope.launch {
+            _updatePromo.value = UiState.LOADING
+            try {
+                val response = repository.updatePromotionById(
+                    id,
+                    title,
+                    description,
+                    startDate,
+                    endDate,
+                    enable,
+                    imageBytes
+                )
+                _updatePromo.value = UiState.SUCCESS(response)
+            } catch (e: Exception) {
+                _updatePromo.value = UiState.ERROR(e)
+            }
+        }
+    }
+
+    fun createPromo(
+        title: String,
+        description: String,
+        startDate: String,
+        endDate: String,
+        enable: Boolean,
+        image: ByteArray,
+    ) {
+        viewModelScope.launch {
+            _createPromo.value = UiState.LOADING
+            try {
+                val response = repository.createPromotion(
+                    title,
+                    description,
+                    startDate,
+                    endDate,
+                    enable,
+                    image
+                )
+                _createPromo.value = UiState.SUCCESS(response)
+            } catch (e: Exception) {
+                _createPromo.value = UiState.ERROR(e)
             }
         }
     }

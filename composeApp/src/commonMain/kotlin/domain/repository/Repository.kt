@@ -102,4 +102,31 @@ class Repository(
     override suspend fun getPromotions(): List<Promotion> {
         return flexiStoreClient.getPromotions()
     }
+
+    override suspend fun deletePromotionById(id: Long): HttpResponse {
+        return flexiStoreClient.deletePromotionById(id)
+    }
+
+    override suspend fun updatePromotionById(
+        id: Long,
+        title: String,
+        description: String,
+        startDate: String,
+        endDate: String,
+        enable: String,
+        imageBytes: ByteArray,
+    ): HttpResponse {
+        return flexiStoreClient.updatePromotionById(id, title, description, startDate, endDate, enable, imageBytes)
+    }
+
+    override suspend fun createPromotion(
+        title: String,
+        description: String,
+        startDate: String,
+        endDate: String,
+        enable: Boolean,
+        image: ByteArray,
+    ): HttpResponse {
+        return flexiStoreClient.createPromotion(title, description, startDate, endDate, enable, image)
+    }
 }

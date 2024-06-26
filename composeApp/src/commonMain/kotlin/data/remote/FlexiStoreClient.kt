@@ -6,6 +6,7 @@ import domain.model.products.Products
 import domain.model.promotions.Promotion
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
+import io.ktor.client.request.delete
 import io.ktor.client.request.forms.FormDataContent
 import io.ktor.client.request.forms.MultiPartFormDataContent
 import io.ktor.client.request.forms.formData
@@ -219,5 +220,67 @@ class FlexiStoreClient(
     }
     suspend fun getPromotions(): List<Promotion>{
         return client.get("v1/promotions").body()
+    }
+    suspend fun deletePromotionById(id: Long): HttpResponse {
+        return client.delete("v1/promotions/$id").body()
+    }
+    @OptIn(InternalAPI::class)
+    suspend fun createPromotion(
+        title: String,
+        description: String,
+        startDate: String,
+        endDate: String,
+        enable: Boolean,
+        image: ByteArray,
+
+        ): HttpResponse {
+        val formData = formData {
+            append("name", title)
+            append("description", description)
+            append("startDate", startDate)
+            append("endDate", endDate)
+            append("enable", enable)
+            append("imageUrl", image, Headers.build {
+                append(
+                    HttpHeaders.ContentDisposition,
+                    "form-data; name=\"image\"; filename=\"${title}.jpg\""
+                )
+                append(HttpHeaders.ContentType, "image/jpeg")
+            })
+        }
+
+        return client.post("v1/promotions") {
+            body = MultiPartFormDataContent(formData)
+        }
+    }
+    @OptIn(InternalAPI::class)
+    suspend fun updatePromotionById(
+        id: Long,
+        title: String,
+        description: String,
+        startDate: String,
+        endDate: String,
+        enable: String,
+        imageBytes: ByteArray,
+    ): HttpResponse {
+        val formData = formData {
+            append("id", id.toString())
+            append("title", title)
+            append("description", description)
+            append("startDate", startDate)
+            append("endDate", endDate)
+            append("enable", enable)
+            append("image", imageBytes, Headers.build {
+                append(
+                    HttpHeaders.ContentDisposition,
+                    "form-data; name=\"image\"; filename=\"${title}.jpg\""
+                )
+                append(HttpHeaders.ContentType, "image/jpeg")
+            })
+        }
+
+        return client.put("v1/promotions/$id") {
+            body = MultiPartFormDataContent(formData)
+        }
     }
 }

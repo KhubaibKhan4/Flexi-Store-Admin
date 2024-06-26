@@ -78,4 +78,25 @@ interface FlexiRepository {
         orderProgress: String
     ): HttpResponse
     suspend fun getPromotions(): List<Promotion>
+    suspend fun deletePromotionById(id: Long): HttpResponse
+    @OptIn(InternalAPI::class)
+    suspend fun updatePromotionById(
+        id: Long,
+        title: String,
+        description: String,
+        startDate: String,
+        endDate: String,
+        enable: String,
+        imageBytes: ByteArray,
+    ): HttpResponse
+    @OptIn(InternalAPI::class)
+    suspend fun createPromotion(
+        title: String,
+        description: String,
+        startDate: String,
+        endDate: String,
+        enable: Boolean,
+        image: ByteArray,
+
+        ): HttpResponse
 }
