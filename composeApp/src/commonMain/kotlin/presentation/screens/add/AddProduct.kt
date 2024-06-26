@@ -24,7 +24,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBackIosNew
 import androidx.compose.material.icons.filled.ArrowDropDown
-import androidx.compose.material.icons.filled.CalendarToday
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Image
 import androidx.compose.material3.Button
@@ -65,6 +64,7 @@ import io.ktor.client.statement.HttpResponse
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import kotlinx.datetime.Clock
 import org.jetbrains.skia.Image
 import org.koin.compose.koinInject
 import presentation.screens.components.ErrorScreen
@@ -75,7 +75,7 @@ class AddProduct(
 ) : Screen {
     @Composable
     override fun Content() {
-        AddProductContent(categories=categories)
+        AddProductContent(categories = categories)
     }
 }
 
@@ -205,10 +205,6 @@ fun AddProductContent(
                     onDimensionsChange = { dimensions = it }
                 )
                 AdditionalInformationSection(
-                    createdAt = createdAt,
-                    onCreatedAtChange = { createdAt = it },
-                    updatedAt = updatedAt,
-                    onUpdatedAtChange = { updatedAt = it },
                     promotionDescription = promotionDescription,
                     onPromotionDescriptionChange = { promotionDescription = it },
                     averageRating = averageRating,
@@ -247,8 +243,8 @@ fun AddProductContent(
                         categoryId.toLong(),
                         categoryTitle,
                         it,
-                        createdAt,
-                        updatedAt,
+                        Clock.System.now().toString(),
+                        Clock.System.now().toString(),
                         totalStack.toLong(),
                         brand,
                         weight.toDouble(),
@@ -271,13 +267,16 @@ fun AddProductContent(
                     Text("Publish Now")
                     Spacer(modifier = Modifier.width(8.dp))
                     AnimatedVisibility(isLoading) {
-                        CircularProgressIndicator()
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(20.dp),
+                            color = Color.White
+                        )
                     }
                 }
             }
         }
         if (serverResponse?.isActive == true) {
-            if (serverResponse?.status?.value == 200 && serverResponse?.status?.value == 201) {
+            if (serverResponse?.status?.value == 200 || serverResponse?.status?.value == 201 || serverResponse?.status?.value == 202 || serverResponse?.status?.value == 203) {
                 Text(
                     text = "Published Successfully...."
                 )
@@ -571,10 +570,6 @@ fun StockInformationSection(
 
 @Composable
 fun AdditionalInformationSection(
-    createdAt: String,
-    onCreatedAtChange: (String) -> Unit,
-    updatedAt: String,
-    onUpdatedAtChange: (String) -> Unit,
     promotionDescription: String,
     onPromotionDescriptionChange: (String) -> Unit,
     averageRating: String,
@@ -600,32 +595,6 @@ fun AdditionalInformationSection(
                 text = "Additional Information",
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Bold
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            OutlinedTextField(
-                value = createdAt,
-                onValueChange = onCreatedAtChange,
-                label = { Text("Created At") },
-                modifier = Modifier.fillMaxWidth(),
-                trailingIcon = {
-                    Icon(
-                        imageVector = Icons.Default.CalendarToday,
-                        contentDescription = "Calendar"
-                    )
-                }
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            OutlinedTextField(
-                value = updatedAt,
-                onValueChange = onUpdatedAtChange,
-                label = { Text("Updated At") },
-                modifier = Modifier.fillMaxWidth(),
-                trailingIcon = {
-                    Icon(
-                        imageVector = Icons.Default.CalendarToday,
-                        contentDescription = "Calendar"
-                    )
-                }
             )
             Spacer(modifier = Modifier.height(8.dp))
             OutlinedTextField(
