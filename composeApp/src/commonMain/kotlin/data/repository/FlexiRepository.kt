@@ -3,6 +3,7 @@ package data.repository
 import domain.model.categories.Categories
 import domain.model.order.Orders
 import domain.model.products.Products
+import domain.model.promotions.Promotion
 import io.ktor.client.statement.HttpResponse
 import io.ktor.util.InternalAPI
 
@@ -76,4 +77,5 @@ interface FlexiRepository {
         id: Long,
         orderProgress: String
     ): HttpResponse
+    suspend fun getPromotions(): List<Promotion>
 }

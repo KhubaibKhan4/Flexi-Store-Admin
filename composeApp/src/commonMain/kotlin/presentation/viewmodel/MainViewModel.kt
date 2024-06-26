@@ -2,9 +2,11 @@ package presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.viewModel
 import domain.model.categories.Categories
 import domain.model.order.Orders
 import domain.model.products.Products
+import domain.model.promotions.Promotion
 import domain.repository.Repository
 import domain.usecase.UiState
 import io.ktor.client.statement.HttpResponse
@@ -52,6 +54,10 @@ class MainViewModel(
     private val _categories: MutableStateFlow<UiState<List<Categories>>> =
         MutableStateFlow(UiState.LOADING)
     val categories = _categories.asStateFlow()
+
+    private val _promotions: MutableStateFlow<UiState<List<Promotion>>> =
+        MutableStateFlow(UiState.LOADING)
+    val promotions = _promotions.asStateFlow()
     fun getAllOrders() {
         viewModelScope.launch {
             _allOrders.value = UiState.LOADING
@@ -256,6 +262,17 @@ class MainViewModel(
             }catch (e: Exception){
                 _updateOrder.value = UiState.ERROR(e)
                 println("VIEWMODEL: ERROR: $e")
+            }
+        }
+    }
+    fun getPromotions(){
+        viewModelScope.launch {
+            _promotions.value = UiState.LOADING
+            try {
+                val response = repository.getPromotions()
+                _promotions.value = UiState.SUCCESS(response)
+            }catch (e: Exception){
+                _promotions.value = UiState.ERROR(e)
             }
         }
     }

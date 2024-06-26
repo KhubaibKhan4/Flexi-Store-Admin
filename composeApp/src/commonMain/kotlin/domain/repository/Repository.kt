@@ -5,6 +5,7 @@ import data.repository.FlexiRepository
 import domain.model.categories.Categories
 import domain.model.order.Orders
 import domain.model.products.Products
+import domain.model.promotions.Promotion
 import io.ktor.client.statement.HttpResponse
 
 class Repository(
@@ -96,5 +97,9 @@ class Repository(
     override suspend fun updateOrderById(id: Long, orderProgress: String): HttpResponse {
         println("REPOSITORY")
         return flexiStoreClient.updateOrderById(id,orderProgress)
+    }
+
+    override suspend fun getPromotions(): List<Promotion> {
+        return flexiStoreClient.getPromotions()
     }
 }
