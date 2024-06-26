@@ -14,8 +14,10 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Category
 import androidx.compose.material.icons.filled.Dashboard
 import androidx.compose.material.icons.filled.LocalOffer
+import androidx.compose.material.icons.filled.Loyalty
 import androidx.compose.material.icons.filled.Pages
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Propane
 import androidx.compose.material.icons.filled.Receipt
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.ShoppingCart
@@ -23,8 +25,10 @@ import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.outlined.Category
 import androidx.compose.material.icons.outlined.Dashboard
 import androidx.compose.material.icons.outlined.LocalOffer
+import androidx.compose.material.icons.outlined.Loyalty
 import androidx.compose.material.icons.outlined.Pages
 import androidx.compose.material.icons.outlined.Person
+import androidx.compose.material.icons.outlined.Propane
 import androidx.compose.material.icons.outlined.Receipt
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.outlined.ShoppingCart
@@ -76,7 +80,7 @@ import presentation.screens.order.OrderScreen
 import presentation.screens.pages.PagesScreen
 import presentation.screens.product.ProductsScreen
 import presentation.screens.profile.ProfileScreen
-import presentation.screens.reviews.ReviewsScreen
+import presentation.screens.reviews.PromotionScreen
 import presentation.screens.setting.SettingScreen
 import presentation.viewmodel.MainViewModel
 
@@ -214,15 +218,9 @@ fun AppContent(viewModel: MainViewModel = koinInject()) {
             hasNews = false,
         ),
         NavigationItem(
-            title = "Reviews",
-            selectedIcon = Icons.Default.Star,
-            unselectedIcon = Icons.Outlined.Star,
-            hasNews = false,
-        ),
-        NavigationItem(
-            title = "Coupons",
-            selectedIcon = Icons.Default.LocalOffer,
-            unselectedIcon = Icons.Outlined.LocalOffer,
+            title = "Promotions",
+            selectedIcon = Icons.Default.Loyalty,
+            unselectedIcon = Icons.Outlined.Loyalty,
             hasNews = false,
         ),
         NavigationItem(
@@ -236,13 +234,7 @@ fun AppContent(viewModel: MainViewModel = koinInject()) {
             selectedIcon = Icons.Default.Settings,
             unselectedIcon = Icons.Outlined.Settings,
             hasNews = false,
-        ),
-        NavigationItem(
-            title = "Pages",
-            selectedIcon = Icons.Default.Pages,
-            unselectedIcon = Icons.Outlined.Pages,
-            hasNews = false,
-        ),
+        )
     )
     val windowClass = calculateWindowSizeClass()
     val showNavigationRail = windowClass.widthSizeClass != WindowWidthSizeClass.Compact
@@ -314,11 +306,9 @@ fun AppContent(viewModel: MainViewModel = koinInject()) {
 
                     2 -> Navigator(CategoriesScreen(allCategories))
                     3 -> Navigator(OrderScreen(orderList))
-                    4 -> Navigator(ReviewsScreen())
-                    5 -> Navigator(CouponsScreen())
-                    6 -> Navigator(ProfileScreen())
-                    7 -> Navigator(SettingScreen())
-                    8 -> Navigator(PagesScreen())
+                    4 -> Navigator(PromotionScreen())
+                    5 -> Navigator(ProfileScreen())
+                    6 -> Navigator(SettingScreen())
                 }
             }
         }
