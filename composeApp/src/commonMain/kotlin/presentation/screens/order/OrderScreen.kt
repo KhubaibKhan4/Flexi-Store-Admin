@@ -1,5 +1,7 @@
 package presentation.screens.order
 
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -7,36 +9,50 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.CloudUpload
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerColors
+import androidx.compose.material3.DatePickerDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ElevatedButton
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -45,6 +61,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
@@ -56,10 +73,12 @@ import io.kamel.core.Resource
 import io.kamel.image.KamelImage
 import io.kamel.image.asyncPainterResource
 import io.ktor.client.statement.HttpResponse
+import kotlinx.datetime.LocalDate
 import kotlinx.serialization.Serializable
 import org.koin.compose.koinInject
 import presentation.viewmodel.MainViewModel
 import utils.Constant.BASE_URL
+import utils.DateUtils
 
 @Serializable
 data class OrderProduct(
@@ -72,81 +91,133 @@ class OrderScreen(
 ) : Screen {
     @Composable
     override fun Content() {
-        val viewModel = koinInject<MainViewModel>()
-        val combinedList = remember { mutableStateOf(emptyList<OrderProduct>()) }
-        val idsList =
-            orderList.map { it.productIds.toString().trim() }.joinToString(separator = ",")
-        val productsState by viewModel.productDetail.collectAsState()
-        var productList by remember { mutableStateOf(emptyList<Products>()) }
-        LaunchedEffect(orderList) {
-            viewModel.getProductsByIds(idsList)
+        OrderScreenContent(orderList)
+    }
+}
+@Composable
+fun OrderScreenContent(orderList: List<Orders>) {
+    val viewModel = koinInject<MainViewModel>()
+    val combinedList = remember { mutableStateOf(emptyList<OrderProduct>()) }
+    val idsList = orderList.map { it.productIds.toString().trim() }.joinToString(separator = ",")
+    val productsState by viewModel.productDetail.collectAsState()
+    var productList by remember { mutableStateOf(emptyList<Products>()) }
+    var searchQuery by remember { mutableStateOf("") }
+    var selectedStatus by remember { mutableStateOf("All") }
+    var searchVisible by remember { mutableStateOf(false) }
+
+    LaunchedEffect(orderList) {
+        viewModel.getProductsByIds(idsList)
+    }
+
+    when (productsState) {
+        is UiState.LOADING -> {
+            CircularProgressIndicator()
         }
 
-        when (productsState) {
-            is UiState.LOADING -> {
-                CircularProgressIndicator()
-            }
+        is UiState.ERROR -> {
+            val error = (productsState as UiState.ERROR).throwable
+            Text("Error loading products: ${error.message}")
+        }
 
-            is UiState.ERROR -> {
-                val error = (productsState as UiState.ERROR).throwable
-                Text("Error loading products: ${error.message}")
-            }
-
-            is UiState.SUCCESS -> {
-                val products = (productsState as UiState.SUCCESS).response
-                productList = products
-                combinedList.value = orderList.mapNotNull { order ->
-                    val product = products.find { it.id == order.productIds }
-                    product?.let { OrderProduct(order, it) }
-                }
-                println("PRODUCT: $productList")
+        is UiState.SUCCESS -> {
+            val products = (productsState as UiState.SUCCESS).response
+            productList = products
+            combinedList.value = orderList.mapNotNull { order ->
+                val product = products.find { it.id == order.productIds }
+                product?.let { OrderProduct(order, it) }
             }
         }
-        LazyColumn(
-            modifier = Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, top = 16.dp)
+    }
+
+    Column(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            item {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.Start,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Column(
-                        horizontalAlignment = Alignment.Start,
-                        verticalArrangement = Arrangement.Center
-                    ) {
-                        Text(
-                            text = "Orders",
-                            fontSize = 24.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = Color(0xFF007BFF)
-                        )
-                    }
-                    Spacer(modifier = Modifier.weight(1f))
-                    ElevatedButton(
-                        onClick = {},
-                        shape = RoundedCornerShape(8.dp),
-                        colors = ButtonDefaults.elevatedButtonColors(
-                            containerColor = Color.White,
-                            contentColor = Color.Black
-                        )
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.CloudUpload,
-                            contentDescription = null,
-                            modifier = Modifier.size(25.dp),
-                            tint = Color.LightGray
-                        )
-                        Spacer(modifier = Modifier.width(4.dp))
-                        Text("Export Invoice")
-                    }
-                    Spacer(modifier = Modifier.width(6.dp))
-                }
-                Spacer(modifier = Modifier.height(16.dp))
-            }
+            Text(
+                text = "Orders",
+                fontSize = 24.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color(0xFF007BFF)
+            )
 
-            item {
-                OrderProductList(combinedList.value)
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                var statusMenuExpanded by remember { mutableStateOf(false) }
+
+                Box {
+                    Text(
+                        text = selectedStatus,
+                        modifier = Modifier
+                            .border(BorderStroke(1.dp, Color.Gray))
+                            .padding(8.dp)
+                            .clickable { statusMenuExpanded = true }
+                    )
+                    DropdownMenu(
+                        expanded = statusMenuExpanded,
+                        onDismissRequest = { statusMenuExpanded = false }
+                    ) {
+                        val statuses = listOf(
+                            "All",
+                            "On Progress",
+                            "On The Way",
+                            "Completed",
+                            "Delivered",
+                            "Cancelled"
+                        )
+                        statuses.forEach { status ->
+                            DropdownMenuItem(onClick = {
+                                selectedStatus = status
+                                statusMenuExpanded = false
+                            }, text = {
+                                Text(status)
+                            })
+                        }
+                    }
+                }
+
+                Spacer(modifier = Modifier.width(8.dp))
+
+                if (searchVisible) {
+                    BasicTextField(
+                        value = searchQuery,
+                        onValueChange = { searchQuery = it },
+                        modifier = Modifier
+                            .border(BorderStroke(1.dp, Color.Gray))
+                            .padding(8.dp)
+                            .weight(1f)
+                            .padding(end = 8.dp),
+                        decorationBox = { innerTextField ->
+                            if (searchQuery.isEmpty()) {
+                                Text("Search...", color = Color.Gray)
+                            }
+                            innerTextField()
+                        }
+                    )
+                } else {
+                    Icon(
+                        imageVector = Icons.Default.Search,
+                        contentDescription = "Search",
+                        modifier = Modifier.clickable { searchVisible = true }
+                    )
+                }
+
+                Spacer(modifier = Modifier.width(8.dp))
+            }
+        }
+
+        LazyVerticalGrid(
+            columns = GridCells.Adaptive(minSize = 340.dp),
+            modifier = Modifier.fillMaxWidth().height(900.dp)
+        ) {
+            items(combinedList.value.filter {
+                (selectedStatus == "All" || it.order.orderProgress == selectedStatus) &&
+                        (searchQuery.isEmpty() || it.product.name.contains(
+                            searchQuery,
+                            ignoreCase = true
+                        ))
+            }) { orderProduct ->
+                OrderProductItem(orderProduct)
             }
         }
     }
@@ -223,7 +294,7 @@ fun OrderProductItem(
                 LinearProgressIndicator(
                     progress = { progress },
                     modifier = Modifier.fillMaxWidth(),
-                    color = when(progress){
+                    color = when (progress) {
                         0f -> Color.Red
                         0.25f -> Color.Yellow
                         0.5f -> Color.Blue
@@ -262,13 +333,11 @@ fun OrderProductItem(
         is UiState.SUCCESS -> {
             val response = (updateOrderState as UiState.SUCCESS).response
             serverResponse = response
-            // Update products or handle success state as needed
             println("RESPONSE: $response")
         }
 
         is UiState.ERROR -> {
             val error = (updateOrderState as UiState.ERROR).throwable
-            // Handle error state if needed
             Text("Error updating order: ${error.message}")
             println("ERROR: $error")
         }
