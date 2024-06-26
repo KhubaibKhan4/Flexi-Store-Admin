@@ -37,6 +37,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -50,11 +51,16 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import cafe.adriel.voyager.core.screen.Screen
+import cafe.adriel.voyager.navigator.LocalNavigator
 import domain.model.promotions.Promotion
 import domain.usecase.UiState
 import io.kamel.core.Resource
 import io.kamel.image.KamelImage
 import io.kamel.image.asyncPainterResource
+import io.ktor.client.statement.HttpResponse
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
 import presentation.screens.add.AddProduct
 import presentation.screens.components.ErrorScreen
@@ -71,6 +77,7 @@ class PromotionScreen : Screen {
 
 @Composable
 fun PromotionContent(viewModel: MainViewModel = koinInject()) {
+    val navigator = LocalNavigator.current
     var promotionList by remember { mutableStateOf(emptyList<Promotion>()) }
     var searchQuery by remember { mutableStateOf("") }
     var enabledFilter by remember { mutableStateOf("All") }
@@ -114,7 +121,7 @@ fun PromotionContent(viewModel: MainViewModel = koinInject()) {
 
                 ElevatedButton(
                     onClick = {
-
+                        navigator?.push(AddPromotion())
                     },
                     shape = RoundedCornerShape(8.dp),
                     colors = ButtonDefaults.elevatedButtonColors(
@@ -178,7 +185,7 @@ fun PromotionContent(viewModel: MainViewModel = koinInject()) {
 
         if (promotionList.isNotEmpty()) {
             LazyVerticalGrid(
-                columns = GridCells.Adaptive(minSize = 150.dp),
+                columns = GridCells.Adaptive(minSize = 220.dp),
                 contentPadding = PaddingValues(8.dp),
                 modifier = Modifier.fillMaxSize()
             ) {
@@ -187,7 +194,7 @@ fun PromotionContent(viewModel: MainViewModel = koinInject()) {
                             it.title.contains(searchQuery, ignoreCase = true)
                 }) { promotion ->
                     PromotionItem(promotion) { selectedPromotion ->
-
+                        navigator?.push(EditPromotion(selectedPromotion))
                     }
                 }
             }
@@ -202,9 +209,26 @@ fun PromotionContent(viewModel: MainViewModel = koinInject()) {
     }
 }
 
-
 @Composable
 fun PromotionItem(promotion: Promotion, onEditClick: (Promotion) -> Unit) {
+    val viewModel: MainViewModel = koinInject()
+
+    val scope = rememberCoroutineScope()
+    var serverResponse by remember { mutableStateOf<HttpResponse?>(null) }
+    val deletePromo by viewModel.deletePromo.collectAsState()
+    when(deletePromo){
+        is UiState.ERROR -> {
+            val error = (deletePromo as UiState.ERROR).throwable
+            ErrorScreen(error.message.toString(), onRetry = {})
+        }
+        UiState.LOADING -> {
+
+        }
+        is UiState.SUCCESS -> {
+            val response = (deletePromo as UiState.SUCCESS).response
+            serverResponse = response
+        }
+    }
     Column(
         modifier = Modifier
             .padding(8.dp)
@@ -240,12 +264,38 @@ fun PromotionItem(promotion: Promotion, onEditClick: (Promotion) -> Unit) {
             overflow = TextOverflow.Ellipsis
         )
         Spacer(modifier = Modifier.height(8.dp))
-        Button(
-            onClick = { onEditClick(promotion) },
-            modifier = Modifier.align(Alignment.End),
-            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF007BFF))
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Text(text = "Edit", color = Color.White)
+            Button(
+                onClick = { onEditClick(promotion) },
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF007BFF))
+            ) {
+                Text(text = "Edit", color = Color.White)
+            }
+            Button(
+                onClick = {
+                    viewModel.deletePromotion(promotion.id.toLong())
+                },
+                colors = ButtonDefaults.buttonColors(containerColor = Color.Red)
+            ) {
+                Text(text = "Delete", color = Color.White)
+            }
+        }
+        if (serverResponse?.isActive == true) {
+            if (serverResponse?.status?.value == 200 || serverResponse?.status?.value == 201 || serverResponse?.status?.value == 202 || serverResponse?.status?.value == 203) {
+                Text(
+                    text = "Published Successfully...."
+                )
+                scope.launch {
+                    delay(2000)
+                }
+            } else {
+                Text(
+                    text = "Failed to Publish...."
+                )
+            }
         }
     }
 }

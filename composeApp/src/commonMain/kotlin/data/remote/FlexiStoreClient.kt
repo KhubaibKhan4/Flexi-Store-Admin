@@ -235,7 +235,7 @@ class FlexiStoreClient(
 
         ): HttpResponse {
         val formData = formData {
-            append("name", title)
+            append("title", title)
             append("description", description)
             append("startDate", startDate)
             append("endDate", endDate)
