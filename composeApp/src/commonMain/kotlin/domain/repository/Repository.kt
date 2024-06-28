@@ -134,4 +134,8 @@ class Repository(
     override suspend fun getAllUsers(): List<Users> {
         return flexiStoreClient.getAllUsers()
     }
+
+    override suspend fun getUserById(id: Long): Users {
+        return flexiStoreClient.getUserById(id)
+    }
 }

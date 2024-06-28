@@ -74,6 +74,10 @@ class MainViewModel(
     private val _allUsers: MutableStateFlow<UiState<List<Users>>> =
         MutableStateFlow(UiState.LOADING)
     val allUsers = _allUsers.asStateFlow()
+
+    private val _user: MutableStateFlow<UiState<Users>> =
+        MutableStateFlow(UiState.LOADING)
+    val user = _user.asStateFlow()
     fun getAllOrders() {
         viewModelScope.launch {
             _allOrders.value = UiState.LOADING
@@ -369,6 +373,18 @@ class MainViewModel(
                 _allUsers.value=UiState.SUCCESS(response)
             }catch (e:Exception){
                 _allUsers.value = UiState.ERROR(e)
+            }
+        }
+    }
+
+    fun getUserById(id:Long){
+        viewModelScope.launch {
+            _user.value= UiState.LOADING
+            try {
+                val response = repository.getUserById(id)
+                _user.value=UiState.SUCCESS(response)
+            }catch (e:Exception){
+                _user.value = UiState.ERROR(e)
             }
         }
     }

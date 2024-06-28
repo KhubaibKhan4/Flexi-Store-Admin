@@ -287,4 +287,7 @@ class FlexiStoreClient(
     suspend fun getAllUsers():List<Users>{
        return client.get("v1/users").body()
     }
+    suspend fun getUserById(id: Long):Users{
+        return client.get("v1/users/$id").body()
+    }
 }
