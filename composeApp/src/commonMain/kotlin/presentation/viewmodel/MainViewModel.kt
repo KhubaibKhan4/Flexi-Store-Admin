@@ -6,6 +6,7 @@ import domain.model.categories.Categories
 import domain.model.order.Orders
 import domain.model.products.Products
 import domain.model.promotions.Promotion
+import domain.model.users.Users
 import domain.repository.Repository
 import domain.usecase.UiState
 import io.ktor.client.statement.HttpResponse
@@ -69,6 +70,10 @@ class MainViewModel(
     private val _createPromo: MutableStateFlow<UiState<HttpResponse>> =
         MutableStateFlow(UiState.LOADING)
     val createPromo = _createPromo.asStateFlow()
+
+    private val _allUsers: MutableStateFlow<UiState<List<Users>>> =
+        MutableStateFlow(UiState.LOADING)
+    val allUsers = _allUsers.asStateFlow()
     fun getAllOrders() {
         viewModelScope.launch {
             _allOrders.value = UiState.LOADING
@@ -353,6 +358,17 @@ class MainViewModel(
                 _createPromo.value = UiState.SUCCESS(response)
             } catch (e: Exception) {
                 _createPromo.value = UiState.ERROR(e)
+            }
+        }
+    }
+    fun getAllUsers(){
+        viewModelScope.launch {
+            _allUsers.value= UiState.LOADING
+            try {
+                val response = repository.getAllUsers()
+                _allUsers.value=UiState.SUCCESS(response)
+            }catch (e:Exception){
+                _allUsers.value = UiState.ERROR(e)
             }
         }
     }

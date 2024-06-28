@@ -6,6 +6,7 @@ import domain.model.categories.Categories
 import domain.model.order.Orders
 import domain.model.products.Products
 import domain.model.promotions.Promotion
+import domain.model.users.Users
 import io.ktor.client.statement.HttpResponse
 
 class Repository(
@@ -128,5 +129,9 @@ class Repository(
         image: ByteArray,
     ): HttpResponse {
         return flexiStoreClient.createPromotion(title, description, startDate, endDate, enable, image)
+    }
+
+    override suspend fun getAllUsers(): List<Users> {
+        return flexiStoreClient.getAllUsers()
     }
 }
