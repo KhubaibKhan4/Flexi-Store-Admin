@@ -1,5 +1,5 @@
 # Flexi-Store-Admin
-Flexi-Store-Admin is a Seller Central for the Flexi-Store-KMP Project that Supports Android, iOS, Web & Desktop.
+Flexi-Store-Admin is a Seller Central for the Flexi-Store-KMP Project that Supports Android, iOS, Web & Desktop. By using Flexi Store Admin, We can add New Products, Edit Exisitng Products, Add New Categories, Edit Existing Categories, Add Promotion Cards, Enable and Disable them, Display the Promotion Cards up to Specific Date as well.
 
 ## Desktop Screen Shots
 
