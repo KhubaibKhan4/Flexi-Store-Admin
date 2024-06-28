@@ -4,6 +4,7 @@ import domain.model.categories.Categories
 import domain.model.order.Orders
 import domain.model.products.Products
 import domain.model.promotions.Promotion
+import domain.model.users.Users
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.delete
@@ -282,5 +283,8 @@ class FlexiStoreClient(
         return client.put("v1/promotions/$id") {
             body = MultiPartFormDataContent(formData)
         }
+    }
+    suspend fun getAllUsers():List<Users>{
+       return client.get("v1/users").body()
     }
 }

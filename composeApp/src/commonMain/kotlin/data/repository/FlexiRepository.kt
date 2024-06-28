@@ -4,6 +4,7 @@ import domain.model.categories.Categories
 import domain.model.order.Orders
 import domain.model.products.Products
 import domain.model.promotions.Promotion
+import domain.model.users.Users
 import io.ktor.client.statement.HttpResponse
 import io.ktor.util.InternalAPI
 
@@ -99,4 +100,5 @@ interface FlexiRepository {
         image: ByteArray,
 
         ): HttpResponse
+    suspend fun getAllUsers():List<Users>
 }
