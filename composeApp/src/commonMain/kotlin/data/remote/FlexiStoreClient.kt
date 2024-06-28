@@ -290,4 +290,19 @@ class FlexiStoreClient(
     suspend fun getUserById(id: Long):Users{
         return client.get("v1/users/$id").body()
     }
+    @OptIn(InternalAPI::class)
+    suspend fun updateProfile(id:Long, imageBytes: ByteArray): HttpResponse{
+        val formData = formData {
+            append("image", imageBytes, Headers.build {
+                append(
+                    HttpHeaders.ContentDisposition,
+                    "form-data; name=\"image\"; filename=\"${id}.jpg\""
+                )
+                append(HttpHeaders.ContentType, "image/jpeg")
+            })
+        }
+        return client.put("v1/users/profileImage/$id"){
+            body = MultiPartFormDataContent(formData)
+        }
+    }
 }

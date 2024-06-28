@@ -138,4 +138,8 @@ class Repository(
     override suspend fun getUserById(id: Long): Users {
         return flexiStoreClient.getUserById(id)
     }
+
+    override suspend fun updateProfile(id: Long, imageBytes: ByteArray): HttpResponse {
+        return flexiStoreClient.updateProfile(id,imageBytes)
+    }
 }

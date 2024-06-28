@@ -78,6 +78,10 @@ class MainViewModel(
     private val _user: MutableStateFlow<UiState<Users>> =
         MutableStateFlow(UiState.LOADING)
     val user = _user.asStateFlow()
+
+    private val _updateImage: MutableStateFlow<UiState<HttpResponse>> =
+        MutableStateFlow(UiState.LOADING)
+    val updateImage = _updateImage.asStateFlow()
     fun getAllOrders() {
         viewModelScope.launch {
             _allOrders.value = UiState.LOADING
@@ -365,26 +369,39 @@ class MainViewModel(
             }
         }
     }
-    fun getAllUsers(){
+
+    fun getAllUsers() {
         viewModelScope.launch {
-            _allUsers.value= UiState.LOADING
+            _allUsers.value = UiState.LOADING
             try {
                 val response = repository.getAllUsers()
-                _allUsers.value=UiState.SUCCESS(response)
-            }catch (e:Exception){
+                _allUsers.value = UiState.SUCCESS(response)
+            } catch (e: Exception) {
                 _allUsers.value = UiState.ERROR(e)
             }
         }
     }
 
-    fun getUserById(id:Long){
+    fun getUserById(id: Long) {
         viewModelScope.launch {
-            _user.value= UiState.LOADING
+            _user.value = UiState.LOADING
             try {
                 val response = repository.getUserById(id)
-                _user.value=UiState.SUCCESS(response)
-            }catch (e:Exception){
+                _user.value = UiState.SUCCESS(response)
+            } catch (e: Exception) {
                 _user.value = UiState.ERROR(e)
+            }
+        }
+    }
+
+    fun updateProfileImage(id: Long, imageBytes: ByteArray) {
+        viewModelScope.launch {
+            _updateImage.value = UiState.LOADING
+            try {
+                val response = repository.updateProfile(id, imageBytes)
+                _updateImage.value = UiState.SUCCESS(response)
+            } catch (e: Exception) {
+                _updateImage.value = UiState.ERROR(e)
             }
         }
     }

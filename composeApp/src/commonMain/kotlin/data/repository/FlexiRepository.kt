@@ -102,4 +102,5 @@ interface FlexiRepository {
         ): HttpResponse
     suspend fun getAllUsers():List<Users>
     suspend fun getUserById(id: Long):Users
+    suspend fun updateProfile(id:Long, imageBytes: ByteArray): HttpResponse
 }
