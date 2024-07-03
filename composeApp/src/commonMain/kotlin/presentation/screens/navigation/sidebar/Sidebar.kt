@@ -59,7 +59,7 @@ fun SidebarMenu(
         modifier = Modifier
             .width(sidebarWidth)
             .fillMaxHeight()
-            .background(Color(0xFFf1f4f9))
+            .background(Color(0xFFf1f5f9))
             .padding(16.dp)
             .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally,
