@@ -1,5 +1,5 @@
 # Flexi-Store-Admin
-Flexi-Store-Admin is a Seller Central for the Flexi-Store-KMP Project that Supports Android, iOS, Web & Desktop.
+Flexi-Store-Admin is a Seller Central for the Flexi-Store-KMP Project that Supports Android, iOS, Web & Desktop. By using Flexi Store Admin, We can add New Products, Edit Exisitng Products, Add New Categories, Edit Existing Categories, Add Promotion Cards, Enable and Disable them, Display the Promotion Cards up to Specific Date as well.
 
 ## Desktop Screen Shots
 
@@ -14,6 +14,14 @@ Flexi-Store-Admin is a Seller Central for the Flexi-Store-KMP Project that Suppo
 | ![Screenshot 2](https://github.com/KhubaibKhan4/Flexi-Store-Admin/blob/master/assests/screenshots/8.png) | 
 | ![Screenshot 2](https://github.com/KhubaibKhan4/Flexi-Store-Admin/blob/master/assests/screenshots/9.png) | 
 | ![Screenshot 2](https://github.com/KhubaibKhan4/Flexi-Store-Admin/blob/master/assests/screenshots/10.png) | 
+| ![Screenshot 2](https://github.com/KhubaibKhan4/Flexi-Store-Admin/blob/master/assests/screenshots/11.png) | 
+| ![Screenshot 2](https://github.com/KhubaibKhan4/Flexi-Store-Admin/blob/master/assests/screenshots/12.png) | 
+| ![Screenshot 2](https://github.com/KhubaibKhan4/Flexi-Store-Admin/blob/master/assests/screenshots/13.png) | 
+| ![Screenshot 2](https://github.com/KhubaibKhan4/Flexi-Store-Admin/blob/master/assests/screenshots/14.png) | 
+| ![Screenshot 2](https://github.com/KhubaibKhan4/Flexi-Store-Admin/blob/master/assests/screenshots/15.png) | 
+| ![Screenshot 2](https://github.com/KhubaibKhan4/Flexi-Store-Admin/blob/master/assests/screenshots/16.png) | 
+| ![Screenshot 2](https://github.com/KhubaibKhan4/Flexi-Store-Admin/blob/master/assests/screenshots/17.png) | 
+| ![Screenshot 2](https://github.com/KhubaibKhan4/Flexi-Store-Admin/blob/master/assests/screenshots/18.png) | 
 
 ## 🌟 Contributions
 If you wanna contribute, Please make sure to add new features & Then make a PR.Feel free to contribute to the project and stay tuned for more exciting updates!
@@ -29,7 +37,8 @@ Let's chat about potential projects, job opportunities, or any other collaborati
 [![Twitter](https://img.shields.io/badge/Twitter-Follow-blue?style=for-the-badge&logo=twitter)](https://twitter.com/codespacepro)
 [![Email](https://img.shields.io/badge/Email-Drop%20a%20Message-red?style=for-the-badge&logo=gmail)](mailto:18.bscs.803@gmail.com)
 
-If you find my work helpful, you can support me by [![Buy me a coffee](https://img.buymeacoffee.com/button-api/?text=Buy%20me%20a%20coffee&emoji=&slug=khubaibkhan&button_colour=FFDD00&font_colour=000000&font_family=Cookie&outline_colour=000000&coffee_colour=ffffff)](https://www.buymeacoffee.com/khubaibkhan)
+  ## 💰 You can help me by Donating
+  [![BuyMeACoffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-ffdd00?style=for-the-badge&logo=buy-me-a-coffee&logoColor=black)](https://buymeacoffee.com/khubaibkhan) [![PayPal](https://img.shields.io/badge/PayPal-00457C?style=for-the-badge&logo=paypal&logoColor=white)](https://paypal.me/18.bscs) [![Patreon](https://img.shields.io/badge/Patreon-F96854?style=for-the-badge&logo=patreon&logoColor=white)](https://patreon.com/MuhammadKhubaibImtiaz) [![Ko-Fi](https://img.shields.io/badge/Ko--fi-F16061?style=for-the-badge&logo=ko-fi&logoColor=white)](https://ko-fi.com/muhammadkhubaibimtiaz) 
 
 ## Setup
 To use this Admin Panel, You need to setup the Flexi-Store Server first. To Setup the Server, you need to follow the Server Guide. [Flexi-Store-Server](https://github.com/KhubaibKhan4/Flexi-Store-Server).
