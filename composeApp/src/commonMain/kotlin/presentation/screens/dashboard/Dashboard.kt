@@ -216,6 +216,7 @@ fun DashboardMainContent(
     if (!isLoading) {
         LazyColumn(
             modifier = Modifier
+                .background(Color(0XFFe5f0f9))
                 .padding(start = 16.dp, end = 16.dp)
                 .fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally
