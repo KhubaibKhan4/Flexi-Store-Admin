@@ -58,6 +58,7 @@ fun ProductDisplayScreen(product: Products) {
     val navigator = LocalNavigator.current
     Column(
         modifier = Modifier
+            .background(Color(0XFFe5f0f9))
             .fillMaxWidth()
             .padding(16.dp)
             .verticalScroll(rememberScrollState())

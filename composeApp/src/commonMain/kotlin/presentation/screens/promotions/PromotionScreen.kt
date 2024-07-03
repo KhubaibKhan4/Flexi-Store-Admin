@@ -134,7 +134,7 @@ fun PromotionContent(viewModel: MainViewModel = koinInject()) {
         }
     }
 
-    Column(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
+    Column(modifier = Modifier .background(Color(0XFFe5f0f9)).fillMaxWidth().padding(16.dp)) {
         Row(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,

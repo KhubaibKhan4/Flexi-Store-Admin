@@ -60,7 +60,8 @@ fun CategoriesDisplayScreen(categories: Categories) {
     val navigator = LocalNavigator.current
     Column(
         modifier = Modifier
-            .fillMaxWidth()
+            .background(Color(0XFFe5f0f9))
+            .fillMaxSize()
             .padding(16.dp)
             .verticalScroll(rememberScrollState())
     ) {
@@ -90,8 +91,7 @@ fun CategoriesDisplayScreen(categories: Categories) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp)
-                .background(Color.White, RoundedCornerShape(8.dp)),
+                .padding(16.dp),
             verticalAlignment = Alignment.Top
         ) {
             Box(

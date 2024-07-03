@@ -3,6 +3,7 @@ package presentation.screens.product
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -124,7 +125,7 @@ fun ProductContent(
         }
     }
     LazyColumn(
-        modifier = Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, top = 16.dp)
+        modifier = Modifier .background(Color(0XFFe5f0f9)).fillMaxWidth().padding(start = 16.dp, end = 16.dp, top = 16.dp)
     ) {
         item {
             Row(

@@ -136,6 +136,7 @@ fun AddProductContent(
 
     Column(
         modifier = Modifier
+            .background(Color(0XFFe5f0f9))
             .fillMaxSize()
             .padding(16.dp)
             .verticalScroll(rememberScrollState())

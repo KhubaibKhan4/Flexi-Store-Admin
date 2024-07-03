@@ -65,7 +65,7 @@ import presentation.viewmodel.MainViewModel
 import utils.Constant.BASE_URL
 
 class CategoriesScreen(
-    private val categories: List<Categories>
+    private val categories: List<Categories>,
 ) : Screen {
     @Composable
     override fun Content() {
@@ -73,7 +73,7 @@ class CategoriesScreen(
         val navigator = LocalNavigator.current
         var allCategories by remember { mutableStateOf(emptyList<Categories>()) }
 
-        LaunchedEffect(Unit){
+        LaunchedEffect(Unit) {
             viewModel.getCategories()
         }
         val categories by viewModel.categories.collectAsState()
@@ -94,7 +94,9 @@ class CategoriesScreen(
         }
 
         LazyColumn(
-            modifier = Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, top = 16.dp)
+            modifier = Modifier.background(Color(0XFFe5f0f9))
+                .fillMaxWidth()
+                .padding(start = 16.dp, end = 16.dp, top = 16.dp)
         ) {
             item {
                 Row(
@@ -142,6 +144,7 @@ class CategoriesScreen(
         }
     }
 }
+
 @Composable
 fun CategoryCard(category: Categories) {
     val navigator = LocalNavigator.current
@@ -186,11 +189,16 @@ fun CategoryCard(category: Categories) {
                     modifier = Modifier
                         .align(Alignment.BottomEnd)
                         .padding(8.dp)
-                        .background(Color.White.copy(alpha = 0.6f), shape = RoundedCornerShape(8.dp))
+                        .background(
+                            Color.White.copy(alpha = 0.6f),
+                            shape = RoundedCornerShape(8.dp)
+                        )
                         .padding(4.dp)
                 ) {
-                    IconButton(onClick = { navigator?.push(EditCategories(category)) },
-                        modifier = Modifier.size(20.dp)) {
+                    IconButton(
+                        onClick = { navigator?.push(EditCategories(category)) },
+                        modifier = Modifier.size(20.dp)
+                    ) {
                         Icon(Icons.Default.Edit, contentDescription = "Edit")
                     }
                 }
@@ -212,10 +220,11 @@ fun CategoryGrid(categories: List<Categories>) {
         }
     }
 }
+
 @Composable
 fun SearchAndFilterBar(
     onSearch: (String) -> Unit,
-    onFilter: (Boolean) -> Unit
+    onFilter: (Boolean) -> Unit,
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,

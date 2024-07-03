@@ -117,7 +117,7 @@ class ProfileScreen : Screen {
             }
         }
 
-        Row(modifier = Modifier.fillMaxSize()) {
+        Row(modifier = Modifier .background(Color(0XFFe5f0f9)).fillMaxSize()) {
             Box(
                 modifier = Modifier.fillMaxSize().padding(16.dp),
                 contentAlignment = Alignment.TopStart
