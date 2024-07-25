@@ -23,6 +23,10 @@ Flexi-Store-Admin is a Seller Central for the Flexi-Store-KMP Project that Suppo
 | ![Screenshot 2](https://github.com/KhubaibKhan4/Flexi-Store-Admin/blob/master/assests/screenshots/17.png) | 
 | ![Screenshot 2](https://github.com/KhubaibKhan4/Flexi-Store-Admin/blob/master/assests/screenshots/18.png) | 
 
+## Future Plans
+- Payment Integration.
+- PayPal Integration.
+
 ## 🌟 Contributions
 If you wanna contribute, Please make sure to add new features & Then make a PR.Feel free to contribute to the project and stay tuned for more exciting updates!
 
